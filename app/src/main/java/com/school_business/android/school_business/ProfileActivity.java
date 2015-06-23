@@ -1,17 +1,30 @@
 package com.school_business.android.school_business;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
-public class ProfileActivity extends ActionBarActivity {
+public class ProfileActivity extends Activity {//ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+	    TextView tv = (TextView) findViewById(R.id.textViewName);
+	    tv.setText(SchoolBusiness.getUserAttr("name"));
+	    tv = (TextView) findViewById(R.id.textViewEmail);
+	    tv.setText(SchoolBusiness.getUserAttr("email"));
+	    tv = (TextView) findViewById(R.id.textViewSchool);
+	    tv.setText("School: " + SchoolBusiness.getUserAttr("school_id"));
+	    tv = (TextView) findViewById(R.id.textViewBio);
+	    tv.setText("Bio: " + SchoolBusiness.getUserAttr("biography"));
+	    tv = (TextView) findViewById(R.id.textViewJob);
+	    tv.setText("Job Title: " + SchoolBusiness.getUserAttr("job_title"));
     }
 
 

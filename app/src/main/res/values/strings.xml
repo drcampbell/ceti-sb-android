@@ -16,5 +16,26 @@
     <string name="title_activity_profile">Profile</string>
     <string name="title_activity_edit_profile">EditProfileActivity</string>
     <string name="title_activity_event2">Event2Activity</string>
+    <string name="activity_json_request_btn_request">JSON request</string>
+    <string name="title_activity_school_search">SchoolSearch</string>
+    <string name="title_activity_school_search_results">SchoolSearchResults</string>
+    <string name="title_activity_school_view">SchoolViewActivity</string>
 
+    <!-- School View Strings -->
+    <string name="address">Address: </string>
+    <string name="city">City: </string>
+    <string name="state">State: </string>
+    <string name="zip">Zip: </string>
+    <string name="phone">Phone: </string>
+    <string name="title_activity_user_view">UserViewActivity</string>
+
+    <!-- User View Strings -->
+    <string name="school">School: </string>
+    <string name="grades">Grades: </string>
+    <string name="business">Business: </string>
+    <string name="job">Job Title: </string>
+    <string name="role">Role: </string>
+    <string name="bio">Biography: </string>
+    <string name="blank"></string>
+    <string name="title_activity_event_view">EventViewActivity</string>
 </resources>

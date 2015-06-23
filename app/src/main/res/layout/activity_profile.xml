@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="John Smith"
-        android:id="@+id/textView2"
+        android:id="@+id/textViewName"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -26,11 +26,11 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="John.Smith@gmail.com"
-        android:id="@+id/textView3"
-        android:layout_below="@+id/textView2"
+        android:id="@+id/textViewEmail"
+        android:layout_below="@+id/textViewName"
         android:layout_marginTop="20dp"
-        android:layout_alignRight="@+id/textView2"
-        android:layout_alignEnd="@+id/textView2"
+        android:layout_alignRight="@+id/textViewName"
+        android:layout_alignEnd="@+id/textViewName"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -39,9 +39,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="School: THE OHIO STATE UNIVERSITY"
-        android:id="@+id/textView4"
+        android:id="@+id/textViewSchool"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/textView3"
+        android:layout_below="@+id/textViewEmail"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -50,18 +50,19 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Bio: Interested in everything Technology related."
-        android:id="@+id/textView5"
-        android:layout_below="@+id/textView4"
+        android:id="@+id/textViewBio"
+        android:layout_below="@+id/textViewSchool"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Job Title: Computer Science Professor"
-        android:id="@+id/textView6"
-        android:layout_below="@+id/textView5"
+        android:id="@+id/textViewJob"
+        android:layout_below="@+id/textViewBio"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="20dp"
@@ -74,7 +75,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Address: Columbus, OH 43210"
         android:id="@+id/textView7"
-        android:layout_below="@+id/textView6"
+        android:layout_below="@+id/textViewJob"
         android:layout_marginTop="20dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -85,7 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Edit Profile"
-        android:id="@+id/button"
+        android:id="@+id/buttonEdit"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -97,9 +98,9 @@
         android:layout_height="wrap_content"
         android:text="Request Addition to School"
         android:id="@+id/button2"
-        android:layout_above="@+id/button"
+        android:layout_above="@+id/buttonEdit"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/button"
-        android:layout_alignEnd="@+id/button" />
+        android:layout_alignRight="@+id/buttonEdit"
+        android:layout_alignEnd="@+id/buttonEdit" />
 </RelativeLayout>

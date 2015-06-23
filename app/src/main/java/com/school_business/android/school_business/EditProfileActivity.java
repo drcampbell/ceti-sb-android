@@ -1,12 +1,13 @@
 package com.school_business.android.school_business;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class EditProfileActivity extends ActionBarActivity {
+public class EditProfileActivity extends Activity {//ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="TV_School" type="id"/>
+    <item name="TV_Grades" type="id"/>
+    <item name="TV_Business" type="id"/>
+    <item name="TV_Job" type="id"/>
+    <item name="TV_Bio" type="id"/>
+    <item name="TV_Name" type="id"/>
+    <item name="TV_Role" type="id"/>
+</resources>

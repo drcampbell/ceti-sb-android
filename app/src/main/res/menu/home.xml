@@ -6,7 +6,10 @@
         <!--android:title="@string/menu_home"-->
         <!--android:orderInCategory="100"-->
         <!--app:showAsAction="ifRoom|withText" />-->
-
+    <item android:id="@+id/school_search"
+          android:title="School"
+          android:orderInCategory="100"
+          app:showAsAction="ifRoom|withText" />
     <item android:id="@+id/search"
         android:title="@string/menu_search"
         android:orderInCategory="100"

@@ -1,0 +1,133 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.school_business.android.school_business.SchoolViewFragment">
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+    style="@style/TV_Style_Title"
+        android:text="School Name"
+        android:id="@+id/tv_name"
+/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="@string/address"
+            android:id="@+id/tv_address_t"
+    />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="@string/address"
+            android:id="@+id/tv_address"
+    />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="@string/city"
+            android:id="@+id/tv_city_t"
+    />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="@string/city"
+            android:id="@+id/tv_city"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="@string/state"
+            android:id="@+id/tv_state_t"
+    />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="@string/state"
+            android:id="@+id/tv_state"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="@string/zip"
+            android:id="@+id/tv_zip_t"
+    />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="@string/zip"
+            android:id="@+id/tv_zip"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="@string/phone"
+            android:id="@+id/tv_phone_t"
+    />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="@string/phone"
+            android:id="@+id/tv_phone"
+            />
+    </LinearLayout>
+
+    <Button
+        style="@style/Button"
+        android:text="Make My School"
+        android:id="@+id/make_my_school_button"
+        android:layout_height="34dp"/>
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_gravity="center"
+        android:text="Event Feed"
+        android:id="@+id/textView3"/>
+
+    <LinearLayout
+        style="@style/LL_Divider">
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    </FrameLayout>
+
+</LinearLayout>
+
+</FrameLayout>

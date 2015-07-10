@@ -13,6 +13,89 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    ></LinearLayout>
+    >
+    <TextView
+        android:id="@+id/tv_title"
+        android:text="Title "
+        style="@style/TV_Style_Title"/>
+    <LinearLayout
+        style="@style/LL_Horizontal">
+        <TextView
+            android:id="@+id/tv_start_t"
+            android:text="Event Start: "
+            style="@style/TV_Style_Title_Left"/>
+        <TextView
+            android:id="@+id/tv_start"
+            style="@style/TV_Style_Content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/LL_Horizontal">
+        <TextView
+            android:id="@+id/tv_end_t"
+            android:text="Event End: "
+            style="@style/TV_Style_Title_Left"/>
+        <TextView
+            android:id="@+id/tv_end"
+            style="@style/TV_Style_Content"/>
+    </LinearLayout>
+    <LinearLayout
+        style="@style/LL_Horizontal">
+        <TextView
+            android:id="@+id/tv_school_t"
+            android:text="Location: "
+            style="@style/TV_Style_Title_Left"/>
+        <TextView
+            android:id="@+id/tv_school"
+            style="@style/TV_Style_Content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/LL_Horizontal">
+        <TextView
+            android:id="@+id/tv_name_t"
+            android:text="Created By: "
+            style="@style/TV_Style_Title_Left"/>
+        <TextView
+            android:id="@+id/tv_name"
+            style="@style/TV_Style_Content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/LL_Horizontal">
+        <TextView
+            android:id="@+id/tv_content_t"
+            android:text="Content: "
+            style="@style/TV_Style_Title_Left"/>
+        <TextView
+            android:id="@+id/tv_content"
+            style="@style/TV_Style_Content"/>
+    </LinearLayout>
+
+
+</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:layout_below="@+id/layout_event"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:id="@+id/edit_button"
+            android:onClick="onClick"
+            android:text="Edit Event"
+            style="@style/Button"/>
+        <Button
+            android:id="@+id/claim_button"
+            android:onClick="onClick"
+            android:text="Claim Event"
+            style="@style/Button"/>
+        <Button
+            android:id="@+id/delete_button"
+            android:onClick="onClick"
+            android:text="Delete Event"
+            style="@style/Button"/>
+        </LinearLayout>
 
 </RelativeLayout>

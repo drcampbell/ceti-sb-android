@@ -7,4 +7,9 @@
     <item name="TV_Bio" type="id"/>
     <item name="TV_Name" type="id"/>
     <item name="TV_Role" type="id"/>
+
+    <item name="TV_Content" type="id"/>
+    <item name="TV_Title" type="id"/>
+    <item name="TV_EventStart" type="id"/>
+    <item name="TV_EventEnd" type="id"/>
 </resources>

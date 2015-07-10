@@ -60,6 +60,7 @@ public class SchoolSearch extends ListActivity implements OnClickListener
 	private ListView listView;
 	private Activity mContext;
 	private TextView textView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -225,6 +226,7 @@ public class SchoolSearch extends ListActivity implements OnClickListener
 	public void onListItemClick(ListView l, View v, int position) {
 		// Do something
 	}
+
 	public class MyArrayAdapter extends ArrayAdapter<String> {
 
 		Activity context;

@@ -42,7 +42,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	private final static String OPT_NAME = "name";
 	private String user_auth = "";
-	private boolean isResponse = false;
 	private static final String TAG = "school_business";
 
     @Override
@@ -57,17 +56,19 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    loginPrefsEditor = loginPreferences.edit();
 
 	    saveLogin = loginPreferences.getBoolean("saveLogin", false);
-	    if (saveLogin == true) {
+	    if (saveLogin) {
 		    saveLoginCheckBox.setChecked(true);
 
 		    userEmailText.setText(loginPreferences.getString("username", ""));
 		    SchoolBusiness.setEmail(loginPreferences.getString("username",""));
+		    SchoolBusiness.setCID(loginPreferences.getString("id", ""));
 		    user_auth = loginPreferences.getString("token", "");
 
 		    SchoolBusiness.setUserAuth(user_auth);
+		    Log.d(TAG, SchoolBusiness.getEmail()+" "+SchoolBusiness.getUserAuth());
 	    }
-	    if (saveLogin == true && user_auth != "" && isValid(user_auth)){
-		    startActivity(new Intent(this, HomeActivity.class));
+	    if (saveLogin && !user_auth.equals("") && isValid(user_auth)){
+		    startActivity(new Intent(this, EventActivity.class));
 	    }
         View btnLogin = (Button) findViewById(R.id.sign_in_button);
         btnLogin.setOnClickListener(this);
@@ -81,14 +82,12 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     private void checkLogin() {
 
-
 		String url = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/users/sign_in";
 	    RequestQueue queue = NetworkVolley.getInstance(this.getApplicationContext())
 			                                .getRequestQueue();
 
         final String email = this.userEmailText.getText().toString();
         final String password = this.userPasswordText.getText().toString();
-
 //        List<String> names = this.dh.selectAll(username, password);
 //        if (names.size() > 0) { // Login successful
 //            // Save username as the name of the player
@@ -127,7 +126,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 				public void onResponse(JSONObject response){
 					Log.d(TAG+" JSON", "Response: " + response.toString());
 					try {
-
+						SchoolBusiness.setCID(response.getString("id"));
 						user_auth = response.getString("authentication_token");
 						SchoolBusiness.setEmail(email);
 						SchoolBusiness.setUserAuth(user_auth);
@@ -135,7 +134,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 //						if(user_auth != null){
 //							Log.d(TAG+" LOGIN", user_auth);
 //						}
-						isResponse = true;
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -156,11 +154,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    Log.d(TAG, jsonRequest.toString());
 	    Log.d(TAG, jsonRequest.getBodyContentType().toString());
 	    queue.add(jsonRequest);
-	    //SchoolBusiness.setUserAuth(user_auth);
-	    isResponse = false;
+
 		if (SchoolBusiness.getUserAuth() == user_auth) {
 			saveLogin(email, user_auth);
-		    startActivity(new Intent(this, EventViewActivity.class));
+		    startActivity(new Intent(this, EventActivity.class));
 	    } else {
 		    // TODO bad login
 	    }
@@ -169,7 +166,11 @@ public class LoginActivity extends Activity implements OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
-                checkLogin();
+	            if (saveLogin && !user_auth.equals("") && isValid(user_auth)){
+		            startActivity(new Intent(this, EventActivity.class));
+	            } else {
+		            checkLogin();
+	            }
                 break;
             case R.id.register_button:
                 startActivity(new Intent(this, SignUpActivity.class));
@@ -184,6 +185,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 			loginPrefsEditor.putBoolean("saveLogin", true);
 			loginPrefsEditor.putString("username", username);
 			loginPrefsEditor.putString("token", token);
+			loginPrefsEditor.putString("id", SchoolBusiness.getCID());
 			loginPrefsEditor.commit();
 		} else {
 			loginPrefsEditor.clear();

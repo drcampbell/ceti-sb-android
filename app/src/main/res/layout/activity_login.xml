@@ -33,15 +33,15 @@
                 android:text="Remember me?"
                 android:textColor="#000" />
             />
-            <Button android:id="@+id/sign_in_button" style="?android:textAppearanceSmall"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" android:text="@string/action_sign_in"
-                android:textStyle="bold" />
+            <Button
+                style="@style/Button"
+                android:id="@+id/sign_in_button"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_sign_in"/>
 
-            <Button android:id="@+id/register_button" style="?android:textAppearanceSmall"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" android:text="@string/action_register"
-                android:textStyle="bold" />
+            <Button android:id="@+id/register_button"
+                style="@style/Button"
+                android:layout_marginTop="16dp" android:text="@string/action_register"/>
 
         </LinearLayout>
     </ScrollView>

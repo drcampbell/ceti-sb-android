@@ -1,0 +1,192 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.school_business.android.school_business.ProfileFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    />
+    <TextView
+        style="@style/TV_Style_Title"
+        android:text="Profile"
+        android:id="@+id/title"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="Name:"
+            android:id="@+id/tv_name_t"
+            />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="John Smith"
+            android:id="@+id/tv_name" />
+    </LinearLayout><![CDATA[
+
+    />
+
+    ]]>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="Email:"
+            android:id="@+id/tv_email_t"
+            />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="John.Smith@gmail.com"
+            android:id="@+id/tv_email"
+     />
+    </LinearLayout><![CDATA[
+
+    />
+
+    ]]>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="School:"
+            android:id="@+id/tv_school_t"
+            />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="THE OHIO STATE UNIVERSITY"
+            android:id="@+id/tv_school"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="Grades:"
+            android:id="@+id/tv_grades_t"
+            />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="13-16"
+            android:id="@+id/tv_grades"
+            />
+    </LinearLayout>
+    <![CDATA[
+
+    />
+
+    ]]>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="Bio:"
+            android:id="@+id/tv_bio_t"
+            />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="Interested in everything Technology related."
+            android:id="@+id/tv_bio"
+            />
+    </LinearLayout><![CDATA[
+
+    />
+    ]]>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="Business:"
+            android:id="@+id/tv_business_t"
+            />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="Google"
+            android:id="@+id/tv_business"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="Job Title:"
+            android:id="@+id/tv_job_t"
+            />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="Computer Science Professor"
+            android:id="@+id/tv_job"
+    />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            style="@style/TV_Style_Title_Left"
+            android:text="Role:"
+            android:id="@+id/tv_role_t"
+            />
+
+        <TextView
+            style="@style/TV_Style_Content"
+            android:text="Both"
+            android:id="@+id/tv_role"
+
+       />
+    </LinearLayout>
+
+    <Button
+        style="@style/Button"
+        android:text="Edit Profile"
+        android:id="@+id/buttonEdit"
+ />
+
+    <Button
+        style="@style/Button"
+        android:text="Request Addition to School"
+        android:id="@+id/button2"
+ />
+
+
+</LinearLayout>
+
+</FrameLayout>

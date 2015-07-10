@@ -1,0 +1,57 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.school_business.android.school_business.SearchOptionsFragment">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Events"
+            android:id="@+id/events_checkBox"
+            android:checked="true"
+            android:onClick="onCheckboxClicked"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Schools"
+            android:id="@+id/schools_checkBox"
+            android:checked="false"
+            android:onClick="onCheckboxClicked"
+            />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Users"
+            android:id="@+id/user_checkBox"
+            android:onClick="onCheckboxClicked"
+            />
+
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Hide"
+            android:id="@+id/toggleButton"
+            android:clickable="true"
+            android:checked="true"
+            android:layout_marginLeft="20px"
+            android:button="@android:color/background_light"
+            android:background="#ffffffff"/>
+
+    </LinearLayout>
+    <LinearLayout
+        style="@style/LL_Divider"></LinearLayout>
+</LinearLayout>
+</FrameLayout>

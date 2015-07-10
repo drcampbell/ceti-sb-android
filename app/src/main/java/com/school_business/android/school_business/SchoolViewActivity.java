@@ -33,7 +33,7 @@ public class SchoolViewActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_school_view);
-		getSchool("2");
+		getSchool(SchoolBusiness.getCID());
 	}
 
 

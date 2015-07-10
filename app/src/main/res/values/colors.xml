@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="SearchButtonColor">#ff17ff04</color>
+    <color name="DefButtonColor">#0000FF</color>
+    <color name="InactiveButton">#ff868687</color>
+    <color name="PressedButtonColor">#000099</color>
+</resources>

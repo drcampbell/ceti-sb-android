@@ -4,25 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -68,7 +60,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		    Log.d(TAG, SchoolBusiness.getEmail()+" "+SchoolBusiness.getUserAuth());
 	    }
 	    if (saveLogin && !user_auth.equals("") && isValid(user_auth)){
-		    startActivity(new Intent(this, EventActivity.class));
+		    startActivity(new Intent(this, MainActivity.class));
 	    }
         View btnLogin = (Button) findViewById(R.id.sign_in_button);
         btnLogin.setOnClickListener(this);
@@ -88,30 +80,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
         final String email = this.userEmailText.getText().toString();
         final String password = this.userPasswordText.getText().toString();
-//        List<String> names = this.dh.selectAll(username, password);
-//        if (names.size() > 0) { // Login successful
-//            // Save username as the name of the player
-//            SharedPreferences settings = PreferenceManager
-//                    .getDefaultSharedPreferences(this);
-//            SharedPreferences.Editor editor = settings.edit();
-//            editor.putString(OPT_NAME, username);
-//            editor.commit();
-//
-//            // Bring up the GameOptions screen
-//            startActivity(new Intent(this, GameOptions.class));
-//            finish();
-//        } else {
-//            // Try again?
-//            new AlertDialog.Builder(this)
-//                    .setTitle("Error")
-//                    .setMessage("Login failed")
-//                    .setNeutralButton("Try Again",
-//                            new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog,
-//                                                    int which) {
-//                                }
-//                            }).show();
-//        }
+
 	    HashMap<String, String> inner = new HashMap<String, String>();
 	    inner.put("email", email);
 	    inner.put("password", password);
@@ -131,9 +100,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 						SchoolBusiness.setEmail(email);
 						SchoolBusiness.setUserAuth(user_auth);
 						SchoolBusiness.setProfile(response);
-//						if(user_auth != null){
-//							Log.d(TAG+" LOGIN", user_auth);
-//						}
+						saveLogin(email, user_auth);
+						startActivity(new Intent(getApplicationContext(), MainActivity.class));
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -154,20 +122,13 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    Log.d(TAG, jsonRequest.toString());
 	    Log.d(TAG, jsonRequest.getBodyContentType().toString());
 	    queue.add(jsonRequest);
-
-		if (SchoolBusiness.getUserAuth() == user_auth) {
-			saveLogin(email, user_auth);
-		    startActivity(new Intent(this, EventActivity.class));
-	    } else {
-		    // TODO bad login
-	    }
 	}
 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
 	            if (saveLogin && !user_auth.equals("") && isValid(user_auth)){
-		            startActivity(new Intent(this, EventActivity.class));
+		            startActivity(new Intent(this, MainActivity.class));
 	            } else {
 		            checkLogin();
 	            }

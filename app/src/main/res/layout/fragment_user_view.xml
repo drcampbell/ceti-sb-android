@@ -9,7 +9,86 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
+        <TextView
+            android:id="@+id/tv_name"
+            android:text="Name "
+            style="@style/TV_Style_Title"/>
 
+        <LinearLayout
+            android:id="@+id/layout_user_teacher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                style="@style/LL_Horizontal">
+                <TextView
+                    android:id="@+id/tv_school_t"
+                    android:text="School: "
+                    style="@style/TV_Style_Title_Left"/>
+                <TextView
+                    android:id="@+id/tv_school"
+                    style="@style/TV_Style_Content"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LL_Horizontal">
+                <TextView
+                    android:id="@+id/tv_grades_t"
+                    android:text="Grades: "
+                    style="@style/TV_Style_Title_Left"/>
+                <TextView
+                    android:id="@+id/tv_grades"
+                    style="@style/TV_Style_Content"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layout_user_business"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                style="@style/LL_Horizontal">
+                <TextView
+                    android:id="@+id/tv_job_t"
+                    android:text="Job Title: "
+                    style="@style/TV_Style_Title_Left"/>
+                <TextView
+                    android:id="@+id/tv_job"
+                    style="@style/TV_Style_Content"/>
+            </LinearLayout>
+            <LinearLayout
+                style="@style/LL_Horizontal">
+                <TextView
+                    android:id="@+id/tv_business_t"
+                    android:text="Business: "
+                    style="@style/TV_Style_Title_Left"/>
+                <TextView
+                    android:id="@+id/tv_business"
+                    style="@style/TV_Style_Content"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/LL_Horizontal">
+            <TextView
+                android:id="@+id/tv_role_t"
+                android:text="Role: "
+                style="@style/TV_Style_Title_Left"/>
+            <TextView
+                android:id="@+id/tv_role"
+                style="@style/TV_Style_Content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/LL_Horizontal">
+            <TextView
+                android:id="@+id/tv_bio_t"
+                android:text="Biography: "
+                style="@style/TV_Style_Title_Left"/>
+            <TextView
+                android:id="@+id/tv_bio"
+                style="@style/TV_Style_Content"/>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

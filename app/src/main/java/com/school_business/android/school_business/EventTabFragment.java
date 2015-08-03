@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,7 @@ public class EventTabFragment extends Fragment {
 	// TODO: Rename and change types of parameters
 	private int tab;
 	private String mParam2;
-
+	private final String[] tabs = {"all", "approval", "claims", "confirmed"};
 	private OnEventTabListener mListener;
 	private FragmentTabHost.OnTabChangeListener mTabListener;
 	/**
@@ -67,7 +66,7 @@ public class EventTabFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_welcome, container, false);
+		View view = inflater.inflate(R.layout.fragment_home, container, false);
 		mTabHost = new FragmentTabHost(getActivity());
 		mTabHost.setup(getActivity(), getChildFragmentManager(),R.id.fragment_container);
 
@@ -89,8 +88,8 @@ public class EventTabFragment extends Fragment {
 		}
 		//mTabHost.getTabWidget().getChildAt(0).findViewById(R.id.ta)
 		mTabHost.setOnTabChangedListener(mTabListener);
-		mTabHost.setCurrentTab(0);
-		mTabListener.onTabChanged("all");
+		mTabHost.setCurrentTab(tab);
+		mTabListener.onTabChanged(tabs[tab]);
 		return mTabHost;
 	}
 

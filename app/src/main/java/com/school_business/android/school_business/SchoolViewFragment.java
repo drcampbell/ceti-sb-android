@@ -23,7 +23,7 @@ import org.json.JSONObject;
  * Use the {@link SchoolViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SchoolViewFragment extends Fragment {
+public class SchoolViewFragment extends Fragment implements View.OnClickListener {
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String JSON_RESPONSE = "response";
@@ -32,6 +32,7 @@ public class SchoolViewFragment extends Fragment {
 	// TODO: Rename and change types of parameters
 	private String mParam1;
 	private String mParam2;
+	private String id;
 
 	private OnSchoolViewInteractionListener mListener;
 
@@ -97,6 +98,14 @@ public class SchoolViewFragment extends Fragment {
 		mListener = null;
 	}
 
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()){
+			case R.id.make_my_school_button:
+				mListener.makeMySchool(id);
+				break;
+		}
+	}
 	/**
 	 * This interface must be implemented by activities that contain this
 	 * fragment to allow an interaction in this fragment to be communicated
@@ -110,12 +119,17 @@ public class SchoolViewFragment extends Fragment {
 	public interface OnSchoolViewInteractionListener {
 		// TODO: Update argument type and name
 		public void onSchoolViewInteraction(String id, String model);
+		public void makeMySchool(String id);
 	}
 
 	public void renderSchool(View view, String str_response){
 		TextView mTextView;
 		try {
 			JSONObject response = new JSONObject(str_response);
+			id = response.getString("id");
+			Boolean isClick = !id.equals("");
+			view.findViewById(R.id.make_my_school_button).setClickable(isClick);
+
 			int[] res = {R.id.tv_name,R.id.tv_address,R.id.tv_city, R.id.tv_state, R.id.tv_zip, R.id.tv_phone};
 			String[] get_str = {"name", "address", "city", "state", "zip", "phone"};
 			for(int i = 0; i < get_str.length; i++) {

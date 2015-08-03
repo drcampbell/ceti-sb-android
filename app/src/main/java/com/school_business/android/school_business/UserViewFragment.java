@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -109,7 +110,9 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 	@Override
 	public void onClick(View view){
 		switch (view.getId()){
-
+			case R.id.tv_school:
+				mListener.onUserViewInteraction((String) view.findViewById(R.id.tv_school).getTag(), "schools");
+				break;
 		}
 	}
 	/**
@@ -129,7 +132,7 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 
 	public String get_id(int res){
 		switch (res){
-			case R.id.TV_School:
+			case R.id.tv_school:
 				return "school_id";
 			default:
 				return "";
@@ -138,64 +141,39 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 
 	private void renderUser(View view, String str_response){
 		try {
-			ArrayList<TVAttributes> attrs = new ArrayList<TVAttributes>();
 			JSONObject response = new JSONObject(str_response);
-			String role = response.getString("role");
+			String str;
 			String link = "";
-			attrs.add(new TVAttributes(R.id.TV_Name, "", "name"));
-			if (role.equals("Teacher") || role.equals("Both")) {
-				attrs.add(new TVAttributes(R.id.TV_School, "School:", "school_name"));
-				attrs.add(new TVAttributes(R.id.TV_Grades, "Grades:", "grades"));
-			}
-			if (role.equals("Speaker") || role.equals("Both")) {
-				attrs.add(new TVAttributes(R.id.TV_Job, "Job Title:", "job_title"));
-				attrs.add(new TVAttributes(R.id.TV_Business, "Business:", "business"));
-			}
-			attrs.add(new TVAttributes(R.id.TV_Role, "Role:", "role"));
-			attrs.add(new TVAttributes(R.id.TV_Bio, "Biography:", "biography"));
+			int[] resource = {R.id.tv_name, R.id.tv_school, R.id.tv_grades,R.id.tv_job,R.id.tv_business,R.id.tv_role,R.id.tv_bio};
+			String[] name = {"name", "school_name", "grades", "job_title", "business", "role", "biography"};
+			TextView tv;
 
-			createText(view, R.id.layout_user, attrs.get(0).res, "", response.getString(attrs.get(0).getStr),
-					true, android.R.style.TextAppearance_Large, true);
-			for (int i = 1; i < attrs.size(); i++) {
-				link = get_id(attrs.get(i).res);
+			if (response.getString("role").equals("Teacher")) {
+				((LinearLayout) view.findViewById(R.id.layout_user_business)).setVisibility(View.GONE);
+			} else if (response.getString("role").equals("Speaker")) {
+				((LinearLayout) view.findViewById(R.id.layout_user_teacher)).setVisibility(View.GONE);
+			}
+			for (int i = 0; i < resource.length; i++) {
+				tv = (TextView) view.findViewById(resource[i]);
+
+				link = get_id(resource[i]);
 				if (!link.equals("")) {
 					link = response.getString(link);
+					tv.setOnClickListener(UserViewFragment.this);
+					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
 				} else {
 					link = "0";
 				}
-				createText(view, R.id.layout_user, attrs.get(i).res, link, attrs.get(i).label, true,
-						android.R.style.TextAppearance_Medium, false);
-				createText(view, R.id.layout_user, attrs.get(i).res, link,
-						response.getString(attrs.get(i).getStr),
-						false, android.R.style.TextAppearance_Medium, false);
+				str = name[i];
+				str = SchoolBusiness.toDisplayCase(response.getString(str));
+				tv.setTag(link);
+				tv.setText(str);
 			}
-		} catch (JSONException e){
-				e.printStackTrace();
-				Toast.makeText(getActivity().getApplicationContext(),
-						"Error: " + e.getMessage(),
-						Toast.LENGTH_LONG).show();
+		} catch (JSONException e) {
+			e.printStackTrace();
+			Toast.makeText(getActivity().getApplicationContext(),
+					"Error: " + e.getMessage(),
+					Toast.LENGTH_LONG).show();
 		}
-	}
-	private void createText(View view,int layout, int tv, String id, String message, Boolean bold, int size, Boolean center){
-		TextView title = new TextView(getActivity());
-
-		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.layout_fragment_user);
-		title.setId(tv);
-		title.setText(message);
-		title.setTag(id);
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT);
-		title.setLayoutParams(params);
-		title.setTextAppearance(getActivity(), size);
-		if (bold) {
-			title.setTypeface(null, Typeface.BOLD);
-		}
-		if (center) {
-			title.setGravity(Gravity.CENTER);
-		}
-		if (!id.equals("0")){
-			title.setOnClickListener(UserViewFragment.this);
-		}
-		linearLayout.addView(title);
 	}
 }

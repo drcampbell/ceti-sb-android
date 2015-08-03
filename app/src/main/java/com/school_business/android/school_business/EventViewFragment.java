@@ -1,25 +1,20 @@
 package com.school_business.android.school_business;
 
 import android.app.Activity;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -76,7 +71,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_event, container, false);
+		View view = inflater.inflate(R.layout.fragment_event_view, container, false);
 		//mLayout = (RelativeLayout) view.findViewById(R.id.layout_fragment_event);
 		String id;
 		String event_owner;
@@ -114,6 +109,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 		}
 	}
 
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -135,14 +131,13 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 	public void onClick(View view) {
 		switch (view.getId()) {
 			case R.id.tv_school:
-				//SchoolBusiness.setCID((String) view.findViewById(R.id.tv_school).getTag());
 				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_school).getTag(), "schools");
-				//startActivity(new Intent(this, SchoolViewActivity.class));
 				break;
 			case R.id.tv_name:
-				//SchoolBusiness.setCID((String) findViewById(R.id.TV_Name).getTag());
 				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_name).getTag(), "users");
-				//startActivity(new Intent(this, UserViewActivity.class));
+				break;
+			case R.id.tv_speaker:
+				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_speaker).getTag(), "users");
 				break;
 			case R.id.edit_button:
 				mListener.onCreateEvent(true, event);
@@ -176,20 +171,6 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 		public void getClaims(String id);
 	}
 
-	class TVAttributes {
-		public int res;
-		public String label;
-		public String getStr;
-		int id;
-
-		TVAttributes(int r, String l, String str) {
-			res = r;
-			label = l;
-			getStr = str;
-			id = 0;
-		}
-	}
-
 	public String get_id(int res) {
 		switch (res) {
 			case R.id.tv_school:
@@ -211,7 +192,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 			int[] resource = {R.id.tv_title, R.id.tv_speaker, R.id.tv_start,R.id.tv_end,R.id.tv_school,R.id.tv_name,R.id.tv_content};
 			String[] name = {"title", "speaker", "event_start", "event_end", "school_name", "user_name", "content"};
 			TextView tv;
-			Button button;
+
 			event = response.toString();
 			Log.d("WHATISEVENT", event);
 			if (!response.getString("user_id").equals(SchoolBusiness.getUserAttr("id"))){
@@ -251,63 +232,11 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				tv.setTag(link);
 				tv.setText(str);
 			}
-		} catch (JSONException E) {
-			// TODO HANDLE
+		} catch (JSONException e) {
+			e.printStackTrace();
+			Toast.makeText(getActivity().getApplicationContext(),
+					"Error: " + e.getMessage(),
+					Toast.LENGTH_LONG).show();
 		}
 	}
-//
-//	public void createText(View view,int layout, int tv, String id, String message, Boolean bold, int size, Boolean center){
-//		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.layout_fragment_event);
-//		LinearLayout row;
-//		TextView title;
-//		if(!id.equals("0")) {
-//			title = new TextView(new ContextThemeWrapper(getActivity(), R.style.TV_Style_Link), null, 0);
-//		} else if(bold) {
-//			title = new TextView(new ContextThemeWrapper(getActivity(), R.style.TV_Style_Title), null, 0);
-//		} else {
-//			title = new TextView(new ContextThemeWrapper(getActivity(), R.style.TV_Style_Content), null, 0);
-//		}
-//		title.setId(tv);
-//		title.setText(message);
-//		title.setTag(id);
-//	//		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-//	//				LinearLayout.LayoutParams.WRAP_CONTENT);
-//	//		title.setLayoutParams(params);
-//		title.setTextAppearance(getActivity(),size);
-//	//		if (bold) {
-//	//			title.setTypeface(null, Typeface.BOLD);
-//	//		}
-//	//		if (center) {
-//	//			title.setGravity(Gravity.CENTER);
-//	//		}
-//		if(!id.equals("0"))	{
-//			title.setOnClickListener(EventViewFragment.this);
-//		}
-//		linearLayout.addView(title);
-//	}
-	/*
-	private void createText(View view,int layout, int tv, String id, String message, Boolean bold, int size, Boolean center){
-		TextView title = new TextView(getActivity());
-
-		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.layout_fragment_event);
-		title.setId(tv);
-		title.setText(message);
-		title.setTag(id);
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT);
-		title.setLayoutParams(params);
-		title.setTextAppearance(getActivity(), size);
-		if (bold) {
-			title.setTypeface(null, Typeface.BOLD);
-		}
-		if (center) {
-			title.setGravity(Gravity.CENTER);
-		}
-		if (!id.equals("0")){
-			title.setOnClickListener(EventViewFragment.this);
-		}
-		linearLayout.addView(title);
-	}
-	*/
-
 }

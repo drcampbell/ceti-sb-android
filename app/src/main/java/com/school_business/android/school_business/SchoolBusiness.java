@@ -14,9 +14,14 @@ import java.util.Date;
  * Created by david on 6/11/15.
  */
 public class SchoolBusiness extends Application{
+	public static final String NONE = "0";
+	public static final String TEACHER = "1";
+	public static final String SPEAKER = "2";
+	public static final String BOTH = "3";
+	public static final String STUDENT = "4";
 	private static String email;
 	private static String token;
-	private static JSONObject profile;
+	private static String profile = "";
 	private static final String TAG = "school_business";
 	private static String id;
 
@@ -28,12 +33,19 @@ public class SchoolBusiness extends Application{
 	}
 
 	public static void setProfile(JSONObject obj){
-		profile = obj;
+		profile = obj.toString();
 	}
-
+	public static String getProfile(){
+		return profile;
+	}
 	public static String getUserAttr(String attribute){
 		try {
-			return profile.getString(attribute);
+			if (profile != null) {
+				JSONObject jprofile = new JSONObject(profile);
+				return jprofile.getString(attribute);
+			} else {
+				return "None";
+			}
 		}  catch (JSONException e) {
 			Log.d(TAG, e.toString());
 			return "None";

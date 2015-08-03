@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'CetiAndroidKey'
+            keyPassword 'Uri49shoE'
+            storeFile file('/Users/david/keystores/ceti_android.jks')
+            storePassword 'Uri49shoE'
+        }
+    }
     compileSdkVersion 21
     buildToolsVersion '20.0.0'
     defaultConfig {
@@ -14,6 +22,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         debug {
             debuggable true

@@ -78,8 +78,14 @@ public class ClaimViewFragment extends Fragment implements View.OnClickListener{
 		if (mListener != null) {
 			//mListener.onClaimViewInteraction(uri);
 		}
+		;
 	}
 
+	@Override
+	public void onPause(){
+		getActivity().findViewById(R.id.layout_event_buttons).setVisibility(View.VISIBLE);
+		super.onPause();
+	}
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);

@@ -129,7 +129,7 @@
             android:label="@string/title_activity_event_view" >
         </activity>
         <activity
-            android:name=".EventActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_event"
             android:launchMode="singleTop">
             <intent-filter>

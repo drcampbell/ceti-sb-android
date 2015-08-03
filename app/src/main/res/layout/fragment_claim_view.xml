@@ -14,7 +14,7 @@
             android:id="@+id/layout_fragment_event"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
             <TextView
                 android:id="@+id/tv_title"
                 android:text="Claimant "
@@ -43,9 +43,17 @@
             </LinearLayout>
 
             <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true"
+                android:gravity="bottom"
+                android:baselineAligned="false">
+            <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="wrap_content"
+                >
 
                 <Button
                     android:id="@+id/accept_button"
@@ -70,6 +78,7 @@
                     style="@style/Button"
                     android:layout_width="wrap_content"
                     android:layout_weight="1"/>
+            </LinearLayout>
             </LinearLayout>
 </LinearLayout>
         </RelativeLayout>

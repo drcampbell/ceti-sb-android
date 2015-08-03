@@ -1,0 +1,114 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.school_business.android.school_business.AccountEditFragment">
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                style="@style/TV_Style_Title"
+                android:text="Edit Account"
+                android:id="@+id/title"/>
+
+                <TextView
+                    style="@style/TV_Style_Title_Left"
+                    android:text="Name:"
+                    android:id="@+id/tv_name_t"/>
+
+                <EditText
+                    style="@style/ET_Style"
+                    android:text="Name"
+                    android:id="@+id/et_name" />
+
+                <TextView
+                    style="@style/TV_Style_Title_Left"
+                    android:text="Email:"
+                    android:id="@+id/tv_email_t"/>
+
+                <EditText
+                    style="@style/ET_Style"
+                    android:text=""
+                    android:id="@+id/et_email"/>
+
+
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Teacher"
+                android:id="@+id/register_teacher"
+                android:onClick="onRadioButtonClicked"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Speaker"
+                android:id="@+id/register_speaker"
+                android:onClick="onRadioButtonClicked"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Both"
+                android:id="@+id/register_both"
+                android:onClick="onRadioButtonClicked"/>
+
+            <TextView
+                style="@style/TV_Style_Title"
+                android:text="Change Password"/>
+
+
+            <EditText android:id="@+id/new_password" android:layout_width="match_parent"
+                      android:layout_height="wrap_content" android:hint="New Password"
+
+                      android:imeOptions="actionUnspecified" android:inputType="textPassword"
+                      android:maxLines="1" android:singleLine="true" />
+
+            <EditText android:id="@+id/confirm_password" android:layout_width="match_parent"
+                      android:layout_height="wrap_content" android:hint="@string/register_confirm_password"
+
+                      android:imeActionLabel="@string/action_register"
+                      android:imeOptions="actionUnspecified" android:inputType="textPassword"
+                      android:maxLines="1" android:singleLine="true" />
+
+            <TextView
+                style="@style/TV_Style_Title"
+                android:text="Enter Current Password To Save"/>
+
+            <EditText android:id="@+id/password" android:layout_width="match_parent"
+                      android:layout_height="wrap_content" android:hint="Current Password"
+
+                      android:imeActionLabel="@string/action_register"
+                      android:imeOptions="actionUnspecified" android:inputType="textPassword"
+                      android:maxLines="1" android:singleLine="true" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="bottom"
+            android:baselineAligned="false">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+                <Button
+                    style="@style/Button"
+                    android:text="Save Account"
+                    android:id="@+id/save_account_button"
+                    android:onClick="onClick"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

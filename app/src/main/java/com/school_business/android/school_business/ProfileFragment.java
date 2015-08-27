@@ -11,8 +11,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.school_business.android.school_business.R;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -103,8 +101,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()){
-			case R.id.tv_school:
-				TextView tv = (TextView) getActivity().findViewById(R.id.tv_school);
+			case R.id.tv_location:
+				TextView tv = (TextView) getActivity().findViewById(R.id.tv_location);
 				mListener.onListItemSelected((String) tv.getTag(), "schools");
 				break;
 			case R.id.edit_account_button:
@@ -134,19 +132,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
 	public void renderProfile(View view){
 		String text;
-		JSONObject profile;
+		JSONObject profile = SchoolBusiness.getProfile();
 		try {
-			if (mProfile != null && !mProfile.isEmpty()) {
-				profile = new JSONObject(mProfile);
-			} else {
-				if (!SchoolBusiness.getProfile().isEmpty()) {
-					profile = new JSONObject(SchoolBusiness.getProfile());
-				} else {
-					return;
-				}
-			}
-			int[] resource = {R.id.tv_name, R.id.tv_email, R.id.tv_school, R.id.tv_bio, R.id.tv_business, R.id.tv_job};
-			String[] id = {"name", "email", "school_name", "biography", "business", "job_title"};
+			int[] resource = {R.id.tv_name, R.id.tv_email, R.id.tv_location, R.id.tv_grades, R.id.tv_bio, R.id.tv_business, R.id.tv_job};
+			String[] id = {"name", "email", "school_name", "grades", "biography", "business", "job_title"};
 			((Button) view.findViewById(R.id.edit_profile_button)).setOnClickListener(ProfileFragment.this);
 			((Button) view.findViewById(R.id.edit_account_button)).setOnClickListener(ProfileFragment.this);
 			for (int i = 0; i < resource.length; i++){
@@ -159,20 +148,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 							.getColor(android.R.color.holo_blue_dark));
 				}
 			}
-			switch (profile.getString("role")) {
-				case SchoolBusiness.NONE:
-					((TextView) view.findViewById(R.id.tv_role)).setText("None");
-					break;
-				case SchoolBusiness.TEACHER:
-					((TextView) view.findViewById(R.id.tv_role)).setText("Teacher");
-					break;
-				case SchoolBusiness.SPEAKER:
-					((TextView) view.findViewById(R.id.tv_role)).setText("Speaker");
-					break;
-				case SchoolBusiness.BOTH:
-					((TextView) view.findViewById(R.id.tv_role)).setText("Both");
-					break;
-			}
+			((TextView) view.findViewById(R.id.tv_role)).setText(SchoolBusiness.getRole(profile.getString("role")));
 
 		} catch (JSONException e) {
 			e.printStackTrace();

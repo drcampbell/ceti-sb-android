@@ -47,7 +47,7 @@
                 <TextView
                     style="@style/TV_Style_Content"
                     android:text=""
-                    android:id="@+id/tv_school"/>
+                    android:id="@+id/tv_location"/>
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"

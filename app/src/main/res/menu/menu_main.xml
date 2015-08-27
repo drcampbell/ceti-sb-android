@@ -8,15 +8,19 @@
           android:showAsAction="collapseActionView|ifRoom"
           android:actionViewClass="android.widget.SearchView"
           />
-    <item android:id="@+id/action_settings"
+    <item android:id="@+id/menu_home"
+          android:title="Home"
+          android:orderInCategory="100"
+          app:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_action_settings"
           android:title="@string/action_settings"
           android:orderInCategory="100"
           app:showAsAction="never"/>
-    <item android:id="@+id/profile"
+    <item android:id="@+id/menu_profile"
           android:title="@string/menu_profile"
           android:orderInCategory="100"
           app:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/logout"
+    <item android:id="@+id/menu_logout"
           android:title="@string/menu_logout"
           android:orderInCategory="100"
           app:showAsAction="ifRoom|withText" />

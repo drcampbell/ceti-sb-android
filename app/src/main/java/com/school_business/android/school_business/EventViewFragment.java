@@ -130,8 +130,8 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
-			case R.id.tv_school:
-				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_school).getTag(), "schools");
+			case R.id.tv_location:
+				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_location).getTag(), "schools");
 				break;
 			case R.id.tv_name:
 				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_name).getTag(), "users");
@@ -173,8 +173,8 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 
 	public String get_id(int res) {
 		switch (res) {
-			case R.id.tv_school:
-				return "school_id";
+			case R.id.tv_location:
+				return "loc_id";
 			case R.id.tv_name:
 				return "user_id";
 			case R.id.tv_speaker:
@@ -189,8 +189,8 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 			event_id = response.getString("id");
 			String str;
 			String link = "";
-			int[] resource = {R.id.tv_title, R.id.tv_speaker, R.id.tv_start,R.id.tv_end,R.id.tv_school,R.id.tv_name,R.id.tv_content};
-			String[] name = {"title", "speaker", "event_start", "event_end", "school_name", "user_name", "content"};
+			int[] resource = {R.id.tv_title, R.id.tv_speaker, R.id.tv_start,R.id.tv_end,R.id.tv_location,R.id.tv_name,R.id.tv_content};
+			String[] name = {"title", "speaker", "event_start", "event_end", "loc_name", "user_name", "content"};
 			TextView tv;
 
 			event = response.toString();

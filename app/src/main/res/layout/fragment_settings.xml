@@ -1,0 +1,79 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.school_business.android.school_business.SettingsFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="left|top">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Settings"
+            android:id="@+id/textView"/>
+        <LinearLayout
+            style="@style/LL_Divider">
+        </LinearLayout>
+
+        <TextView
+            style="@style/TV_Style_Title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Email Notifications"
+            android:id="@+id/tv_email_notifications"
+            android:layout_gravity="center_horizontal"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Event Updates"
+            android:id="@+id/set_event_updates"
+            android:checked="true"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Confirmations"
+            android:id="@+id/set_confirmations"
+            android:checked="true"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Event Claims"
+            android:id="@+id/set_event_claims"
+            android:checked="true"/>
+        <LinearLayout
+            style="@style/LL_Divider">
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom"
+        android:baselineAligned="false">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+            <Button
+                style="@style/Button"
+                android:text="Save Settings"
+                android:id="@+id/save_settings_button"
+                android:onClick="onClick"
+                android:layout_weight="1"/>
+        </LinearLayout>
+    </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

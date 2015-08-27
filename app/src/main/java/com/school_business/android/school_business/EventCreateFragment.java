@@ -43,6 +43,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "edit";
 	private static final String ARG_PARAM2 = "param2";
+	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 	// TODO: Rename and change types of parameters
 	private Boolean mEdit;
@@ -117,7 +118,13 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	public void onClick(View view){
 		switch (view.getId()){
 			case R.id.post_event_button:
-				mListener.onPostEvent(packageEvent(), mEdit);
+				view.findViewById(R.id.post_event_button).setClickable(false);
+				JSONObject jEvent = packageEvent();
+				if (jEvent != null) {
+					mListener.onPostEvent(jEvent, mEdit);
+				} else {
+					view.findViewById(R.id.post_event_button).setClickable(true);
+				}
 				break;
 		}
 	}
@@ -151,14 +158,17 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 
 			String event_start = createDate(getView().getRootView(), start, R.id.start_pm);
 			String event_end = createDate(getView().getRootView(), end, R.id.end_pm);
-
+			if (!compareDates(event_start, event_end)){
+				Toast.makeText(getActivity(), "Error: Can't Post\nEvent Finishes Before It Begins!", Toast.LENGTH_LONG).show();
+				return null;
+			}
 			for (int i = 0; i < resource.length; i++) {
 				data = (EditText) getActivity().findViewById(resource[i]);
 				event.put(headers[i], data.getText().toString());
 			}
 			event.put("event_start", event_start);
 			event.put("event_end", event_end);
-			event.put("school_id", SchoolBusiness.getUserAttr("school_id"));
+			event.put("loc_id", SchoolBusiness.getUserAttr("school_id"));
 			return event;
 		} catch (JSONException e){
 			Log.d("OOPS", "Something went wrong with packaging an event");
@@ -166,7 +176,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		}
 	}
 	public String createDate(View view, int[] resource, int cb){
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		//DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		int[] cal_res = {Calendar.YEAR, Calendar.MONTH, Calendar.DATE, Calendar.HOUR_OF_DAY, Calendar.MINUTE};
 		EditText et;
 		Date date;
@@ -199,7 +209,6 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	}
 
 	public Date parseDate(String data){
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		Date date;
 		try {
 			date = dateFormat.parse(data);
@@ -255,13 +264,14 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		((Button) view.findViewById(R.id.post_event_button)).setOnClickListener(EventCreateFragment.this);
 	}
 
+
 	public void setETDate(Calendar cal, View view, int[] resource, String[] begin, String[] end, int[] cal_res, int cbid) {
 		CheckBox cb = (CheckBox) view.findViewById(cbid);
 		Log.d("time", cal.toString());
 		for (int i = 0; i < resource.length; i++) {
 			EditText et = (EditText) view.findViewById(resource[i]);
 			et.setFilters(new InputFilter[]{new InputFilterNumeric(begin[i], end[i])});
-			if (cal_res[i] == Calendar.HOUR_OF_DAY && cal.get(Calendar.HOUR) != cal.get(Calendar.HOUR_OF_DAY)) {
+			if (cal_res[i] == Calendar.HOUR && cal.get(Calendar.HOUR) != cal.get(Calendar.HOUR_OF_DAY)) {
 				cb.setChecked(true);
 			}
 			if (cal_res[i] == Calendar.MONTH){
@@ -306,5 +316,16 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		private boolean isInRange(int a, int b, int c) {
 			return b > a ? c >= a && c <= b : c >= b && c <= a;
 		}
+	}
+
+	public boolean compareDates(String date1, String date2) {
+		try {
+			Date d1 = dateFormat.parse(date1);
+			Date d2 = dateFormat.parse(date2);
+			return d1.compareTo(d2)<0;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

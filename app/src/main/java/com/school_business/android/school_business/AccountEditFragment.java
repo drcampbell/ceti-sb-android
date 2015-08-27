@@ -24,7 +24,8 @@ import org.json.JSONObject;
  * Use the {@link AccountEditFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AccountEditFragment extends Fragment implements View.OnClickListener {
+public class AccountEditFragment extends Fragment implements View.OnClickListener
+{
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "param1";
@@ -33,7 +34,7 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 	// TODO: Rename and change types of parameters
 	private String mParam1;
 	private String mParam2;
-	private String role;
+	private String role = "";
 	private OnEditAccountListener mListener;
 
 	/**
@@ -107,6 +108,18 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 				JSONObject account = collectAccount();
 				mListener.onSaveAccount(account);
 				break;
+			case R.id.register_teacher:
+				role = "Teacher";
+				Log.d("Account", role);
+				break;
+			case R.id.register_speaker:
+				role = "Speaker";
+				Log.d("Account", role);
+				break;
+			case R.id.register_both:
+				role = "Both";
+				Log.d("Account", role);
+				break;
 		}
 	}
 
@@ -140,14 +153,15 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 		public void onSaveAccount(JSONObject account);
 	}
 	public void renderAccount(View view){
+		JSONObject profile = SchoolBusiness.getProfile();
 		((Button) view.findViewById(R.id.save_account_button)).setOnClickListener(AccountEditFragment.this);
-		// ((RadioButton)) view.findViewById(R.id.register_speaker)).
-		String strprofile = SchoolBusiness.getProfile();
+		view.findViewById(R.id.register_teacher).setOnClickListener(this);
+		view.findViewById(R.id.register_speaker).setOnClickListener(this);
+		view.findViewById(R.id.register_both).setOnClickListener(this);
+
 		try {
-			JSONObject profile = new JSONObject(strprofile);
 			((EditText) view.findViewById(R.id.et_name)).setText(profile.getString("name"));
 			((EditText) view.findViewById(R.id.et_email)).setText(profile.getString("email"));
-			Log.d("Test", strprofile);
 			role = profile.getString("role");
 
 			switch (role){
@@ -173,7 +187,8 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 		try {
 			account.put("name", ((EditText) getActivity().findViewById(R.id.et_name)).getText());
 			account.put("email", ((EditText) getActivity().findViewById(R.id.et_email)).getText());
-			account.put("role", getRole(role));
+			// Rails handles roles in a stupid way.  (Takes as input alpha, provides numeric output)
+			account.put("role", SchoolBusiness.getRole(role));
 			String new_password = ((EditText) getActivity().findViewById(R.id.new_password)).getText().toString();
 			String confirm_password = ((EditText) getActivity().findViewById(R.id.confirm_password)).getText().toString();
 			if (!new_password.isEmpty() && !confirm_password.isEmpty() && new_password.equals(confirm_password)){
@@ -192,18 +207,5 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 			return null;
 		}
 	}
-	public String getRole(String role){
-		switch (role) {
-			case SchoolBusiness.NONE:
-				return "None";
-			case SchoolBusiness.TEACHER:
-				return "Teacher";
-			case SchoolBusiness.SPEAKER:
-				return "Speaker";
-			case SchoolBusiness.BOTH:
-				return "Both";
-			default:
-				return "";
-		}
-	}
+
 }

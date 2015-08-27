@@ -17,7 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 		import android.widget.CheckBox;
-import android.widget.FrameLayout;
+import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -51,13 +51,14 @@ public class MainActivity extends FragmentActivity
 		FragmentTabHost.OnTabChangeListener,
 		ProfileFragment.OnProfileInteractionListener,
 		ProfileEditFragment.OnProfileEditListener,
-		AccountEditFragment.OnEditAccountListener//,
+		AccountEditFragment.OnEditAccountListener,
+		SettingsFragment.OnSettingsListener,
+		MessageFragment.OnMessageListener//,
 		//FragmentManager.OnBackStackChangedListener
 {
 	private enum E_Type {EVENT_CREATE, EVENT_CLAIM};
 
 	private final String TAG = "Event";
-	private String[] listArr;
 	private String event_id;
 	private int mTab = 0;
 	private final String EVENTS = "events";
@@ -100,18 +101,33 @@ public class MainActivity extends FragmentActivity
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.search_options_container, searchOptionsFragment, "Search")
 					.commit();
-
-			// Add fragment to the container Frame Layout
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.fragment_container, homeFragment, FRAG_MAIN).addToBackStack(FRAG_MAIN)
-					.commit();
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.tab_container, blankFragment, TAB_CONTAINER)
 					.commit();
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.tab_content, blankFragment2, TAB_CONTENT)
 					.commit();
+			// Add fragment to the container Frame Layout
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.fragment_container, homeFragment, FRAG_MAIN)//.addToBackStack(FRAG_MAIN)
+					.commit();
 		}
+	}
+
+	@Override
+	protected void onResume(){
+		if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
+			onCreateTab(mTab);
+		}
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause(){
+		if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
+			clearTabs();
+		}
+		super.onPause();
 	}
 
 	@Override
@@ -123,7 +139,7 @@ public class MainActivity extends FragmentActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_event, menu);
+		getMenuInflater().inflate(R.menu.menu_main, menu);
 
 		SearchManager searchManager =
 				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -142,13 +158,23 @@ public class MainActivity extends FragmentActivity
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		switch (item.getItemId()){
-			case R.id.action_settings:
-
+			case R.id.menu_home:
+				if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() != HomeFragment.class) {
+					HomeFragment homeFragment = new HomeFragment();
+					swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, true);
+				}
 				return true;
-			case R.id.profile:
+			case R.id.menu_action_settings:
+				getModel(Request.Method.GET, "settings", USERS, null, true);
+				return true;
+			case R.id.menu_profile:
 				getModel(Request.Method.GET, "profile", USERS, null, true);
 				//ProfileFragment profileFragment = ProfileFragment.newInstance(getModel(Request.););
 				//swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, true);//FRAG_PROFILE, true);
+				return true;
+			case R.id.menu_logout:
+				Log.d(TAG, "User selected Logout");
+				getModel(Request.Method.DELETE, "sign_out", USERS, null, false);
 				return true;
 		}
 
@@ -210,6 +236,22 @@ public class MainActivity extends FragmentActivity
 		}
 	}
 
+	public void onRadioButtonClicked(View view) {
+		boolean checked = ((RadioButton) view).isChecked();
+
+		switch (view.getId()) {
+			case R.id.register_teacher:
+				role = "Teacher";
+				break;
+			case R.id.register_speaker:
+				role = "Speaker";
+				break;
+			case R.id.register_both:
+				role = "Both";
+				break;
+		}
+	}
+
 	public void onListItemSelected(String id, String model) {
 		getSupportFragmentManager().executePendingTransactions();
 		Boolean backtrack = true;
@@ -248,6 +290,7 @@ public class MainActivity extends FragmentActivity
 				String event_id = event.getString("id");
 				getModel(Request.Method.PATCH, event_id, EVENTS, event, true);
 			} else {
+				Log.d(TAG, event.toString());
 				getModel(Request.Method.POST, "create", EVENTS, event, true);
 			}
 			//postEvent(event, E_Type.EVENT_CREATE);
@@ -300,9 +343,8 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void onCreateTab(int tab){
-		String[] tabs = {"all", "approval", "claims", "confirmed"};
+		Log.d(TAG, "Creating Tabs");
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
 		EventTabFragment eventTabFragment = EventTabFragment.newInstance(mTab);
 		transaction.add(R.id.tab_container, eventTabFragment, TAB_CONTAINER );
 		transaction.commit();
@@ -333,8 +375,21 @@ public class MainActivity extends FragmentActivity
 	public void onSaveProfile(JSONObject profile){
 		getModel(Request.Method.PUT, "", USERS, profile, false);
 	}
+
+	public void onSaveSettings(JSONObject settings){
+		getModel(Request.Method.PUT, "settings", USERS, settings, false);
+	}
 	public void onEventTabSelected(String tab){
 
+	}
+
+	public void onContactUser(String id, String name){
+		MessageFragment messageFragment = MessageFragment.newInstance(id, name);
+		swapFragment(messageFragment, R.id.fragment_container, FRAG_MAIN, true);
+	}
+
+	public void onSendMessage(String id, JSONObject message){
+		getModel(Request.Method.POST, id, "send_message", message, false);
 	}
 
 	@Override
@@ -459,6 +514,21 @@ public class MainActivity extends FragmentActivity
 											e.getMessage(), Toast.LENGTH_SHORT).show();
 								}
 								break;
+							case "send_message":
+								try {
+									if (response.getString("state").equals("0")){
+										HomeFragment homeFragment = new HomeFragment();
+										swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, false);
+										Toast.makeText(getApplicationContext(), "Message Sent Successfully", Toast.LENGTH_LONG).show();
+									} else {
+										findViewById(R.id.send_message_button).setClickable(true);
+										Toast.makeText(getApplicationContext(), "Message  Unsuccessful", Toast.LENGTH_LONG).show();
+									}
+								} catch (JSONException e) {
+									Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+									findViewById(R.id.send_message_button).setClickable(true);
+								}
+								break;
 							case EVENTS:
 								handleEventResponse(method, model, id, response, backtrack);
 								break;
@@ -478,7 +548,7 @@ public class MainActivity extends FragmentActivity
 			public void onErrorResponse(VolleyError error){
 				VolleyLog.d(TAG, "Error: " + error.getMessage());
 				Toast.makeText(getApplicationContext(),
-						error.getMessage(), Toast.LENGTH_SHORT).show();
+						error.getMessage(), Toast.LENGTH_LONG).show();
 			}
 		}){
 			@Override
@@ -512,7 +582,7 @@ public class MainActivity extends FragmentActivity
 					swapFragment(eventViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_EVENT, backtrack);
 					break;
 				case Request.Method.DELETE:
-					getSupportFragmentManager().popBackStackImmediate();
+					//getSupportFragmentManager().popBackStackImmediate();
 					onBackPressed();
 					break;
 				case Request.Method.PATCH:
@@ -536,6 +606,10 @@ public class MainActivity extends FragmentActivity
 
 							getSupportFragmentManager().popBackStackImmediate();
 							getModel(Request.Method.GET, data.getString("id"), EVENTS, null, backtrack);
+						} else {
+							Log.d(TAG, response.getString("messages"));
+							Toast.makeText(getApplicationContext(), "Failure to post event\n"+response.getString("messages"), Toast.LENGTH_LONG).show();
+							findViewById(R.id.post_event_button).setClickable(true);
 						}
 					} else { /* EVENT_CLAIM */
 						if (response.getString("state").equals("0")){
@@ -580,15 +654,7 @@ public class MainActivity extends FragmentActivity
 	}
 	public void handleSchoolResponse(int method, String id, JSONObject response, Boolean backtrack) {
 		if (id.contains("make_mine")){
-			try {
-				ProfileFragment profileFragment = ProfileFragment.newInstance(response.getJSONObject("profile"));
-				swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
-			} catch (JSONException e){
-				e.printStackTrace();
-				Toast.makeText(getApplicationContext(),
-						"Error: " + e.getMessage(),
-						Toast.LENGTH_LONG).show();
-			}
+			getModel(Request.Method.GET, "profile", USERS, null, true);
 			return;
 		}
 		SchoolViewFragment schoolViewFragment = SchoolViewFragment.newInstance(response);
@@ -596,21 +662,43 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void handleUserResponse(int method, String id, JSONObject response, Boolean backtrack) {
-		if (id.equals("profile")){
-			SchoolBusiness.setProfile(response);
-			ProfileFragment profileFragment = ProfileFragment.newInstance(response);
-			swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
-			return;
+		switch (id) {
+			case "profile":
+				Log.d(TAG, "Updating User Profile");
+				SchoolBusiness.updateProfile(response);
+				ProfileFragment profileFragment = ProfileFragment.newInstance(response);
+				swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
+				return;
+			case "settings":
+				switch (method) {
+					case Request.Method.GET:
+						Log.d(TAG, "Getting User Settings");
+						SettingsFragment settingsFragment = SettingsFragment.newInstance(response);
+						swapFragment(settingsFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
+						return;
+					case Request.Method.PUT:
+						Log.d(TAG, "Posting User Settings");
+
+						HomeFragment homeFragment = new HomeFragment();
+						swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
+						Toast.makeText(getApplicationContext(),
+								"Settings Saved",
+								Toast.LENGTH_LONG).show();
+						return;
+				}
+			default:
+				break;
 		}
+
 		UserViewFragment userViewFragment;
-		switch (method){
+		switch (method) {
 			case Request.Method.PUT:
 				try {
 					JSONObject user = response.getJSONObject("user");
-					SchoolBusiness.setProfile(user);
+					SchoolBusiness.updateProfile(user);
 					userViewFragment = UserViewFragment.newInstance(user);
 					swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_USER, backtrack);
-				} catch (JSONException e){
+				} catch (JSONException e) {
 					e.printStackTrace();
 					Toast.makeText(getApplicationContext(),
 							"Error: " + e.getMessage(),
@@ -620,6 +708,22 @@ public class MainActivity extends FragmentActivity
 			case Request.Method.GET:
 				userViewFragment = UserViewFragment.newInstance(response);
 				swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_USER, backtrack);
+				break;
+			case Request.Method.DELETE:
+				Log.d(TAG, "Logging user out");
+				try {
+					Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
+				} catch (JSONException e) {
+					Toast.makeText(getApplicationContext(),
+							"Error: " + e.getMessage(),
+							Toast.LENGTH_LONG).show();
+				}
+				SchoolBusiness.clearLogin(getApplicationContext());
+
+				Intent intent = new Intent(this, LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+				finish();
 				break;
 		}
 	}

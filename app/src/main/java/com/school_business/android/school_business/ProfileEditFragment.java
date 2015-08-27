@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -125,11 +124,10 @@ public class ProfileEditFragment extends Fragment implements View.OnClickListene
 
 	public void renderProfile(View view){
 		((Button) view.findViewById(R.id.save_profile_button)).setOnClickListener(ProfileEditFragment.this);
-		String strprofile = SchoolBusiness.getProfile();
+		JSONObject profile = SchoolBusiness.getProfile();
 		try {
-			JSONObject profile = new JSONObject(strprofile);
 			((TextView) view.findViewById(R.id.tv_name)).setText(profile.getString("name"));
-			((TextView) view.findViewById(R.id.tv_school)).setText(profile.getString("school_name"));
+			((TextView) view.findViewById(R.id.tv_location)).setText(profile.getString("school_name"));
 			((EditText) view.findViewById(R.id.et_grades)).setText(profile.getString("grades"));
 			((EditText) view.findViewById(R.id.et_bio)).setText(profile.getString("biography"));
 			((EditText) view.findViewById(R.id.et_business)).setText(profile.getString("business"));
@@ -144,7 +142,12 @@ public class ProfileEditFragment extends Fragment implements View.OnClickListene
 	}
 	public JSONObject collectProfile(){
 		try {
-			JSONObject profile = new JSONObject(SchoolBusiness.getProfile());
+			JSONObject profile = SchoolBusiness.getProfile();
+
+			// Rails handles roles in a stupid way.  (Takes as input alpha, provides numeric output)
+			if (SchoolBusiness.isNumeric(profile.getString("role"))) {
+				profile.put("role", SchoolBusiness.getRole(profile.getString("role")));
+			}
 			profile.put("grades", ((EditText) getActivity().findViewById(R.id.et_grades)).getText());
 			profile.put("biography", ((EditText) getActivity().findViewById(R.id.et_bio)).getText());
 			profile.put("business", ((EditText) getActivity().findViewById(R.id.et_business)).getText());

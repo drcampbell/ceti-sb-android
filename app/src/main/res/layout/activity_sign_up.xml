@@ -47,27 +47,31 @@
                 android:imeActionLabel="@string/action_register"
                 android:imeOptions="actionUnspecified" android:inputType="textPassword"
                 android:maxLines="1" android:singleLine="true" />
+            <RadioGroup
+                android:id="@+id/radio_group_role"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Teacher"
+                    android:id="@+id/register_teacher"
+                    android:onClick="onRadioButtonClicked"/>
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Teacher"
-                android:id="@+id/register_teacher"
-                android:onClick="onRadioButtonClicked"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Speaker"
+                    android:id="@+id/register_speaker"
+                    android:onClick="onRadioButtonClicked"/>
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Speaker"
-                android:id="@+id/register_speaker"
-                android:onClick="onRadioButtonClicked"/>
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Both"
-                android:id="@+id/register_both"
-                android:onClick="onRadioButtonClicked"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Both"
+                    android:id="@+id/register_both"
+                    android:onClick="onRadioButtonClicked"/>
+            </RadioGroup>
 
             <Button android:id="@+id/register_button" style="@style/Button"
                 android:layout_width="match_parent" android:layout_height="wrap_content"

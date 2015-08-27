@@ -7,8 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.school_business.android.school_business.R;
 
@@ -18,41 +18,41 @@ import org.json.JSONObject;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SchoolViewFragment.OnSchoolViewInteractionListener} interface
+ * {@link MessageFragment.OnMessageListener} interface
  * to handle interaction events.
- * Use the {@link SchoolViewFragment#newInstance} factory method to
+ * Use the {@link MessageFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SchoolViewFragment extends Fragment implements View.OnClickListener {
+public class MessageFragment extends Fragment implements View.OnClickListener {
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String JSON_RESPONSE = "response";
+	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
 
 	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
-	private String id;
+	private String recipient_id;
+	private String name;
 
-	private OnSchoolViewInteractionListener mListener;
+	private OnMessageListener mListener;
 
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
 	 *
-	 * @param param1 Parameter 1.
-	 * @return A new instance of fragment SchoolViewFragment.
+	 * @param id Parameter 1.
+	 * @return A new instance of fragment MessageFragment.
 	 */
 	// TODO: Rename and change types and number of parameters
-	public static SchoolViewFragment newInstance(JSONObject param1) {
-		SchoolViewFragment fragment = new SchoolViewFragment();
+	public static MessageFragment newInstance(String id, String name) {
+		MessageFragment fragment = new MessageFragment();
 		Bundle args = new Bundle();
-		args.putString(JSON_RESPONSE, param1.toString());
+		args.putString(ARG_PARAM1, id);
+		args.putString(ARG_PARAM2, name);
 		fragment.setArguments(args);
 		return fragment;
 	}
 
-	public SchoolViewFragment() {
+	public MessageFragment() {
 		// Required empty public constructor
 	}
 
@@ -60,8 +60,8 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			//mParam1 = getArguments().getString(JSON_RESPONSE);
-			//mParam2 = getArguments().getString(ARG_PARAM2);
+			recipient_id = getArguments().getString(ARG_PARAM1);
+			name = getArguments().getString(ARG_PARAM2);
 		}
 	}
 
@@ -69,15 +69,15 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_school_view, container, false);
-		renderSchool(view, getArguments().getString(JSON_RESPONSE));
+		View view = inflater.inflate(R.layout.fragment_message, container, false);
+		renderMessage(view);
 		return view;
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event
 	public void onButtonPressed(Uri uri) {
 		if (mListener != null) {
-			//mListener.onSchoolViewInteraction(uri);
+			//mListener.onSendMessage(uri);
 		}
 	}
 
@@ -85,7 +85,7 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-			mListener = (OnSchoolViewInteractionListener) activity;
+			mListener = (OnMessageListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnFragmentInteractionListener");
@@ -99,13 +99,15 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 	}
 
 	@Override
-	public void onClick(View view) {
+	public void onClick(View view){
 		switch (view.getId()){
-			case R.id.make_my_school_button:
-				mListener.makeMySchool(id);
+			case R.id.send_message_button:
+				view.findViewById(R.id.send_message_button).setClickable(false);
+				mListener.onSendMessage(recipient_id, getMessage(view));
 				break;
 		}
 	}
+
 	/**
 	 * This interface must be implemented by activities that contain this
 	 * fragment to allow an interaction in this fragment to be communicated
@@ -116,35 +118,26 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
-	public interface OnSchoolViewInteractionListener {
+	public interface OnMessageListener {
 		// TODO: Update argument type and name
-		public void onSchoolViewInteraction(String id, String model);
-		public void makeMySchool(String id);
+		public void onSendMessage(String id, JSONObject message);
 	}
 
-	public void renderSchool(View view, String str_response){
-		TextView mTextView;
-		try {
-			JSONObject response = new JSONObject(str_response);
-			id = response.getString("id");
-			Boolean isClick = !id.equals("");
-			view.findViewById(R.id.make_my_school_button).setClickable(isClick);
-			view.findViewById(R.id.make_my_school_button).setOnClickListener(this);
-			int[] res = {R.id.tv_name,R.id.tv_address,R.id.tv_city, R.id.tv_state, R.id.tv_zip, R.id.tv_phone};
-			String[] get_str = {"name", "address", "city", "state", "zip", "phone"};
-			for(int i = 0; i < get_str.length; i++) {
-				mTextView = (TextView) view.findViewById(res[i]);
-				if (get_str.equals("phone")) {
-					mTextView.setText(SchoolBusiness.phoneNumber(response.getString(get_str[i])));
-				} else {
-					mTextView.setText(SchoolBusiness.toDisplayCase(response.getString(get_str[i])));
-				}
-			}
-		} catch (JSONException e){
-			e.printStackTrace();
-			Toast.makeText(getActivity().getApplicationContext(),
-					"Error: " + e.getMessage(),
-					Toast.LENGTH_LONG).show();
-		}
+	public void renderMessage(View view){
+		((TextView) view.findViewById(R.id.message_title)).setText("Send a Message to " + name);
+		view.findViewById(R.id.send_message_button).setOnClickListener(this);
 	}
+
+	public JSONObject getMessage(View view){
+		String text = ((EditText) getActivity().findViewById(R.id.message_content)).getText().toString();
+		JSONObject message;
+		try {
+			message = new JSONObject();
+			message.put("user_message", text);
+		} catch (JSONException e) {
+			message = null;
+		}
+		return message;
+	}
+
 }

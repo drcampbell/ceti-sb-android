@@ -53,11 +53,11 @@
         <LinearLayout
             style="@style/LL_Horizontal">
             <TextView
-                android:id="@+id/tv_school_t"
+                android:id="@+id/tv_location_t"
                 android:text="Location: "
                 style="@style/TV_Style_Title_Left"/>
             <TextView
-                android:id="@+id/tv_school"
+                android:id="@+id/tv_location"
                 style="@style/TV_Style_Content"/>
         </LinearLayout>
 

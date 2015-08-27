@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -74,32 +76,53 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 				JSONObject params = getParams();
 				JSONObject user = new JSONObject();
 				Log.d(TAG, "Button clicked?");
-				if (validateParams(params)) {
-					Log.d(TAG, "Parameters are present");
-					try {
-						user.put("user", params);
-					} catch (JSONException e){
-						Log.d(TAG, "User Params Failed");
+				try {
+					if (!comparePassword(params)){
+						Toast.makeText(getApplicationContext(), "Passwords Do Not Match!", Toast.LENGTH_LONG).show();
 					}
-					register(user);
-					findViewById(R.id.register_button).setClickable(false);
-				} else {
-					Log.d(TAG, "Validation failed");
-					Toast.makeText(getApplicationContext(), "Fill out all forms", Toast.LENGTH_SHORT);
+					else if (!validateEmail(params.getString("email"))){
+						Toast.makeText(getApplicationContext(), "Email is Invalid or Missing", Toast.LENGTH_LONG).show();
+					}
+					else if (!hasRole()) {
+						Toast.makeText(getApplicationContext(), "Please Select a Role", Toast.LENGTH_LONG).show();
+					} else if (!hasName(params.getString("name"))){
+						Toast.makeText(getApplicationContext(), "Please Enter Your Name", Toast.LENGTH_LONG).show();
+					}
+					else {
+						Log.d(TAG, "Parameters are present");
+
+						user.put("user", params);
+
+						findViewById(R.id.register_button).setClickable(false);
+						register(user);
+						}
+				} catch (JSONException e){
+					Log.d(TAG, "User Params Failed");
 				}
 				break;
 		}
 	}
-	private Boolean validateParams(JSONObject user) {
+
+	private Boolean hasName(String name){
+		return !name.equals("");
+	}
+	private Boolean hasRole(){
+		return  ((RadioButton) findViewById(R.id.register_teacher)).isChecked() ||
+				((RadioButton) findViewById(R.id.register_speaker)).isChecked() ||
+				((RadioButton) findViewById(R.id.register_both)).isChecked();
+	}
+
+	private Boolean validateEmail(String target){
+		return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+	}
+	private Boolean comparePassword(JSONObject user) {
 		try {
-			return (user.getString("password").equals(user.getString("confirm_password"))
-					&& user.getString("name") != null && user.getString("email") != null
-					&& user.getString("role") != null);
+			return user.getString("password").equals(user.getString("confirm_password"));
 		} catch (JSONException e) {
-			Log.d(TAG, "Validate Params Failed");
 			return false;
 		}
 	}
+
 
 	public JSONObject getParams() {
 		JSONObject user = new JSONObject();
@@ -139,17 +162,10 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 
 						try {
 							JSONObject user = response.getJSONObject("data");
-							SchoolBusiness.setCID(user.getString("id"));
-							//user_auth = response.getString("authentication_token");
-							SchoolBusiness.setEmail(user.getString("email"));
-							SchoolBusiness.setUserAuth(user.getString("authentication_token"));
 							SchoolBusiness.setProfile(user);
 							Log.d(TAG, "Registration successful");
 
-							finish();
-//						if(user_auth != null){
-//							Log.d(TAG+" LOGIN", user_auth);
-//						}
+							finishSignUp();
 						} catch (JSONException e) {
 							findViewById(R.id.register_button).setClickable(true);
 							e.printStackTrace();
@@ -179,7 +195,14 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 //			// TODO bad login
 //		}
 	}
-	public void finish() {
-		startActivity(new Intent(this, MainActivity.class));
+	public void finishSignUp() {
+		Intent intent = new Intent(this, MainActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
+		if (isFinishing()){
+			;
+		}else {
+			finish();
+		}
 	}
 }

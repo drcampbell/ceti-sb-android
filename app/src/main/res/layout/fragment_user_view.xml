@@ -3,7 +3,9 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context="com.school_business.android.school_business.UserViewFragment">
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <LinearLayout
         android:id="@+id/layout_fragment_user"
         android:orientation="vertical"
@@ -26,7 +28,7 @@
                     android:text="School: "
                     style="@style/TV_Style_Title_Left"/>
                 <TextView
-                    android:id="@+id/tv_school"
+                    android:id="@+id/tv_location"
                     style="@style/TV_Style_Content"/>
             </LinearLayout>
 
@@ -93,8 +95,22 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom"
+        android:baselineAligned="false">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+            <Button
+                style="@style/Button"
+                android:text="Contact User"
+                android:id="@+id/contact_user_button"
+                android:onClick="onClick"
+                android:layout_weight="1"/>
+        </LinearLayout>
     </LinearLayout>
-
+    </RelativeLayout>
 </FrameLayout>

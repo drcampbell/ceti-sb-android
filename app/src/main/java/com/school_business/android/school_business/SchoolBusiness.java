@@ -17,11 +17,11 @@ import java.util.Iterator;
  * Created by david on 6/11/15.
  */
 public class SchoolBusiness extends Application{
-	public static final String NONE = "0";
-	public static final String TEACHER = "1";
-	public static final String SPEAKER = "2";
-	public static final String BOTH = "3";
-	public static final String STUDENT = "4";
+	public static final String NONE = "None";
+	public static final String TEACHER = "Teacher";
+	public static final String SPEAKER = "Speaker";
+	public static final String BOTH = "Both";
+	public static final String STUDENT = "Student";
 	public static final String[] roles = {"None", "Teacher", "Speaker", "Both", "Student"};
 
 	private static final String TAG = "school_business";
@@ -38,6 +38,11 @@ public class SchoolBusiness extends Application{
 
 	public static void setProfile(JSONObject obj){
 		profile = obj;
+		try {
+			profile.put("role", translateRole(profile.get("role").toString()));
+		} catch (JSONException e){
+			Log.d(TAG, e.toString());
+		}
 	}
 	public static JSONObject getProfile(){
 		return profile;
@@ -49,6 +54,7 @@ public class SchoolBusiness extends Application{
 				String key = (String) keys.next();
 				profile.put(key, obj.getString(key));
 			}
+			profile.put("role", translateRole(profile.get("role").toString()));
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
 		}
@@ -88,6 +94,23 @@ public class SchoolBusiness extends Application{
 	public static void setEmail(String email) {
 		try {
 			profile.put("email", email);
+		} catch (JSONException e){
+			Log.d(TAG, e.toString());
+		}
+	}
+
+	public static String getRole(){
+		try {
+			return profile.getString("role");
+		} catch (JSONException e){
+			Log.d(TAG, e.toString());
+			return "";
+		}
+	}
+
+	public static void setRole(String role){
+		try {
+			profile.put("role", role);
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
 		}
@@ -205,18 +228,18 @@ public class SchoolBusiness extends Application{
 		return str.matches("-?\\d+(\\.\\d+)?");
 	}
 
-	public static String getRole(String role){
+	public static String translateRole(String role){
 		switch (role) {
-			case SchoolBusiness.NONE:
-				return "None";
-			case SchoolBusiness.TEACHER:
-				return "Teacher";
-			case SchoolBusiness.SPEAKER:
-				return "Speaker";
-			case SchoolBusiness.BOTH:
-				return "Both";
+			case "0":
+				return NONE;
+			case "1":
+				return TEACHER;
+			case "2":
+				return SPEAKER;
+			case "3":
+				return BOTH;
 			default:
-				return "";
+				return role;
 		}
 	}
 }

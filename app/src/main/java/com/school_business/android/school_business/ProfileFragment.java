@@ -148,7 +148,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 							.getColor(android.R.color.holo_blue_dark));
 				}
 			}
-			((TextView) view.findViewById(R.id.tv_role)).setText(SchoolBusiness.getRole(profile.getString("role")));
+			((TextView) view.findViewById(R.id.tv_role)).setText(SchoolBusiness.getRole());//profile.getString("role")));
 
 		} catch (JSONException e) {
 			e.printStackTrace();

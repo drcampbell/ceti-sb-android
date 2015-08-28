@@ -241,15 +241,17 @@ public class MainActivity extends FragmentActivity
 
 		switch (view.getId()) {
 			case R.id.register_teacher:
-				role = "Teacher";
+				SchoolBusiness.setRole("Teacher");
 				break;
 			case R.id.register_speaker:
-				role = "Speaker";
+				SchoolBusiness.setRole("Speaker");
 				break;
 			case R.id.register_both:
-				role = "Both";
+				SchoolBusiness.setRole("Both");
 				break;
 		}
+		Log.d(TAG, "Role is now set to "+SchoolBusiness.getRole());
+
 	}
 
 	public void onListItemSelected(String id, String model) {

@@ -146,7 +146,7 @@ public class ProfileEditFragment extends Fragment implements View.OnClickListene
 
 			// Rails handles roles in a stupid way.  (Takes as input alpha, provides numeric output)
 			if (SchoolBusiness.isNumeric(profile.getString("role"))) {
-				profile.put("role", SchoolBusiness.getRole(profile.getString("role")));
+				profile.put("role", SchoolBusiness.translateRole(profile.getString("role")));
 			}
 			profile.put("grades", ((EditText) getActivity().findViewById(R.id.et_grades)).getText());
 			profile.put("biography", ((EditText) getActivity().findViewById(R.id.et_bio)).getText());

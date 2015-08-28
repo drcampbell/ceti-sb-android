@@ -109,6 +109,7 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 				mListener.onSaveAccount(account);
 				break;
 			case R.id.register_teacher:
+
 				role = "Teacher";
 				Log.d("Account", role);
 				break;
@@ -121,6 +122,7 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 				Log.d("Account", role);
 				break;
 		}
+		SchoolBusiness.setRole(role);
 	}
 
 	public void onRadioButtonClicked(View view) {
@@ -188,7 +190,7 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 			account.put("name", ((EditText) getActivity().findViewById(R.id.et_name)).getText());
 			account.put("email", ((EditText) getActivity().findViewById(R.id.et_email)).getText());
 			// Rails handles roles in a stupid way.  (Takes as input alpha, provides numeric output)
-			account.put("role", SchoolBusiness.getRole(role));
+			account.put("role", SchoolBusiness.getRole());
 			String new_password = ((EditText) getActivity().findViewById(R.id.new_password)).getText().toString();
 			String confirm_password = ((EditText) getActivity().findViewById(R.id.confirm_password)).getText().toString();
 			if (!new_password.isEmpty() && !confirm_password.isEmpty() && new_password.equals(confirm_password)){

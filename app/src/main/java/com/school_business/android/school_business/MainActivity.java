@@ -158,6 +158,10 @@ public class MainActivity extends FragmentActivity
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		switch (item.getItemId()){
+			case R.id.notifications:
+				ListItemFragment notificationsFragment = ListItemFragment.newInstance(SchoolBusiness.getNotifications(), "notifications");
+				swapFragment(notificationsFragment, R.id.fragment_container, FRAG_MAIN, true);
+				return true;
 			case R.id.menu_home:
 				if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() != HomeFragment.class) {
 					HomeFragment homeFragment = new HomeFragment();

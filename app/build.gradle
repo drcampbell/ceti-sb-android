@@ -1,15 +1,16 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     signingConfigs {
         config {
             keyAlias 'CetiAndroidKey'
-            keyPassword 'Uri49shoE'
+            keyPassword 'password'
             storeFile file('/Users/david/keystores/ceti_android.jks')
-            storePassword 'Uri49shoE'
+            storePassword 'password'
         }
     }
-    compileSdkVersion 21
+    compileSdkVersion 22
     buildToolsVersion '20.0.0'
     defaultConfig {
         applicationId 'com.CETI_Android.android.school_business'
@@ -41,6 +42,6 @@ dependencies {
     compile project(':volley')
     compile files('libs/gson-2.3.1.jar')
     compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.google.android.gms:play-services:6.5.87'
+    compile 'com.google.android.gms:play-services:7.5.+'
     compile 'com.loopj.android:android-async-http:1.4.5'
 }

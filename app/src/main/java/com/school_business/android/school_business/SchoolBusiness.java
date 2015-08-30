@@ -27,6 +27,7 @@ public class SchoolBusiness extends Application{
 	private static final String TAG = "school_business";
 	private static String id;
 	private static JSONObject profile;
+	private static JSONObject notifications;
 	private static SharedPreferences loginPreferences;
 	private static SharedPreferences.Editor loginPrefsEditor;
 	@Override
@@ -34,6 +35,10 @@ public class SchoolBusiness extends Application{
 		super.onCreate();
 
 		init();
+	}
+
+	public static JSONObject getNotifications(){
+		return notifications;
 	}
 
 	public static void setProfile(JSONObject obj){

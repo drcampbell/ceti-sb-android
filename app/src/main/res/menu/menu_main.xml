@@ -8,6 +8,10 @@
           android:showAsAction="collapseActionView|ifRoom"
           android:actionViewClass="android.widget.SearchView"
           />
+    <item android:id="@+id/notifications"
+          android:title="0"
+          android:showAsAction="collapseActionView|ifRoom"
+          />
     <item android:id="@+id/menu_home"
           android:title="Home"
           android:orderInCategory="100"

@@ -22,7 +22,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
-	private int tab = 0;
+	private int tab;
 //	private FragmentTabHost tabHost;
 
 	// TODO: Rename and change types of parameters
@@ -60,6 +60,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 			mParam1 = getArguments().getString(ARG_PARAM1);
 			mParam2 = getArguments().getString(ARG_PARAM2);
 		}
+		tab = 0;
 	}
 
 	@Override
@@ -67,7 +68,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_home, container, false);
-		((Button) view.findViewById(R.id.create_event)).setOnClickListener(HomeFragment.this);
+		if (SchoolBusiness.getRole().equals("Teacher") || SchoolBusiness.getRole().equals("Both")) {
+			((Button) view.findViewById(R.id.create_event)).setOnClickListener(HomeFragment.this);
+		} else {
+			((Button) view.findViewById(R.id.create_event)).setVisibility(View.INVISIBLE);
+		}
 		mListener.onCreateTab(tab);
 		return view;
 	}
@@ -75,15 +80,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 	// TODO: Rename method, update argument and hook method into UI event
 	public void onButtonPressed(Uri uri) {
 		if (mListener != null) {
-			mListener.onWelcomeInteraction(uri);
+			//mListener.onWelcomeInteraction(uri);
 		}
 	}
-
-//	@Override
-//	public void onResume(){
-//
-//		super.onResume();
-//	}
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -128,7 +127,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 	 */
 	public interface OnWelcomeInteractionListener {
 		// TODO: Update argument type and name
-		public void onWelcomeInteraction(Uri uri);
 		public void onCreateEvent(Boolean edit, String event);
 		public void onCreateTab(int tab);
 		public void clearTabs();

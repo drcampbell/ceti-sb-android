@@ -25,10 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,7 +40,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	private static final String ARG_PARAM1 = "edit";
 	private static final String ARG_PARAM2 = "param2";
 	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
+	Toast toast;
 	// TODO: Rename and change types of parameters
 	private Boolean mEdit;
 	private String mEvent;
@@ -79,6 +75,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			mEdit = getArguments().getBoolean(ARG_PARAM1);
 			mEvent = getArguments().getString(ARG_PARAM2);
 		}
+		toast = Toast.makeText(getActivity().getApplicationContext(), "", Toast.LENGTH_SHORT);
 	}
 
 	@Override
@@ -158,8 +155,13 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 
 			String event_start = createDate(getView().getRootView(), start, R.id.start_pm);
 			String event_end = createDate(getView().getRootView(), end, R.id.end_pm);
+			if (event_start.isEmpty() || event_end.isEmpty()){
+				return null;
+			}
 			if (!compareDates(event_start, event_end)){
-				Toast.makeText(getActivity(), "Error: Can't Post\nEvent Finishes Before It Begins!", Toast.LENGTH_LONG).show();
+				toast.cancel();
+				toast = Toast.makeText(getActivity(), "Error: Can't Post\nEvent Finishes Before It Begins!", Toast.LENGTH_LONG);
+				toast.show();
 				return null;
 			}
 			for (int i = 0; i < resource.length; i++) {
@@ -178,6 +180,9 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	public String createDate(View view, int[] resource, int cb){
 		//DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		int[] cal_res = {Calendar.YEAR, Calendar.MONTH, Calendar.DATE, Calendar.HOUR_OF_DAY, Calendar.MINUTE};
+		String[] name = {"Year", "Month", "Date", "Hour", "Minute"};
+		int[] time_min = {2015, 1, 1, 1, 0 };
+		int[] time_max = {2115, 12, 31, 12, 59};
 		EditText et;
 		Date date;
 		Calendar cal = new GregorianCalendar();
@@ -187,7 +192,20 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		int[] x = {0,0,0,0,0};
 		for (int i = 0; i < 5; i++){
 			et = (EditText) view.findViewById(resource[i]);
-			x[i] = Integer.parseInt(et.getText().toString());
+			try {
+				x[i] = Integer.parseInt(et.getText().toString());
+				if (x[i] < time_min[i] || x[i] > time_max[i]){
+					toast.cancel();
+					toast = Toast.makeText(getActivity().getApplicationContext(), "Values for "+name[i]+" must be between "+time_min[i]+" and "+time_max[i], Toast.LENGTH_LONG);
+					toast.show();
+					return "";
+				}
+			} catch (NumberFormatException e){
+				toast.cancel();
+				toast = Toast.makeText(getActivity().getApplicationContext(), "You must enter a valid value for " + name[i],Toast.LENGTH_LONG);
+				toast.show();
+				return "";
+			}
 			if (cal_res[i]==Calendar.MONTH){
 				x[i] = (x[i]-1) % 12;
 			}
@@ -270,7 +288,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		Log.d("time", cal.toString());
 		for (int i = 0; i < resource.length; i++) {
 			EditText et = (EditText) view.findViewById(resource[i]);
-			et.setFilters(new InputFilter[]{new InputFilterNumeric(begin[i], end[i])});
+			//et.setFilters(new InputFilter[]{new InputFilterNumeric(begin[i], end[i])});
 			if (cal_res[i] == Calendar.HOUR && cal.get(Calendar.HOUR) != cal.get(Calendar.HOUR_OF_DAY)) {
 				cb.setChecked(true);
 			}
@@ -306,9 +324,11 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				if (isInRange(min, max, input))
 					return null;
 			} catch (NumberFormatException nfe) {
-				Toast.makeText(getActivity(),
+				toast.cancel();
+				toast = Toast.makeText(getActivity(),
 						"Entered value must be between " + min + " and " + max,
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_LONG);
+				toast.show();
 			}
 			return "";
 		}

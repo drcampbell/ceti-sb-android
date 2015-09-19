@@ -3,6 +3,7 @@ package com.school_business.android.school_business;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +49,8 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	private ArrayList<String> mParam3 = new ArrayList<String>();
 	private String mModel;
 
+	public static final String NOTIFICATIONS = "notifications";
+	public static final String EVENTS = "events";
 	private static String[] events = {"id", "event_title", "event_start"};
 	private static String[] schools = {"id", "school_name", "city_state"};
 	private static String[] users = {"id", "name", "association"};
@@ -91,12 +95,22 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 			for (int i = 0; i < obj_arr.length(); i++){
 
 				obj = (JSONObject) obj_arr.get(i);
-				ids.add   (obj.getString(key[0]));
-				titles.add(obj.getString(key[1]));
-				if (model.equals("events")){
-					starts.add(SchoolBusiness.parseTime(obj.getString(key[2])));
-				} else {
-					starts.add(obj.getString(key[2]));
+				switch (model){
+					case EVENTS:
+						ids.add   (obj.getString(key[0]));
+						titles.add(obj.getString(key[1]));
+						starts.add(SchoolBusiness.parseTime(obj.getString(key[2])));
+						break;
+					case NOTIFICATIONS:
+						ids.add(obj.getString("event_id"));
+						titles.add(obj.getString("act_user_name"));
+						starts.add(notification(obj.getString("event_title"), Integer.parseInt(obj.getString("n_type"))));
+						break;
+					default:
+						ids.add   (obj.getString(key[0]));
+						titles.add(obj.getString(key[1]));
+						starts.add(obj.getString(key[2]));
+						break;
 				}
 			}
 		} catch (JSONException e){
@@ -110,7 +124,12 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		args.putStringArrayList(ARG_PARAM1, ids);
 		args.putStringArrayList(ARG_PARAM2, titles);
 		args.putStringArrayList(ARG_PARAM3, starts);
-		args.putString(ARG_MODEL, model);
+		Log.d("ListItem", model);
+		if (model.equals(NOTIFICATIONS)){
+			args.putString(ARG_MODEL, EVENTS);
+		} else {
+			args.putString(ARG_MODEL, model);
+		}
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -223,4 +242,16 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		public void onListItemSelected(String id, String model);
 	}
 
+	public static String notification(String event_title, int n_type){
+		switch(n_type){
+			case 0:
+				return "has claimed your event:" + event_title;
+			case 1:
+				return "has confirmed you as the speaker of event: " + event_title;
+			case 2:
+				return "has updated event: " + event_title;
+			default:
+				return event_title;
+		}
+	}
 }

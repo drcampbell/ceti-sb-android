@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,12 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
+	private static final String PASSWORD_LENGTH = "New password must be have at least 8 characters";
+	private static final String PASSWORD_MISMATCH = "New password must match confirm password";
+	private static final String PASSWORD_EMPTY = "You must provide a new password and confirm new password to change your password";
+	private static final String PASSWORD_MISSING = "You must provide your old password to confirm changes";
+	private static final String NAME_INVALID = "You must provide a valid name";
+	private static final String EMAIL_INVALID = "You must provide a valid email address";
 
 	// TODO: Rename and change types of parameters
 	private String mParam1;
@@ -106,7 +113,9 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 		switch ( view.getId() ){
 			case R.id.save_account_button:
 				JSONObject account = collectAccount();
-				mListener.onSaveAccount(account);
+				if (account != null) {
+					mListener.onSaveAccount(account);
+				}
 				break;
 			case R.id.register_teacher:
 
@@ -187,17 +196,38 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 	public JSONObject collectAccount(){
 		JSONObject account = new JSONObject();
 		try {
-			account.put("name", ((EditText) getActivity().findViewById(R.id.et_name)).getText());
-			account.put("email", ((EditText) getActivity().findViewById(R.id.et_email)).getText());
+			String name = ((EditText) getActivity().findViewById(R.id.et_name)).getText().toString();
+			String email = ((EditText) getActivity().findViewById(R.id.et_email)).getText().toString();
+			if (validateName(name)) {
+				account.put("name", name);
+			} else {
+				Toast.makeText(getActivity().getApplicationContext(), NAME_INVALID, Toast.LENGTH_LONG).show();
+				return null;
+			}
+			if (validateEmail(email)) {
+				account.put("email", email);
+			} else {
+				Toast.makeText(getActivity().getApplicationContext(), EMAIL_INVALID, Toast.LENGTH_LONG).show();
+				return null;
+			}
 			// Rails handles roles in a stupid way.  (Takes as input alpha, provides numeric output)
 			account.put("role", SchoolBusiness.getRole());
 			String new_password = ((EditText) getActivity().findViewById(R.id.new_password)).getText().toString();
 			String confirm_password = ((EditText) getActivity().findViewById(R.id.confirm_password)).getText().toString();
-			if (!new_password.isEmpty() && !confirm_password.isEmpty() && new_password.equals(confirm_password)){
-				account.put("password", new_password);
-				account.put("confirm_password", confirm_password);
+			String current_password = ((EditText) getActivity().findViewById(R.id.password)).getText().toString();
+			if (!new_password.isEmpty() || !confirm_password.isEmpty()){
+				if (validateNewPassword(new_password, confirm_password)){
+					account.put("password", new_password);
+					account.put("confirm_password", confirm_password);
+				} else {
+					return null;
+				}
 			}
-			account.put("current_password", ((EditText) getActivity().findViewById(R.id.password)).getText());
+			if (current_password.isEmpty()){
+				Toast.makeText(getActivity().getApplicationContext(), PASSWORD_MISSING, Toast.LENGTH_LONG).show();
+				return null;
+			}
+			account.put("current_password", current_password);
 			JSONObject user = new JSONObject();
 			user.put("user", account);
 			return user;
@@ -210,4 +240,34 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 		}
 	}
 
+	public Boolean validateNewPassword(String new_password, String confirm){
+		if (!new_password.isEmpty() && !confirm.isEmpty()){
+			if (new_password.equals(confirm)) {
+				if (new_password.length() > 8) {
+					return true;
+				} else {
+					Toast.makeText(getActivity().getApplicationContext(), PASSWORD_LENGTH, Toast.LENGTH_LONG).show();
+				}
+			} else {
+				Toast.makeText(getActivity().getApplicationContext(), PASSWORD_MISMATCH, Toast.LENGTH_LONG).show();
+			}
+		} else {
+			Toast.makeText(getActivity().getApplicationContext(), PASSWORD_EMPTY, Toast.LENGTH_LONG).show();
+		}
+		return false;
+	}
+
+	private Boolean validateName(String name){
+		return !name.equals("");
+	}
+
+	private Boolean hasRole(){
+		return  ((RadioButton) getActivity().findViewById(R.id.register_teacher)).isChecked() ||
+				((RadioButton) getActivity().findViewById(R.id.register_speaker)).isChecked() ||
+				((RadioButton) getActivity().findViewById(R.id.register_both)).isChecked();
+	}
+
+	private Boolean validateEmail(String target){
+		return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+	}
 }

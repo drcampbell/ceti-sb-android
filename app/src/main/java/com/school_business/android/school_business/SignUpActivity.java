@@ -20,6 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,13 +60,13 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 
 		switch (view.getId()) {
 			case R.id.register_teacher:
-				role = "Teacher";
+				role = getString(R.string.teacher);
 				break;
 			case R.id.register_speaker:
-				role = "Speaker";
+				role = getString(R.string.speaker);
 				break;
 			case R.id.register_both:
-				role = "Both";
+				role = getString(R.string.both);
 				break;
 		}
 	}
@@ -73,6 +74,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 	public void onClick(View view) {
 		switch (view.getId()) {
 			case R.id.register_button:
+				view.findViewById(R.id.register_button).setClickable(false);
 				JSONObject params = getParams();
 				JSONObject user = new JSONObject();
 				Log.d(TAG, "Button clicked?");
@@ -106,6 +108,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 	private Boolean hasName(String name){
 		return !name.equals("");
 	}
+
 	private Boolean hasRole(){
 		return  ((RadioButton) findViewById(R.id.register_teacher)).isChecked() ||
 				((RadioButton) findViewById(R.id.register_speaker)).isChecked() ||
@@ -115,6 +118,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 	private Boolean validateEmail(String target){
 		return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
 	}
+
 	private Boolean comparePassword(JSONObject user) {
 		try {
 			return user.getString("password").equals(user.getString("confirm_password"));
@@ -136,10 +140,6 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 			user.put("password", field.getText());
 			field = (EditText) findViewById(R.id.confirm_password);
 			user.put("confirm_password", field.getText());
-//			if (((EditText)findViewById(R.id.password)).getText() == ((EditText)findViewById(R.id.confirm_password)).getText()) {
-//				field = (EditText) findViewById(R.id.password);
-//				user.put("password", field.getText());
-//			}
 			user.put("role", role);
 			user.put("school_id", "1");
 		} catch (JSONException e) {
@@ -150,7 +150,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 
 	public void register(JSONObject obj){
 		String user_auth;
-		String url = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/users/sign_up";
+		String url = SchoolBusiness.TARGET + "users/sign_up";
 		RequestQueue queue = NetworkVolley.getInstance(this.getApplicationContext())
 				.getRequestQueue();
 		Log.d(TAG, "Register?");
@@ -158,14 +158,21 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 				new Response.Listener<JSONObject>() {
 					@Override
 					public void onResponse(JSONObject response){
-						Log.d(TAG + " JSON", "Response: " + response.toString());
-
 						try {
-							JSONObject user = response.getJSONObject("data");
-							SchoolBusiness.setProfile(user);
-							Log.d(TAG, "Registration successful");
+							if (response.getString("state").equals("1")){
+								JSONArray messages = response.getJSONArray("messages");
+								for (int i = 0; i < messages.length(); i++ ){
+									String message = messages.getString(i);
+									Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+								}
+								findViewById(R.id.register_button).setClickable(true);
+							} else if (response.getString("state").equals("0")) {
+								JSONObject user = response.getJSONObject("data");
+								SchoolBusiness.setProfile(user);
+								Log.d(TAG, "Registration successful");
 
-							finishSignUp();
+								finishSignUp();
+							}
 						} catch (JSONException e) {
 							findViewById(R.id.register_button).setClickable(true);
 							e.printStackTrace();
@@ -182,19 +189,9 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 				return "application/json";
 			}
 		};
-		//Log.d("JSON",obj.getParams.toString());
-
-		Log.d(TAG, jsonRequest.toString());
-		Log.d(TAG, jsonRequest.getBodyContentType().toString());
 		queue.add(jsonRequest);
-
-//		if (SchoolBusiness.getUserAuth() == user_auth) {
-//			saveLogin(email, user_auth);
-//			startActivity(new Intent(this, MainActivity.class));
-//		} else {
-//			// TODO bad login
-//		}
 	}
+
 	public void finishSignUp() {
 		Intent intent = new Intent(this, MainActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

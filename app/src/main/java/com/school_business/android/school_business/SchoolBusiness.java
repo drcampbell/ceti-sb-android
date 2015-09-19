@@ -17,12 +17,16 @@ import java.util.Iterator;
  * Created by david on 6/11/15.
  */
 public class SchoolBusiness extends Application{
+	public static final String TARGET = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/";
 	public static final String NONE = "None";
 	public static final String TEACHER = "Teacher";
 	public static final String SPEAKER = "Speaker";
 	public static final String BOTH = "Both";
 	public static final String STUDENT = "Student";
 	public static final String[] roles = {"None", "Teacher", "Speaker", "Both", "Student"};
+
+	public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+	public static final String REGISTRATION_COMPLETE = "registrationComplete";
 
 	private static final String TAG = "school_business";
 	private static String id;
@@ -49,9 +53,11 @@ public class SchoolBusiness extends Application{
 			Log.d(TAG, e.toString());
 		}
 	}
+
 	public static JSONObject getProfile(){
 		return profile;
 	}
+
 	public static void updateProfile(JSONObject obj) {
 		Iterator<?> keys = obj.keys();
 		try {
@@ -64,6 +70,7 @@ public class SchoolBusiness extends Application{
 			Log.d(TAG, e.toString());
 		}
 	}
+
 	public static String getUserAttr(String attribute){
 		try {
 			if (profile != null) {
@@ -75,17 +82,6 @@ public class SchoolBusiness extends Application{
 			Log.d(TAG, e.toString());
 			return "None";
 		}
-	}
-
-	//public static String getBio(){}
-	//public static String getBio(){}
-
-	public static String getCID(){
-		return ""+id;
-	}
-
-	public static void setCID(String cid){
-		id = cid;
 	}
 
 	public static String getEmail(){
@@ -130,14 +126,6 @@ public class SchoolBusiness extends Application{
 		}
 	}
 
-	public static void setUserAuth(String token){
-		try {
-			profile.put("authentication_token", token);
-		} catch (JSONException e){
-			Log.d(TAG, e.toString());
-		}
-	}
-
 	private void init() {
 		NetworkVolley.getInstance(this.getApplicationContext());
 	}
@@ -158,7 +146,6 @@ public class SchoolBusiness extends Application{
 		}
 	}
 	public static String toDisplayCase(String s) {
-
 		final String ACTIONABLE_DELIMITERS = " '-/"; // these cause the character following
 		// to be capitalized
 
@@ -174,6 +161,7 @@ public class SchoolBusiness extends Application{
 		}
 		return sb.toString();
 	}
+
 	public static String phoneNumber(String s) {
 		StringBuilder sb = new StringBuilder();
 		char[] c = s.toCharArray();

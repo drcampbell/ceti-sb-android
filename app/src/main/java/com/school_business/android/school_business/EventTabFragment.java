@@ -66,7 +66,7 @@ public class EventTabFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_home, container, false);
+		//View view = inflater.inflate(R.layout.fragment_home, container, false);
 		mTabHost = new FragmentTabHost(getActivity());
 		mTabHost.setup(getActivity(), getChildFragmentManager(),R.id.fragment_container);
 
@@ -144,11 +144,4 @@ public class EventTabFragment extends Fragment {
 		// TODO: Update argument type and name
 		public void onEventTabSelected(String string);
 	}
-
-
-
-//	@Override
-//	public void setSelected(final boolean selected){
-//
-//	}
 }

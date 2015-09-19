@@ -1,22 +1,24 @@
 package com.school_business.android.school_business;
 
-//import android.app.ListFragment;
-//import android.app.FragmentManager;
 import android.app.DialogFragment;
-import android.net.Uri;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-		import android.view.Menu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-		import android.widget.CheckBox;
+import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -28,6 +30,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,10 +57,8 @@ public class MainActivity extends FragmentActivity
 		ProfileEditFragment.OnProfileEditListener,
 		AccountEditFragment.OnEditAccountListener,
 		SettingsFragment.OnSettingsListener,
-		MessageFragment.OnMessageListener//,
-		//FragmentManager.OnBackStackChangedListener
+		MessageFragment.OnMessageListener
 {
-	private enum E_Type {EVENT_CREATE, EVENT_CLAIM};
 
 	private final String TAG = "Event";
 	private String event_id;
@@ -65,57 +67,110 @@ public class MainActivity extends FragmentActivity
 	private final String USERS = "users";
 	private final String CLAIMS = "claims";
 	private final String SCHOOLS = "schools";
+	private final String NOTIFICATIONS = "notifications";
 	private String searchModel = EVENTS;
 
-	private String FRAG_BLANK = "Event";
-	private String FRAG_EVENT = "Event";
-	private String FRAG_CREATE_EVENT = "Event";
-	private String FRAG_EVENT_LIST = "Home";//"EventList";
-	private String FRAG_HOME = "Home";
-	private String FRAG_PROFILE = "Event";
+	private final String TEACHER = getString(R.string.teacher);
+	private final String SPEAKER = getString(R.string.speaker);
+	private final String BOTH = getString(R.string.both);
+
 	private String FRAG_SEARCH = "Event";
 	private String FRAG_MAIN = "Main";
 	private String FRAG_CLAIM = "Claim";
 	private String TAB_CONTENT = "TabContent";
 	private String TAB_CONTAINER = "TabContainer";
-	private String FRAG_SCHOOL = "Event";
-	private String FRAG_USER = "Event";
+
+	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+	private Boolean CAN_GET_TABS = false;
+
+	private BroadcastReceiver mRegistrationBroadcastReceiver;
+	private Fragment tabContent;
+	private Fragment tabContainer;
+	private Fragment blankContent;
+	private Fragment blankContainer;
+	private View mainView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		mainView = getWindow().getDecorView().getRootView();
 		handleIntent(getIntent());
+
+		/* Get GCM Token */
+		mRegistrationBroadcastReceiver = new BroadcastReceiver(){
+			@Override
+			public void onReceive(Context context, Intent intent){
+				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+				boolean sentToken = sharedPreferences.getBoolean(SchoolBusiness.SENT_TOKEN_TO_SERVER, false);
+				if (sentToken){
+					Log.d(TAG, "Received GCM Token");
+				} else {
+					Log.d(TAG, "An error occurred while either fetching the Instance ID ");
+				}
+			}
+		};
+
+		if (checkPlayServices()){
+			Intent intent = new Intent(this, RegistrationIntentService.class);
+			getApplicationContext().startService(intent);
+		}
 
 		if (findViewById(R.id.fragment_container) != null){
 			if (savedInstanceState != null){
 				return;
 			}
-			BlankFragment blankFragment = new BlankFragment();
-			BlankFragment blankFragment2 = new BlankFragment();
+			tabContent = new BlankFragment();
+			tabContainer = new BlankFragment();
+			blankContainer = new BlankFragment();
+			blankContent = new BlankFragment();
 			HomeFragment homeFragment = new HomeFragment();
 			SearchOptionsFragment searchOptionsFragment = new SearchOptionsFragment();
 			homeFragment.setArguments(getIntent().getExtras());
 
-			// Add the Search Options Container Fragment
+			/* Add the Search Options Container Fragment */
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.search_options_container, searchOptionsFragment, "Search")
 					.commit();
+			/* Add Tab Container */
 			getSupportFragmentManager().beginTransaction()
-					.add(R.id.tab_container, blankFragment, TAB_CONTAINER)
+					.add(R.id.tab_container, tabContainer, TAB_CONTAINER)
 					.commit();
+			/* Add Tab Content */
 			getSupportFragmentManager().beginTransaction()
-					.add(R.id.tab_content, blankFragment2, TAB_CONTENT)
+					.add(R.id.tab_content, tabContent, TAB_CONTENT)
 					.commit();
-			// Add fragment to the container Frame Layout
+			/* Add Main Fragment */
 			getSupportFragmentManager().beginTransaction()
-					.add(R.id.fragment_container, homeFragment, FRAG_MAIN)//.addToBackStack(FRAG_MAIN)
+					.add(R.id.fragment_container, homeFragment, FRAG_MAIN)
 					.commit();
 		}
 	}
 
+	/**
+	 * Check the device to make sure it has the Google Play Services APK. If
+	 * it doesn't, display a dialog that allows users to download the APK from
+	 * the Google Play Store or enable it in the device's system settings.
+	 */
+	private boolean checkPlayServices() {
+		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (resultCode != ConnectionResult.SUCCESS) {
+			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+						PLAY_SERVICES_RESOLUTION_REQUEST).show();
+			} else {
+				Log.i(TAG, "This device is not supported.");
+				finish();
+			}
+			return false;
+		}
+		return true;
+	}
+
 	@Override
 	protected void onResume(){
+		LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+				new IntentFilter(SchoolBusiness.REGISTRATION_COMPLETE));
 		if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
 			onCreateTab(mTab);
 		}
@@ -124,6 +179,7 @@ public class MainActivity extends FragmentActivity
 
 	@Override
 	protected void onPause(){
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
 		if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
 			clearTabs();
 		}
@@ -159,8 +215,7 @@ public class MainActivity extends FragmentActivity
 		int id = item.getItemId();
 		switch (item.getItemId()){
 			case R.id.notifications:
-				ListItemFragment notificationsFragment = ListItemFragment.newInstance(SchoolBusiness.getNotifications(), "notifications");
-				swapFragment(notificationsFragment, R.id.fragment_container, FRAG_MAIN, true);
+				getModel(Request.Method.GET, "", NOTIFICATIONS, null, true);
 				return true;
 			case R.id.menu_home:
 				if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() != HomeFragment.class) {
@@ -169,12 +224,12 @@ public class MainActivity extends FragmentActivity
 				}
 				return true;
 			case R.id.menu_action_settings:
+				Log.d(TAG, "User selected get settings");
 				getModel(Request.Method.GET, "settings", USERS, null, true);
 				return true;
 			case R.id.menu_profile:
+				Log.d(TAG, "User selected get profile");
 				getModel(Request.Method.GET, "profile", USERS, null, true);
-				//ProfileFragment profileFragment = ProfileFragment.newInstance(getModel(Request.););
-				//swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, true);//FRAG_PROFILE, true);
 				return true;
 			case R.id.menu_logout:
 				Log.d(TAG, "User selected Logout");
@@ -200,7 +255,10 @@ public class MainActivity extends FragmentActivity
 		BlankFragment blankFragment = new BlankFragment();
 		swapFragment(blankFragment, R.id.search_options_container, FRAG_SEARCH, true);
 	}
+
 	private void handleIntent(Intent intent){
+		//Log.d(TAG, intent.getAction());
+		//Log.d(TAG, intent.getDataString());
 		if (intent.getAction() != null) {
 			Log.d(TAG, intent.getAction().toString());
 		} else {
@@ -245,27 +303,25 @@ public class MainActivity extends FragmentActivity
 
 		switch (view.getId()) {
 			case R.id.register_teacher:
-				SchoolBusiness.setRole("Teacher");
+				SchoolBusiness.setRole(TEACHER);
 				break;
 			case R.id.register_speaker:
-				SchoolBusiness.setRole("Speaker");
+				SchoolBusiness.setRole(SPEAKER);
 				break;
 			case R.id.register_both:
-				SchoolBusiness.setRole("Both");
+				SchoolBusiness.setRole(BOTH);
 				break;
 		}
-		Log.d(TAG, "Role is now set to "+SchoolBusiness.getRole());
+		Log.d(TAG, "Role is now set to " + SchoolBusiness.getRole());
 
 	}
 
 	public void onListItemSelected(String id, String model) {
-		getSupportFragmentManager().executePendingTransactions();
 		Boolean backtrack = true;
 		getModel(Request.Method.GET, id, model, null, backtrack);
 	}
 
 	public void onEventViewInteraction(String id, String model){
-		getSupportFragmentManager().executePendingTransactions();
 		Boolean backtrack = true;
 		getModel(Request.Method.GET, id, model, null, backtrack);
 	}
@@ -273,17 +329,16 @@ public class MainActivity extends FragmentActivity
 	public void onSchoolViewInteraction(String id, String model){
 
 	}
+
 	public void onUserViewInteraction(String id, String model){
-		getSupportFragmentManager().executePendingTransactions();
 		Boolean backtrack = true;
 		getModel(Request.Method.GET, id, model, null, backtrack);
 	}
+
 	public void onSearchInteraction(String model){
 		searchModel = model;
 	}
-	public void onWelcomeInteraction(Uri uri){
 
-	}
 	public void onCreateEvent(Boolean edit, String event){
 		EventCreateFragment eventCreateFragment = EventCreateFragment.newInstance(edit, event);
 		swapFragment(eventCreateFragment, R.id.fragment_container, FRAG_MAIN, true);//FRAG_CREATE_EVENT, true);
@@ -345,24 +400,19 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void makeMySchool(String id){
-		getModel(Request.Method.GET, "make_mine/"+id, SCHOOLS, null, true);
+		getModel(Request.Method.GET, "make_mine/" + id, SCHOOLS, null, true);
 	}
 
 	public void onCreateTab(int tab){
+		CAN_GET_TABS = true;
 		Log.d(TAG, "Creating Tabs");
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		EventTabFragment eventTabFragment = EventTabFragment.newInstance(mTab);
-		transaction.add(R.id.tab_container, eventTabFragment, TAB_CONTAINER );
-		transaction.commit();
+		tabContainer = EventTabFragment.newInstance(mTab);
+		swapFragment(tabContainer, R.id.tab_container, TAB_CONTAINER, false);
 	}
 
 	public void clearTabs(){
-		swapFragment(new BlankFragment(),R.id.tab_container, TAB_CONTAINER, false);
-		swapFragment(new BlankFragment(),R.id.tab_content, TAB_CONTENT, false);
-	}
-
-	public void onProfileInteraction(Uri uri){
-
+//		swapFragment(new BlankFragment(),R.id.tab_container, TAB_CONTAINER, false);
+//		swapFragment(new BlankFragment(),R.id.tab_content, TAB_CONTENT, false);
 	}
 
 	public void onEditProfile(){
@@ -376,8 +426,8 @@ public class MainActivity extends FragmentActivity
 
 	public void onSaveAccount(JSONObject account){
 		getModel(Request.Method.PUT, "", "account", account, false);
-
 	}
+
 	public void onSaveProfile(JSONObject profile){
 		getModel(Request.Method.PUT, "", USERS, profile, false);
 	}
@@ -385,6 +435,7 @@ public class MainActivity extends FragmentActivity
 	public void onSaveSettings(JSONObject settings){
 		getModel(Request.Method.PUT, "settings", USERS, settings, false);
 	}
+
 	public void onEventTabSelected(String tab){
 
 	}
@@ -400,6 +451,7 @@ public class MainActivity extends FragmentActivity
 
 	@Override
 	public void onTabChanged(String tab) {
+		if (!CAN_GET_TABS){return;}
 		switch (tab){
 			case "all":
 				mTab = 0;
@@ -422,23 +474,51 @@ public class MainActivity extends FragmentActivity
 		}
 	}
 
-	public void swapFragment(Fragment fragment, int container, String tag, Boolean backstack)
+	public void swapFragment(final Fragment fragment, final int container, final String tag, final Boolean backstack)
 	{
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		Fragment old = getSupportFragmentManager().findFragmentByTag(tag);
-		if (old != null) {
-			transaction.remove(old);
-		}
-		transaction.add(container, fragment, tag);
-		if (backstack) {
-			transaction.addToBackStack(tag);
-		}
-		transaction.commit();
+		MainActivity.this.mainView.post(new Runnable(){
+			public void run(){
+				getSupportFragmentManager().executePendingTransactions();
+				if (tag.equals(FRAG_MAIN)){
+					CAN_GET_TABS = false;
+				}
+				FragmentTransaction		transaction = getSupportFragmentManager().beginTransaction();
+				Fragment old = getSupportFragmentManager().findFragmentByTag(tag);
+				if (old != null) {
+					transaction.remove(old);
+				}
+				transaction.add(container, fragment, tag);
+				if (backstack) {
+					transaction.addToBackStack(tag);
+				}
+				transaction.commit();
+
+				if (tag.equals(FRAG_MAIN)){
+					Log.d(TAG, "Removing tabs");
+					Fragment f = getSupportFragmentManager().findFragmentById(R.id.tab_container);
+					Log.d(TAG, f.getClass().toString());
+					if (f.getClass() != blankContainer.getClass()) {
+						tabContainer = blankContainer;
+						getSupportFragmentManager().beginTransaction()
+								.replace(R.id.tab_container, blankContainer, TAB_CONTAINER)
+								.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+								.commit();
+					}
+					f = getSupportFragmentManager().findFragmentById(R.id.tab_content);
+					if (f.getClass() != blankContent.getClass()) {
+						getSupportFragmentManager().beginTransaction()
+								.replace(R.id.tab_content, blankContent, TAB_CONTENT)
+								.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+								.commit();
+					}
+				}
+			}
+		});
 	}
 
 	public void searchModels(final String query, final String model, final boolean feed_mode)
 	{
-		String url = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/" + model;
+		String url = SchoolBusiness.TARGET + model;
 		String encodedUrl = null;
 		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
 				.getRequestQueue();
@@ -460,10 +540,9 @@ public class MainActivity extends FragmentActivity
 						ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model);
 						if (feed_mode){
 							FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-							//transaction.replace(R.id.event_feed_container, listItemFragment, "EventFeed");
 							transaction.commit();
 						} else {
-							swapFragment(listItemFragment, R.id.fragment_container, FRAG_MAIN, true);//FRAG_EVENT_LIST, true);
+							swapFragment(listItemFragment, R.id.fragment_container, FRAG_MAIN, true);
 						}
 					}
 				}, new Response.ErrorListener() {
@@ -502,7 +581,7 @@ public class MainActivity extends FragmentActivity
 
 
 	public void getModel(final int method, final String id, final String model, JSONObject obj, final Boolean backtrack){
-		String url = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/"+model+"/"+id;
+		String url = SchoolBusiness.TARGET + model + "/" + id;
 		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
 				.getRequestQueue();
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(method,url,obj,
@@ -534,6 +613,11 @@ public class MainActivity extends FragmentActivity
 									Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
 									findViewById(R.id.send_message_button).setClickable(true);
 								}
+								break;
+							case NOTIFICATIONS:
+								ListItemFragment notifications = ListItemFragment.newInstance(response, NOTIFICATIONS);
+								swapFragment(notifications, R.id.fragment_container, FRAG_MAIN, backtrack);
+								clearTabs();
 								break;
 							case EVENTS:
 								handleEventResponse(method, model, id, response, backtrack);
@@ -576,21 +660,26 @@ public class MainActivity extends FragmentActivity
 
 	public void handleEventResponse(int method, String model, String id, JSONObject response, Boolean backtrack){
 		EventViewFragment eventViewFragment;
+		/* Handle Tabs */
 		if (id.equals("my_events") || id.equals("confirmed") || id.equals("pending_events") || id.equals("pending_claims")){
-			ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model);
-			swapFragment(listItemFragment, R.id.tab_content, TAB_CONTENT, backtrack);
+			if (!CAN_GET_TABS){return;}
+			tabContent = ListItemFragment.newInstance(response, model);
+			swapFragment(tabContent, R.id.tab_content, TAB_CONTENT, false);
 			return;
 		}
 		try {
 			switch (method) {
+				/* Get an event */
 				case Request.Method.GET:
 					eventViewFragment = EventViewFragment.newInstance(response);
 					swapFragment(eventViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_EVENT, backtrack);
 					break;
+				/* Cancel an event */
 				case Request.Method.DELETE:
 					//getSupportFragmentManager().popBackStackImmediate();
 					onBackPressed();
 					break;
+				/* Update an event */
 				case Request.Method.PATCH:
 					if (response.getString("state").equals("0")) {
 						eventViewFragment = EventViewFragment.newInstance(response.getJSONObject("event"));
@@ -600,10 +689,11 @@ public class MainActivity extends FragmentActivity
 						Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
 					}
 					break;
+				/* Create or Claim an Event */
 				case Request.Method.POST:
 					JSONObject data;
+					/* Create an Event */
 					if (id.equals("create")) {
-						 //data = new JSONObject(response.getString("state"));
 
 						if (response.getString("state").equals("0")) {
 							Toast.makeText(getApplicationContext(),
@@ -617,7 +707,7 @@ public class MainActivity extends FragmentActivity
 							Toast.makeText(getApplicationContext(), "Failure to post event\n"+response.getString("messages"), Toast.LENGTH_LONG).show();
 							findViewById(R.id.post_event_button).setClickable(true);
 						}
-					} else { /* EVENT_CLAIM */
+					} else { /* Claim an Event */
 						if (response.getString("state").equals("0")){
 							Toast.makeText(getApplicationContext(),"Event Claimed", Toast.LENGTH_SHORT).show();
 							data = new JSONObject(response.getString("event"));
@@ -658,11 +748,14 @@ public class MainActivity extends FragmentActivity
 					e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 	}
+
 	public void handleSchoolResponse(int method, String id, JSONObject response, Boolean backtrack) {
 		if (id.contains("make_mine")){
+			Log.d(TAG, "Set School as Users");
 			getModel(Request.Method.GET, "profile", USERS, null, true);
 			return;
 		}
+		Log.d(TAG, "Getting School");
 		SchoolViewFragment schoolViewFragment = SchoolViewFragment.newInstance(response);
 		swapFragment(schoolViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_SCHOOL, backtrack);
 	}
@@ -700,10 +793,11 @@ public class MainActivity extends FragmentActivity
 		switch (method) {
 			case Request.Method.PUT:
 				try {
+					Log.d(TAG, "Posting User Profile");
 					JSONObject user = response.getJSONObject("user");
 					SchoolBusiness.updateProfile(user);
 					userViewFragment = UserViewFragment.newInstance(user);
-					swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_USER, backtrack);
+					swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				} catch (JSONException e) {
 					e.printStackTrace();
 					Toast.makeText(getApplicationContext(),
@@ -712,8 +806,9 @@ public class MainActivity extends FragmentActivity
 				}
 				break;
 			case Request.Method.GET:
+				Log.d(TAG, "Getting User Profile");
 				userViewFragment = UserViewFragment.newInstance(response);
-				swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_USER, backtrack);
+				swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				break;
 			case Request.Method.DELETE:
 				Log.d(TAG, "Logging user out");

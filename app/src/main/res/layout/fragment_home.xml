@@ -43,7 +43,7 @@
         <LinearLayout
             style="@style/LL_Divider">
         </LinearLayout>
-
+    </LinearLayout>
         <!--<FragmentTabHost-->
             <!--android:layout_width="fill_parent"-->
             <!--android:layout_height="fill_parent"-->
@@ -167,7 +167,7 @@
                 style="@style/LL_Divider">
             </LinearLayout>
         </LinearLayout>-->
-    </LinearLayout>
+
 
 
 

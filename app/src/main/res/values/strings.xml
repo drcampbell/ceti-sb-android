@@ -39,6 +39,11 @@
     <string name="blank"></string>
     <string name="title_activity_event_view">EventViewActivity</string>
 
+    <!-- role Strings -->
+    <string name="teacher">Teacher</string>
+    <string name="speaker">Speaker</string>
+    <string name="both">Both</string>
+
     <string name="welcome">Welcome to Events!</string>
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

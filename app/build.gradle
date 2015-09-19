@@ -11,11 +11,11 @@ android {
         }
     }
     compileSdkVersion 22
-    buildToolsVersion '20.0.0'
+    buildToolsVersion '22.0.1'
     defaultConfig {
         applicationId 'com.CETI_Android.android.school_business'
         minSdkVersion 16
-        targetSdkVersion 16
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
@@ -41,7 +41,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':volley')
     compile files('libs/gson-2.3.1.jar')
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.google.android.gms:play-services:7.5.+'
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.google.android.gms:play-services-gcm:7.8.0'
     compile 'com.loopj.android:android-async-http:1.4.5'
 }

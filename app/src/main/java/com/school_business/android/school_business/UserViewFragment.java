@@ -145,7 +145,11 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 			int[] resource = {R.id.tv_name, R.id.tv_location, R.id.tv_grades,R.id.tv_job,R.id.tv_business,R.id.tv_role,R.id.tv_bio};
 			String[] name = {"name", "school_name", "grades", "job_title", "business", "role", "biography"};
 			TextView tv;
-			view.findViewById(R.id.contact_user_button).setOnClickListener(this);
+			if (user_id.equals(SchoolBusiness.getUserAttr("id"))) {
+				view.findViewById(R.id.contact_user_button).setVisibility(View.GONE);
+			} else {
+				view.findViewById(R.id.contact_user_button).setOnClickListener(this);
+			}
 			if (response.getString("role").equals("Teacher")) {
 				((LinearLayout) view.findViewById(R.id.layout_user_business)).setVisibility(View.GONE);
 			} else if (response.getString("role").equals("Speaker")) {

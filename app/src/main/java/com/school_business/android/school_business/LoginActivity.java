@@ -1,7 +1,6 @@
 package com.school_business.android.school_business;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -49,7 +48,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    if (SchoolBusiness.loadLogin(getApplicationContext())) {
 		    saveLoginCheckBox.setChecked(true);
 		    saveLogin = true;
-		    Log.d(TAG, SchoolBusiness.getEmail()+" "+SchoolBusiness.getUserAuth());
 		    if (isValid(SchoolBusiness.getUserAuth())){
 				startMain();
 		    }
@@ -66,8 +64,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	}
 
     private void checkLogin() {
-
-		String url = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/users/sign_in";
+		String url = SchoolBusiness.TARGET + "users/sign_in";
 	    RequestQueue queue = NetworkVolley.getInstance(this.getApplicationContext())
 			                                .getRequestQueue();
 
@@ -86,7 +83,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 			new Response.Listener<JSONObject>() {
 				@Override
 				public void onResponse(JSONObject response){
-					Log.d(TAG+" JSON", "Response: " + response.toString());
 					SchoolBusiness.setProfile(response);
 					saveLogin();
 					startMain();

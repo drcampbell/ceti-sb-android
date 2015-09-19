@@ -131,16 +131,4 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 		public void onCreateTab(int tab);
 		public void clearTabs();
 	}
-
-//	void createTab(View view){
-//		tabHost = new FragmentTabHost(getActivity());//(FragmentTabHost) view.findViewById(android.R.id.tabhost);
-//
-//		tabHost.setup(getActivity(), getChildFragmentManager(), android.R.id.tabcontent);
-//
-//		tabHost.addTab(tabHost.newTabSpec("First Tab").setIndicator("All"), EventAllFragment.class, null);
-//		//TabHost.TabSpec tab2 = tabHost.newTabSpec("Second Tab");
-//		//TabHost.TabSpec tab3 = tabHost.newTabSpec("Third Tab");
-//
-//		tabHost.setCurrentTab(0);
-//	}
 }

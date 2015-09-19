@@ -28,13 +28,8 @@ public class LoginActivity extends Activity implements OnClickListener {
     private EditText userEmailText;
     private EditText userPasswordText;
     private CheckBox saveLoginCheckBox;
-	private SharedPreferences loginPreferences;
-	private SharedPreferences.Editor loginPrefsEditor;
-	private Boolean saveLogin = false;
 
-	private final static String OPT_NAME = "name";
-	private String user_auth = "";
-	private static final String TAG = "school_business";
+	private static final String TAG = "Login Activity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +42,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	    if (SchoolBusiness.loadLogin(getApplicationContext())) {
 		    saveLoginCheckBox.setChecked(true);
-		    saveLogin = true;
 		    if (isValid(SchoolBusiness.getUserAuth())){
 				startMain();
 		    }
@@ -76,10 +70,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    inner.put("password", password);
 	    HashMap<String, HashMap<String, String>> outer = new HashMap<String, HashMap<String, String>>();
 		outer.put("user", inner);
-	JSONObject obj = new JSONObject(outer);
+		JSONObject obj = new JSONObject(outer);
 
 
-    JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST,url,obj,
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST,url,obj,
 			new Response.Listener<JSONObject>() {
 				@Override
 				public void onResponse(JSONObject response){

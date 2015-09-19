@@ -215,7 +215,7 @@ public class MainActivity extends FragmentActivity
 		int id = item.getItemId();
 		switch (item.getItemId()){
 			case R.id.notifications:
-				getModel(Request.Method.GET, "", NOTIFICATIONS, null, true);
+				sendVolley(Request.Method.GET, "", NOTIFICATIONS, null, true);
 				return true;
 			case R.id.menu_home:
 				if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() != HomeFragment.class) {
@@ -225,15 +225,15 @@ public class MainActivity extends FragmentActivity
 				return true;
 			case R.id.menu_action_settings:
 				Log.d(TAG, "User selected get settings");
-				getModel(Request.Method.GET, "settings", USERS, null, true);
+				sendVolley(Request.Method.GET, "settings", USERS, null, true);
 				return true;
 			case R.id.menu_profile:
 				Log.d(TAG, "User selected get profile");
-				getModel(Request.Method.GET, "profile", USERS, null, true);
+				sendVolley(Request.Method.GET, "profile", USERS, null, true);
 				return true;
 			case R.id.menu_logout:
 				Log.d(TAG, "User selected Logout");
-				getModel(Request.Method.DELETE, "sign_out", USERS, null, false);
+				sendVolley(Request.Method.DELETE, "sign_out", USERS, null, false);
 				return true;
 		}
 
@@ -266,7 +266,7 @@ public class MainActivity extends FragmentActivity
 		}
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())){
 			String query = intent.getStringExtra(SearchManager.QUERY);
-			searchModels(query, searchModel, false);
+			sendSearchVolley(query, searchModel, false);
 		}
 	}
 
@@ -318,12 +318,12 @@ public class MainActivity extends FragmentActivity
 
 	public void onListItemSelected(String id, String model) {
 		Boolean backtrack = true;
-		getModel(Request.Method.GET, id, model, null, backtrack);
+		sendVolley(Request.Method.GET, id, model, null, backtrack);
 	}
 
 	public void onEventViewInteraction(String id, String model){
 		Boolean backtrack = true;
-		getModel(Request.Method.GET, id, model, null, backtrack);
+		sendVolley(Request.Method.GET, id, model, null, backtrack);
 	}
 
 	public void onSchoolViewInteraction(String id, String model){
@@ -332,7 +332,7 @@ public class MainActivity extends FragmentActivity
 
 	public void onUserViewInteraction(String id, String model){
 		Boolean backtrack = true;
-		getModel(Request.Method.GET, id, model, null, backtrack);
+		sendVolley(Request.Method.GET, id, model, null, backtrack);
 	}
 
 	public void onSearchInteraction(String model){
@@ -349,10 +349,10 @@ public class MainActivity extends FragmentActivity
 			if (edit) {
 				Log.d(TAG, event.toString());
 				String event_id = event.getString("id");
-				getModel(Request.Method.PATCH, event_id, EVENTS, event, true);
+				sendVolley(Request.Method.PATCH, event_id, EVENTS, event, true);
 			} else {
 				Log.d(TAG, event.toString());
-				getModel(Request.Method.POST, "create", EVENTS, event, true);
+				sendVolley(Request.Method.POST, "create", EVENTS, event, true);
 			}
 			//postEvent(event, E_Type.EVENT_CREATE);
 		} catch (JSONException e){
@@ -364,7 +364,7 @@ public class MainActivity extends FragmentActivity
 		try{
 			//JSONObject jsonObject = new JSONObject(event);
 			//postEvent(jsonObject, E_Type.EVENT_CLAIM);
-			getModel(Request.Method.POST, "claim_event", EVENTS, new JSONObject(event), true);
+			sendVolley(Request.Method.POST, "claim_event", EVENTS, new JSONObject(event), true);
 		} catch (JSONException e){
 
 		}
@@ -372,12 +372,12 @@ public class MainActivity extends FragmentActivity
 
 	public void getClaims(String id){
 		String res = "pending_claims?event_id="+id;
-		getModel(Request.Method.GET, res,CLAIMS, null,false);
+		sendVolley(Request.Method.GET, res, CLAIMS, null, false);
 	}
 
 	public void onAcceptClaim(String event_id, String claim_id){
 		String res = "teacher_confirm?event_id="+event_id+"&claim_id="+claim_id;
-		getModel(Request.Method.POST, res, CLAIMS, null, true);
+		sendVolley(Request.Method.POST, res, CLAIMS, null, true);
 	}
 
 	public void onRejectClaim(String event_id, String user_id){
@@ -392,7 +392,7 @@ public class MainActivity extends FragmentActivity
 
 	public void onDeleteEventPositiveClick(DialogFragment dialog){
 		dialog.dismiss();
-		getModel(Request.Method.DELETE, event_id, EVENTS, null, false);
+		sendVolley(Request.Method.DELETE, event_id, EVENTS, null, false);
 	}
 
 	public void onDeleteEventNegativeClick(DialogFragment dialog){
@@ -400,7 +400,7 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void makeMySchool(String id){
-		getModel(Request.Method.GET, "make_mine/" + id, SCHOOLS, null, true);
+		sendVolley(Request.Method.GET, "make_mine/" + id, SCHOOLS, null, true);
 	}
 
 	public void onCreateTab(int tab){
@@ -425,15 +425,15 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void onSaveAccount(JSONObject account){
-		getModel(Request.Method.PUT, "", "account", account, false);
+		sendVolley(Request.Method.PUT, "", "account", account, false);
 	}
 
 	public void onSaveProfile(JSONObject profile){
-		getModel(Request.Method.PUT, "", USERS, profile, false);
+		sendVolley(Request.Method.PUT, "", USERS, profile, false);
 	}
 
 	public void onSaveSettings(JSONObject settings){
-		getModel(Request.Method.PUT, "settings", USERS, settings, false);
+		sendVolley(Request.Method.PUT, "settings", USERS, settings, false);
 	}
 
 	public void onEventTabSelected(String tab){
@@ -446,7 +446,7 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void onSendMessage(String id, JSONObject message){
-		getModel(Request.Method.POST, id, "send_message", message, false);
+		sendVolley(Request.Method.POST, id, "send_message", message, false);
 	}
 
 	@Override
@@ -455,30 +455,30 @@ public class MainActivity extends FragmentActivity
 		switch (tab){
 			case "all":
 				mTab = 0;
-				getModel(Request.Method.GET, "my_events", EVENTS, null, false);
+				sendVolley(Request.Method.GET, "my_events", EVENTS, null, false);
 				break;
 			case "approval":
 				mTab = 1;
-				getModel(Request.Method.GET, "pending_events", EVENTS, null, false);
+				sendVolley(Request.Method.GET, "pending_events", EVENTS, null, false);
 				break;
 			case CLAIMS:
 				mTab = 2;
-				getModel(Request.Method.GET, "pending_claims", EVENTS, null, false);
+				sendVolley(Request.Method.GET, "pending_claims", EVENTS, null, false);
 				break;
 			case "confirmed":
 				mTab = 3;
-				getModel(Request.Method.GET, "confirmed", EVENTS, null, false);
+				sendVolley(Request.Method.GET, "confirmed", EVENTS, null, false);
 				break;
 			default:
 				break;
 		}
 	}
 
-	public void swapFragment(final Fragment fragment, final int container, final String tag, final Boolean backstack)
-	{
+	public void swapFragment(final Fragment fragment, final int container, final String tag, final Boolean backstack) {
 		MainActivity.this.mainView.post(new Runnable(){
 			public void run(){
 				getSupportFragmentManager().executePendingTransactions();
+
 				if (tag.equals(FRAG_MAIN)){
 					CAN_GET_TABS = false;
 				}
@@ -516,7 +516,7 @@ public class MainActivity extends FragmentActivity
 		});
 	}
 
-	public void searchModels(final String query, final String model, final boolean feed_mode)
+	public void sendSearchVolley(final String query, final String model, final boolean feed_mode)
 	{
 		String url = SchoolBusiness.TARGET + model;
 		String encodedUrl = null;
@@ -536,7 +536,7 @@ public class MainActivity extends FragmentActivity
 				new Response.Listener<JSONObject>() {
 					@Override
 					public void onResponse(JSONObject response){
-						Log.d("JSON", "Response: " + response.toString());
+						if(SchoolBusiness.DEBUG){Log.d("JSON", "Response: " + response.toString());}
 						ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model);
 						if (feed_mode){
 							FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -580,7 +580,7 @@ public class MainActivity extends FragmentActivity
 	}
 
 
-	public void getModel(final int method, final String id, final String model, JSONObject obj, final Boolean backtrack){
+	public void sendVolley(final int method, final String id, final String model, JSONObject obj, final Boolean backtrack){
 		String url = SchoolBusiness.TARGET + model + "/" + id;
 		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
 				.getRequestQueue();
@@ -588,7 +588,7 @@ public class MainActivity extends FragmentActivity
 				new Response.Listener<JSONObject>() {
 					@Override
 					public void onResponse(JSONObject response){
-						Log.d(TAG, "Response: " + response.toString());
+						if(SchoolBusiness.DEBUG){Log.d("JSON", "Response: " + response.toString());}
 						switch (model) {
 							case "account":
 								try {
@@ -701,7 +701,7 @@ public class MainActivity extends FragmentActivity
 							data = new JSONObject(response.getString("event"));
 
 							getSupportFragmentManager().popBackStackImmediate();
-							getModel(Request.Method.GET, data.getString("id"), EVENTS, null, backtrack);
+							sendVolley(Request.Method.GET, data.getString("id"), EVENTS, null, backtrack);
 						} else {
 							Log.d(TAG, response.getString("messages"));
 							Toast.makeText(getApplicationContext(), "Failure to post event\n"+response.getString("messages"), Toast.LENGTH_LONG).show();
@@ -711,7 +711,7 @@ public class MainActivity extends FragmentActivity
 						if (response.getString("state").equals("0")){
 							Toast.makeText(getApplicationContext(),"Event Claimed", Toast.LENGTH_SHORT).show();
 							data = new JSONObject(response.getString("event"));
-							getModel(Request.Method.GET, data.getString("id"), EVENTS, null, backtrack);
+							sendVolley(Request.Method.GET, data.getString("id"), EVENTS, null, backtrack);
 						}
 					}
 					break;
@@ -752,7 +752,7 @@ public class MainActivity extends FragmentActivity
 	public void handleSchoolResponse(int method, String id, JSONObject response, Boolean backtrack) {
 		if (id.contains("make_mine")){
 			Log.d(TAG, "Set School as Users");
-			getModel(Request.Method.GET, "profile", USERS, null, true);
+			sendVolley(Request.Method.GET, "profile", USERS, null, true);
 			return;
 		}
 		Log.d(TAG, "Getting School");

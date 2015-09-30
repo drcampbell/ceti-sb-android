@@ -103,4 +103,8 @@
     <item name="android:layout_marginTop">10dp</item>
     </style>
 
+    <style name="Badge">
+        <item name="android:background">@drawable/badge</item>
+    </style>
+
 </resources>

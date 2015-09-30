@@ -13,6 +13,14 @@
         android:id="@+id/tv_name"
 />
 
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/school_badge"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        style="@style/Badge"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"/>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"

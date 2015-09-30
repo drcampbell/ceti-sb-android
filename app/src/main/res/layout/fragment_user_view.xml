@@ -3,9 +3,6 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context="com.school_business.android.school_business.UserViewFragment">
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
     <LinearLayout
         android:id="@+id/layout_fragment_user"
         android:orientation="vertical"
@@ -91,7 +88,7 @@
                 android:id="@+id/tv_bio"
                 style="@style/TV_Style_Content"/>
         </LinearLayout>
-    </LinearLayout>
+
 
     <LinearLayout
         android:orientation="vertical"
@@ -111,6 +108,19 @@
                 android:onClick="onClick"
                 android:layout_weight="1"/>
         </LinearLayout>
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_gravity="center"
+            android:text="Event Feed"
+            android:id="@+id/textView3"/>
+
+        <LinearLayout
+            style="@style/LL_Divider">
+
+        </LinearLayout>
     </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </FrameLayout>

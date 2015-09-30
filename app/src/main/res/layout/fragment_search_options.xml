@@ -12,7 +12,11 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|top">
-
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search for: "/>
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,16 +43,16 @@
             android:onClick="onCheckboxClicked"
             />
 
-        <ToggleButton
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:text="Hide"
-            android:id="@+id/toggleButton"
-            android:clickable="true"
-            android:checked="true"
-            android:layout_marginLeft="20px"
-            android:button="@android:color/background_light"
-            android:background="#ffffffff"/>
+        <!--<ToggleButton-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:text="Hide"-->
+            <!--android:id="@+id/toggleButton"-->
+            <!--android:clickable="true"-->
+            <!--android:checked="true"-->
+            <!--android:layout_marginLeft="20px"-->
+            <!--android:button="@android:color/background_light"-->
+            <!--android:background="#ffffffff"/>-->
 
     </LinearLayout>
     <LinearLayout

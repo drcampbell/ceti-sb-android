@@ -29,9 +29,9 @@
 
     <uses-permission android:name="com.school_business.android.school_business.permission.C2D_MESSAGE" />
 
-    <android:uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -68,9 +68,7 @@
             </intent-filter>
         </service>
 
-        <meta-data
-            android:name="android.app.default_searchable"
-            android:value=".EventActivity" />
+
 
         <activity
             android:name=".LoginActivity"
@@ -99,14 +97,16 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_event"
             android:launchMode="singleTop" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable"
-                android:value=".EventActivity" />
+                android:resource="@xml/searchable"/>
         </activity>
     </application>
 

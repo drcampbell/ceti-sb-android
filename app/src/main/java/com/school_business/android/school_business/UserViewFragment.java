@@ -123,6 +123,7 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 	public interface OnUserViewInteractionListener {
 		// TODO: Update argument type and name
 		public void onUserViewInteraction(String id, String model);
+		public void createUserFeed(JSONObject response);
 		public void onContactUser(String id, String name);
 	}
 
@@ -140,8 +141,9 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 			JSONObject response = new JSONObject(str_response);
 			String str;
 			String link = "";
-			user_id = response.getString("id");
-			name = response.getString("name");
+			JSONObject user = response.getJSONObject("user");
+			user_id = user.getString("id");
+			name = user.getString("name");
 			int[] resource = {R.id.tv_name, R.id.tv_location, R.id.tv_grades,R.id.tv_job,R.id.tv_business,R.id.tv_role,R.id.tv_bio};
 			String[] name = {"name", "school_name", "grades", "job_title", "business", "role", "biography"};
 			TextView tv;
@@ -150,9 +152,9 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 			} else {
 				view.findViewById(R.id.contact_user_button).setOnClickListener(this);
 			}
-			if (response.getString("role").equals("Teacher")) {
+			if (user.getString("role").equals("Teacher")) {
 				((LinearLayout) view.findViewById(R.id.layout_user_business)).setVisibility(View.GONE);
-			} else if (response.getString("role").equals("Speaker")) {
+			} else if (user.getString("role").equals("Speaker")) {
 				((LinearLayout) view.findViewById(R.id.layout_user_teacher)).setVisibility(View.GONE);
 			}
 			for (int i = 0; i < resource.length; i++) {
@@ -160,17 +162,18 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 
 				link = get_id(resource[i]);
 				if (!link.equals("")) {
-					link = response.getString(link);
+					link = user.getString(link);
 					tv.setOnClickListener(UserViewFragment.this);
 					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
 				} else {
 					link = "0";
 				}
 				str = name[i];
-				str = SchoolBusiness.toDisplayCase(response.getString(str));
+				str = SchoolBusiness.toDisplayCase(user.getString(str));
 				tv.setTag(link);
 				tv.setText(str);
 			}
+			mListener.createUserFeed(response);
 		} catch (JSONException e) {
 			e.printStackTrace();
 			Toast.makeText(getActivity().getApplicationContext(),

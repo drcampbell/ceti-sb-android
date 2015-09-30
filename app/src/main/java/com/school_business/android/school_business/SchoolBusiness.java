@@ -19,6 +19,7 @@ import java.util.Iterator;
 public class SchoolBusiness extends Application{
 	public static final Boolean DEBUG = true;
 	public static final String TARGET = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/";
+	public static final String AWS_S3 = "https://s3-us-west-1.amazonaws.com/ceti-sb/badges/";
 	public static final String NONE = "None";
 	public static final String TEACHER = "Teacher";
 	public static final String SPEAKER = "Speaker";

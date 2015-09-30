@@ -27,11 +27,9 @@ public class NetworkVolley {
 	    if (mRequestQueue != null){
 		    Log.d("VOLLEY", "Request Queue isn't NULL");
 	    }
-        mImageLoader = new ImageLoader(mRequestQueue,
-                new ImageLoader.ImageCache() {
-            private final LruCache<String, Bitmap>
-                    cache = new LruCache<String, Bitmap>(20);
 
+        mImageLoader = new ImageLoader(mRequestQueue, new ImageLoader.ImageCache() {
+            private final LruCache<String, Bitmap> cache = new LruCache<String, Bitmap>(20);
             @Override
             public Bitmap getBitmap(String url) {
                 return cache.get(url);

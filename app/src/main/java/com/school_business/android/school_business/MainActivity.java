@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -14,6 +15,7 @@ import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,10 +31,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.NetworkImageView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,11 +73,11 @@ public class MainActivity extends FragmentActivity
 	private final String CLAIMS = "claims";
 	private final String SCHOOLS = "schools";
 	private final String NOTIFICATIONS = "notifications";
-	private String searchModel = EVENTS;
+	private String searchModel = "events";
 
-	private final String TEACHER = getString(R.string.teacher);
-	private final String SPEAKER = getString(R.string.speaker);
-	private final String BOTH = getString(R.string.both);
+	private final String TEACHER = "Teacher";
+	private final String SPEAKER = "Speaker";
+	private final String BOTH = "BOTH";
 
 	private String FRAG_SEARCH = "Event";
 	private String FRAG_MAIN = "Main";
@@ -88,7 +93,10 @@ public class MainActivity extends FragmentActivity
 	private Fragment tabContainer;
 	private Fragment blankContent;
 	private Fragment blankContainer;
+	private Fragment blankSearch;
+	private SearchOptionsFragment searchOptionsFragment;
 	private View mainView;
+	private ImageLoader imageLoader;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +119,7 @@ public class MainActivity extends FragmentActivity
 			}
 		};
 
+		/* Start Registration Service */
 		if (checkPlayServices()){
 			Intent intent = new Intent(this, RegistrationIntentService.class);
 			getApplicationContext().startService(intent);
@@ -124,13 +133,17 @@ public class MainActivity extends FragmentActivity
 			tabContainer = new BlankFragment();
 			blankContainer = new BlankFragment();
 			blankContent = new BlankFragment();
+			blankSearch = new BlankFragment();
 			HomeFragment homeFragment = new HomeFragment();
-			SearchOptionsFragment searchOptionsFragment = new SearchOptionsFragment();
+			searchOptionsFragment = new SearchOptionsFragment();
 			homeFragment.setArguments(getIntent().getExtras());
 
 			/* Add the Search Options Container Fragment */
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.search_options_container, searchOptionsFragment, "Search")
+					.commit();
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.search_options_container, blankSearch, "Search").hide(searchOptionsFragment)
 					.commit();
 			/* Add Tab Container */
 			getSupportFragmentManager().beginTransaction()
@@ -199,11 +212,37 @@ public class MainActivity extends FragmentActivity
 
 		SearchManager searchManager =
 				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		SearchView searchView =
+		final SearchView searchView =
 				(SearchView) menu.findItem(R.id.event_search).getActionView();
 		searchView.setSearchableInfo(
 				searchManager.getSearchableInfo(getComponentName()));
-
+		searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener(){
+			@Override
+			public void onFocusChange(View view, boolean hasFocus){
+				if(!hasFocus){
+					if (searchView != null){
+						if (!searchView.isIconified()){
+							Log.d(TAG, "Sanity");
+							getSupportFragmentManager().beginTransaction()
+								.hide(searchOptionsFragment)
+								.show(blankSearch)
+								.commit();
+							searchView.setIconified(true);
+						}
+					}
+				}
+			}
+		});
+		searchView.setOnSearchClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Log.d(TAG, "SearchView is iconified: " + searchView.isIconified());
+				getSupportFragmentManager().beginTransaction()
+						.show(searchOptionsFragment)
+						.hide(blankSearch)
+						.commit();
+			}
+		});
 		return true;
 	}
 
@@ -242,10 +281,10 @@ public class MainActivity extends FragmentActivity
 	}
 
 	@Override
-	public boolean onSearchRequested(){
+	public boolean onSearchRequested() {
 		Log.d(TAG, "onSearchRequested called");
-		SearchOptionsFragment searchOptionsFragment = new SearchOptionsFragment();
-		swapFragment(searchOptionsFragment, R.id.search_options_container, FRAG_SEARCH, true);
+		//SearchOptionsFragment searchOptionsFragment = new SearchOptionsFragment();
+		swapFragment(searchOptionsFragment, R.id.search_options_container, FRAG_SEARCH, false);
 		//setOnDismissListener(SearchManager.OnDismissListener listener);
 		return super.onSearchRequested();
 	}
@@ -253,7 +292,7 @@ public class MainActivity extends FragmentActivity
 	@Override
 	public void onDismiss(){
 		BlankFragment blankFragment = new BlankFragment();
-		swapFragment(blankFragment, R.id.search_options_container, FRAG_SEARCH, true);
+		swapFragment(blankFragment, R.id.search_options_container, FRAG_SEARCH, false);
 	}
 
 	private void handleIntent(Intent intent){
@@ -399,6 +438,18 @@ public class MainActivity extends FragmentActivity
 		dialog.dismiss();
 	}
 
+	public void createSchoolFeed(View view, JSONObject response){
+		try {
+			imageLoader = NetworkVolley.getInstance(getApplicationContext()).getImageLoader();
+			NetworkImageView badge = (NetworkImageView) view.findViewById(R.id.school_badge);
+			badge.setImageUrl(SchoolBusiness.AWS_S3 + response.getString("badge_url"), imageLoader);
+		} catch (JSONException e){
+			;
+		}
+		ListItemFragment event_list = ListItemFragment.newInstance(response, "events");
+		swapFragment(event_list, R.id.tab_content, TAB_CONTENT, false);
+	}
+
 	public void makeMySchool(String id){
 		sendVolley(Request.Method.GET, "make_mine/" + id, SCHOOLS, null, true);
 	}
@@ -440,6 +491,11 @@ public class MainActivity extends FragmentActivity
 
 	}
 
+	public void createUserFeed(JSONObject response){
+		ListItemFragment event_list = ListItemFragment.newInstance(response, "events");
+		swapFragment(event_list, R.id.tab_content, TAB_CONTENT, false);
+	}
+
 	public void onContactUser(String id, String name){
 		MessageFragment messageFragment = MessageFragment.newInstance(id, name);
 		swapFragment(messageFragment, R.id.fragment_container, FRAG_MAIN, true);
@@ -475,14 +531,14 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void swapFragment(final Fragment fragment, final int container, final String tag, final Boolean backstack) {
-		MainActivity.this.mainView.post(new Runnable(){
-			public void run(){
+		MainActivity.this.mainView.post(new Runnable() {
+			public void run() {
 				getSupportFragmentManager().executePendingTransactions();
 
-				if (tag.equals(FRAG_MAIN)){
+				if (tag.equals(FRAG_MAIN)) {
 					CAN_GET_TABS = false;
 				}
-				FragmentTransaction		transaction = getSupportFragmentManager().beginTransaction();
+				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 				Fragment old = getSupportFragmentManager().findFragmentByTag(tag);
 				if (old != null) {
 					transaction.remove(old);
@@ -493,7 +549,7 @@ public class MainActivity extends FragmentActivity
 				}
 				transaction.commit();
 
-				if (tag.equals(FRAG_MAIN)){
+				if (tag.equals(FRAG_MAIN)) {
 					Log.d(TAG, "Removing tabs");
 					Fragment f = getSupportFragmentManager().findFragmentById(R.id.tab_container);
 					Log.d(TAG, f.getClass().toString());
@@ -756,9 +812,10 @@ public class MainActivity extends FragmentActivity
 			return;
 		}
 		Log.d(TAG, "Getting School");
-		SchoolViewFragment schoolViewFragment = SchoolViewFragment.newInstance(response);
-		swapFragment(schoolViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_SCHOOL, backtrack);
+			SchoolViewFragment schoolViewFragment = SchoolViewFragment.newInstance(response);
+			swapFragment(schoolViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 	}
+
 
 	public void handleUserResponse(int method, String id, JSONObject response, Boolean backtrack) {
 		switch (id) {

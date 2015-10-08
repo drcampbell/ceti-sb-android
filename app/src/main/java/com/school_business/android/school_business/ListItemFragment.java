@@ -99,7 +99,8 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 					case EVENTS:
 						ids.add   (obj.getString(key[0]));
 						titles.add(obj.getString(key[1]));
-						starts.add(SchoolBusiness.parseTime(obj.getString(key[2])));
+						//starts.add(SchoolBusiness.parseTime(obj.getString(key[2])));
+						starts.add(obj.getString(key[2]));
 						break;
 					case NOTIFICATIONS:
 						ids.add(obj.getString("event_id"));

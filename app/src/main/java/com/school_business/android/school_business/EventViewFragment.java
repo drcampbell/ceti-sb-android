@@ -225,7 +225,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				}
 				str = name[i];
 				if (str.contains("event")) {
-					str = SchoolBusiness.parseTime(response.getString(str));
+					str = response.getString(str);
 				} else {//if (str.equals("school_name")) {
 					str = SchoolBusiness.toDisplayCase(response.getString(str));
 				}

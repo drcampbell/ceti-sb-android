@@ -553,7 +553,7 @@ public class MainActivity extends FragmentActivity
 					Log.d(TAG, "Removing tabs");
 					Fragment f = getSupportFragmentManager().findFragmentById(R.id.tab_container);
 					Log.d(TAG, f.getClass().toString());
-					if (f.getClass() != blankContainer.getClass()) {
+					if (f != null && f.getClass() != blankContainer.getClass()) {
 						tabContainer = blankContainer;
 						getSupportFragmentManager().beginTransaction()
 								.replace(R.id.tab_container, blankContainer, TAB_CONTAINER)
@@ -853,7 +853,7 @@ public class MainActivity extends FragmentActivity
 					Log.d(TAG, "Posting User Profile");
 					JSONObject user = response.getJSONObject("user");
 					SchoolBusiness.updateProfile(user);
-					userViewFragment = UserViewFragment.newInstance(user);
+					userViewFragment = UserViewFragment.newInstance(response);
 					swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				} catch (JSONException e) {
 					e.printStackTrace();

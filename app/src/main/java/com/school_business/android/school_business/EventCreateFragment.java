@@ -11,9 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -22,9 +24,11 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +51,8 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	private String mId;
 	private OnEventCreatorListener mListener;
 
+	Spinner mSpinner;
+	ArrayAdapter<String> idAdapter;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -168,6 +174,8 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				data = (EditText) getActivity().findViewById(resource[i]);
 				event.put(headers[i], data.getText().toString());
 			}
+			event.put("time_zone", mSpinner.getSelectedItem());
+			Log.d("FJADSFJAK", event.getString("time_zone"));
 			event.put("event_start", event_start);
 			event.put("event_end", event_end);
 			event.put("loc_id", SchoolBusiness.getUserAttr("school_id"));
@@ -210,7 +218,11 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				x[i] = (x[i]-1) % 12;
 			}
 			if (cal_res[i] == Calendar.HOUR_OF_DAY && ((CheckBox) view.findViewById(cb)).isChecked()){
-				x[i] = (x[i] + 12) % 24;
+				if (x[i] != 12) {
+					x[i] = (x[i] + 12) % 24;
+				}
+			} else if (cal_res[i] == Calendar.HOUR_OF_DAY && x[i] == 12){
+				x[i] = 0;
 			}
 		}
 		cal.set(x[0],x[1],x[2],x[3],x[4],0);
@@ -248,6 +260,24 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		Date date;
 		Calendar cal = Calendar.getInstance();
 
+		/* Timezone spinna */
+		//populate spinner with all timezones
+
+		mSpinner = (Spinner) view.findViewById(R.id.TimeZoneEntry);
+		String[] idArray = SchoolBusiness.time_zones; //TimeZone.getAvailableIDs();
+		idAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item,
+				idArray);
+		idAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mSpinner.setAdapter(idAdapter);
+
+		// now set the spinner to default timezone from the time zone settings
+//		for(int i = 0; i < idAdapter.getCount(); i++) {
+//			if(idAdapter.getItem(i).equals(TimeZone.getDefault().getID())) {
+//				mSpinner.setSelection(i);
+//			}
+//		}
+		mSpinner.setSelection(0);
+		/* Timezone spinna */
 		if (mEdit){
 			try {
 				JSONObject event = new JSONObject(mEvent);
@@ -348,4 +378,8 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		}
 		return false;
 	}
+
+
+
+
 }

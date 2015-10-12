@@ -52,6 +52,11 @@
                 style="@style/ET_Style"
                 android:id="@+id/ET_tags"/>
 
+            <Spinner
+                android:id="@+id/TimeZoneEntry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
             <TextView
                 style="@style/TV_Style_Title"
                 android:textAppearance="?android:attr/textAppearanceLarge"

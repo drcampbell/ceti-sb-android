@@ -37,6 +37,7 @@ public class SchoolBusiness extends Application{
 	private static SharedPreferences loginPreferences;
 	private static SharedPreferences.Editor loginPrefsEditor;
 
+	public static final String[] time_zones = {"Eastern Time (US & Canada)"};
 	@Override
 	public void onCreate(){
 		super.onCreate();

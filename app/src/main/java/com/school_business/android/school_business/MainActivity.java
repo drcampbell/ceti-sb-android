@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
@@ -476,15 +477,15 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void onSaveAccount(JSONObject account){
-		sendVolley(Request.Method.PUT, "", "account", account, false);
+		sendVolley(Request.Method.PUT, "", "account", account, true);
 	}
 
 	public void onSaveProfile(JSONObject profile){
-		sendVolley(Request.Method.PUT, "", USERS, profile, false);
+		sendVolley(Request.Method.PUT, "", USERS, profile, true);
 	}
 
 	public void onSaveSettings(JSONObject settings){
-		sendVolley(Request.Method.PUT, "settings", USERS, settings, false);
+		sendVolley(Request.Method.PUT, "settings", USERS, settings, true);
 	}
 
 	public void onEventTabSelected(String tab){
@@ -648,6 +649,8 @@ public class MainActivity extends FragmentActivity
 						switch (model) {
 							case "account":
 								try {
+									getSupportFragmentManager().popBackStack();
+									getSupportFragmentManager().popBackStack();
 									JSONObject profile = response.getJSONObject("user");
 									handleUserResponse(method, "profile", profile, backtrack);
 								} catch (JSONException e) {
@@ -734,10 +737,13 @@ public class MainActivity extends FragmentActivity
 				case Request.Method.DELETE:
 					//getSupportFragmentManager().popBackStackImmediate();
 					onBackPressed();
+
 					break;
 				/* Update an event */
 				case Request.Method.PATCH:
 					if (response.getString("state").equals("0")) {
+						getSupportFragmentManager().popBackStack();
+						getSupportFragmentManager().popBackStack();
 						eventViewFragment = EventViewFragment.newInstance(response.getJSONObject("event"));
 						swapFragment(eventViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_EVENT, backtrack);
 					} else {
@@ -767,7 +773,9 @@ public class MainActivity extends FragmentActivity
 						if (response.getString("state").equals("0")){
 							Toast.makeText(getApplicationContext(),"Event Claimed", Toast.LENGTH_SHORT).show();
 							data = new JSONObject(response.getString("event"));
-							sendVolley(Request.Method.GET, data.getString("id"), EVENTS, null, backtrack);
+							getSupportFragmentManager().popBackStack();
+							//getSupportFragmentManager().popBackStack();
+							sendVolley(Request.Method.GET, data.getString("id"), EVENTS, null, true);
 						}
 					}
 					break;
@@ -794,6 +802,8 @@ public class MainActivity extends FragmentActivity
 				case Request.Method.POST:
 					if (response.getString("status").equals("0")) {
 						JSONObject event = response.getJSONObject("event");
+						getSupportFragmentManager().popBackStack();
+						getSupportFragmentManager().popBackStack();
 						EventViewFragment eventViewFragment = EventViewFragment.newInstance(event);
 						swapFragment(eventViewFragment, R.id.fragment_container, FRAG_MAIN, true);//FRAG_EVENT, true);
 					}
@@ -835,8 +845,8 @@ public class MainActivity extends FragmentActivity
 					case Request.Method.PUT:
 						Log.d(TAG, "Posting User Settings");
 
-						HomeFragment homeFragment = new HomeFragment();
-						swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
+						//HomeFragment homeFragment = new HomeFragment();
+						//swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 						Toast.makeText(getApplicationContext(),
 								"Settings Saved",
 								Toast.LENGTH_LONG).show();
@@ -853,8 +863,10 @@ public class MainActivity extends FragmentActivity
 					Log.d(TAG, "Posting User Profile");
 					JSONObject user = response.getJSONObject("user");
 					SchoolBusiness.updateProfile(user);
-					userViewFragment = UserViewFragment.newInstance(response);
-					swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
+					getSupportFragmentManager().popBackStack();
+					getSupportFragmentManager().popBackStack();
+					ProfileFragment profileFragment = ProfileFragment.newInstance(response);
+					swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				} catch (JSONException e) {
 					e.printStackTrace();
 					Toast.makeText(getApplicationContext(),

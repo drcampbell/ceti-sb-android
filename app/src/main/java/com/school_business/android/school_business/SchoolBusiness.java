@@ -80,6 +80,7 @@ public class SchoolBusiness extends Application{
 			if (profile != null) {
 				return profile.getString(attribute);
 			} else {
+				Log.d(TAG, "Failed to get user attribute " + attribute);
 				return "None";
 			}
 		}  catch (JSONException e) {

@@ -33,6 +33,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+	    Log.d(TAG, "Login Activity Created");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 

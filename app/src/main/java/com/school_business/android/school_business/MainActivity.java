@@ -98,6 +98,9 @@ public class MainActivity extends FragmentActivity
 	private SearchOptionsFragment searchOptionsFragment;
 	private View mainView;
 	private ImageLoader imageLoader;
+	private SearchView searchView;
+	private String restore_model;
+	private String restore_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +108,7 @@ public class MainActivity extends FragmentActivity
 		setContentView(R.layout.activity_main);
 		mainView = getWindow().getDecorView().getRootView();
 		handleIntent(getIntent());
-
+		SchoolBusiness.loadLogin(this);
 		/* Get GCM Token */
 		mRegistrationBroadcastReceiver = new BroadcastReceiver(){
 			@Override
@@ -183,10 +186,16 @@ public class MainActivity extends FragmentActivity
 
 	@Override
 	protected void onResume(){
-		LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+		if (SchoolBusiness.loadLogin(getApplicationContext())){
+
+			LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
 				new IntentFilter(SchoolBusiness.REGISTRATION_COMPLETE));
-		if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
-			onCreateTab(mTab);
+			if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
+				onCreateTab(mTab);
+			}
+		} else {
+			Intent intent = new Intent(this, LoginActivity.class);
+			startActivity(intent);
 		}
 		super.onResume();
 	}
@@ -196,6 +205,9 @@ public class MainActivity extends FragmentActivity
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
 		if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
 			clearTabs();
+		}
+		if(SchoolBusiness.getProfile() != null) {
+			SchoolBusiness.saveLogin(getApplicationContext());
 		}
 		super.onPause();
 	}
@@ -213,21 +225,21 @@ public class MainActivity extends FragmentActivity
 
 		SearchManager searchManager =
 				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		final SearchView searchView =
-				(SearchView) menu.findItem(R.id.event_search).getActionView();
+
+		searchView = (SearchView) menu.findItem(R.id.event_search).getActionView();
 		searchView.setSearchableInfo(
 				searchManager.getSearchableInfo(getComponentName()));
-		searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener(){
+		searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
-			public void onFocusChange(View view, boolean hasFocus){
-				if(!hasFocus){
-					if (searchView != null){
-						if (!searchView.isIconified()){
+			public void onFocusChange(View view, boolean hasFocus) {
+				if (!hasFocus) {
+					if (searchView != null) {
+						if (!searchView.isIconified()) {
 							Log.d(TAG, "Sanity");
 							getSupportFragmentManager().beginTransaction()
-								.hide(searchOptionsFragment)
-								.show(blankSearch)
-								.commit();
+									.hide(searchOptionsFragment)
+									.show(blankSearch)
+									.commit();
 							searchView.setIconified(true);
 						}
 					}
@@ -428,6 +440,7 @@ public class MainActivity extends FragmentActivity
 		DeleteEventDialogFragment fragment = new DeleteEventDialogFragment();
 		fragment.show(getFragmentManager(), "delete_event");
 		event_id = id;
+
 	}
 
 	public void onDeleteEventPositiveClick(DialogFragment dialog){
@@ -472,6 +485,18 @@ public class MainActivity extends FragmentActivity
 		swapFragment(profileEditFragment, R.id.fragment_container, FRAG_MAIN, true);
 	}
 
+	public void onSaveProfile(JSONObject profile){
+		sendVolley(Request.Method.PUT, "", USERS, profile, true);
+	}
+
+	public void onFindMySchool(){
+		searchView.setIconified(false);
+		((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(true);
+		searchModel = SCHOOLS;
+		((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
+		((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
+	}
+
 	public void onEditAccount(){
 		swapFragment(new AccountEditFragment(), R.id.fragment_container, FRAG_MAIN, true);
 	}
@@ -480,9 +505,7 @@ public class MainActivity extends FragmentActivity
 		sendVolley(Request.Method.PUT, "", "account", account, true);
 	}
 
-	public void onSaveProfile(JSONObject profile){
-		sendVolley(Request.Method.PUT, "", USERS, profile, true);
-	}
+
 
 	public void onSaveSettings(JSONObject settings){
 		sendVolley(Request.Method.PUT, "settings", USERS, settings, true);
@@ -535,7 +558,7 @@ public class MainActivity extends FragmentActivity
 		MainActivity.this.mainView.post(new Runnable() {
 			public void run() {
 				getSupportFragmentManager().executePendingTransactions();
-
+				/* */
 				if (tag.equals(FRAG_MAIN)) {
 					CAN_GET_TABS = false;
 				}
@@ -553,8 +576,9 @@ public class MainActivity extends FragmentActivity
 				if (tag.equals(FRAG_MAIN)) {
 					Log.d(TAG, "Removing tabs");
 					Fragment f = getSupportFragmentManager().findFragmentById(R.id.tab_container);
-					Log.d(TAG, f.getClass().toString());
-					if (f != null && f.getClass() != blankContainer.getClass()) {
+					//Log.d(TAG, f.getClass().toString());
+					if ((f != null) && (!f.getClass().equals(BlankFragment.class))) {
+						Log.d(TAG, f.getClass().toString());
 						tabContainer = blankContainer;
 						getSupportFragmentManager().beginTransaction()
 								.replace(R.id.tab_container, blankContainer, TAB_CONTAINER)
@@ -562,7 +586,7 @@ public class MainActivity extends FragmentActivity
 								.commit();
 					}
 					f = getSupportFragmentManager().findFragmentById(R.id.tab_content);
-					if (f.getClass() != blankContent.getClass()) {
+					if (!f.getClass().equals(BlankFragment.class)) {
 						getSupportFragmentManager().beginTransaction()
 								.replace(R.id.tab_content, blankContent, TAB_CONTENT)
 								.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
@@ -661,8 +685,7 @@ public class MainActivity extends FragmentActivity
 							case "send_message":
 								try {
 									if (response.getString("state").equals("0")){
-										HomeFragment homeFragment = new HomeFragment();
-										swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, false);
+										onBackPressed();
 										Toast.makeText(getApplicationContext(), "Message Sent Successfully", Toast.LENGTH_LONG).show();
 									} else {
 										findViewById(R.id.send_message_button).setClickable(true);
@@ -735,9 +758,11 @@ public class MainActivity extends FragmentActivity
 					break;
 				/* Cancel an event */
 				case Request.Method.DELETE:
-					//getSupportFragmentManager().popBackStackImmediate();
-					onBackPressed();
 
+					Intent intent = new Intent(this, LoginActivity.class);
+					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(intent);
+					finish();
 					break;
 				/* Update an event */
 				case Request.Method.PATCH:
@@ -790,13 +815,16 @@ public class MainActivity extends FragmentActivity
 		try {
 			switch (method) {
 				case Request.Method.GET:
-					if (id.contains("pending_claims")) {
-						ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model);
-						swapFragment(listItemFragment, R.id.claim_container, FRAG_CLAIM, false);
-					} else {
-						findViewById(R.id.layout_event_buttons).setVisibility(View.GONE);
-						ClaimViewFragment claimViewFragment = ClaimViewFragment.newInstance(response);
-						swapFragment(claimViewFragment, R.id.claim_container, FRAG_CLAIM, true);
+					if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN)
+									.getClass().equals(EventViewFragment.class)) {
+						if (id.contains("pending_claims")) {
+							ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model);
+							swapFragment(listItemFragment, R.id.claim_container, FRAG_CLAIM, false);
+						} else {
+							findViewById(R.id.layout_event_buttons).setVisibility(View.GONE);
+							ClaimViewFragment claimViewFragment = ClaimViewFragment.newInstance(response);
+							swapFragment(claimViewFragment, R.id.claim_container, FRAG_CLAIM, true);
+						}
 					}
 					break;
 				case Request.Method.POST:
@@ -863,8 +891,8 @@ public class MainActivity extends FragmentActivity
 					Log.d(TAG, "Posting User Profile");
 					JSONObject user = response.getJSONObject("user");
 					SchoolBusiness.updateProfile(user);
-					getSupportFragmentManager().popBackStack();
-					getSupportFragmentManager().popBackStack();
+					onBackPressed();
+					onBackPressed();
 					ProfileFragment profileFragment = ProfileFragment.newInstance(response);
 					swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				} catch (JSONException e) {

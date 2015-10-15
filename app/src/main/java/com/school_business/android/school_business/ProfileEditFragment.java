@@ -105,6 +105,9 @@ public class ProfileEditFragment extends Fragment implements View.OnClickListene
 			case R.id.save_profile_button:
 				mListener.onSaveProfile(collectProfile());
 				break;
+			case R.id.find_school_button:
+				mListener.onFindMySchool();
+				break;
 		}
 	}
 	/**
@@ -120,9 +123,11 @@ public class ProfileEditFragment extends Fragment implements View.OnClickListene
 	public interface OnProfileEditListener {
 		// TODO: Update argument type and name
 		public void onSaveProfile(JSONObject profile);
+		public void onFindMySchool();
 	}
 
 	public void renderProfile(View view){
+		((Button) view.findViewById(R.id.find_school_button)).setOnClickListener(ProfileEditFragment.this);
 		((Button) view.findViewById(R.id.save_profile_button)).setOnClickListener(ProfileEditFragment.this);
 		JSONObject profile = SchoolBusiness.getProfile();
 		try {

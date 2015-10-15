@@ -92,7 +92,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 			}
 			//mParam1 = getArguments().getString(JSON_RESPONSE);
 			//mParam2 = getArguments().getString(ARG_PARAM2);
-			if (displayClaims && event_owner == SchoolBusiness.getUserAttr("id")) {
+			if (displayClaims && event_owner.equals(SchoolBusiness.getUserAttr("id"))) {
 				mListener.getClaims(id);
 			} else {
 				view.findViewById(R.id.ll_claims).setVisibility(View.GONE);

@@ -12,7 +12,8 @@
             android:id="@+id/tv_name"
             android:text="Name "
             style="@style/TV_Style_Title"/>
-
+        <LinearLayout
+            style="@style/LL_Divider"/>
         <LinearLayout
             android:id="@+id/layout_user_teacher"
             android:layout_width="match_parent"
@@ -118,9 +119,7 @@
             android:id="@+id/textView3"/>
 
         <LinearLayout
-            style="@style/LL_Divider">
-
-        </LinearLayout>
+            style="@style/LL_Divider"/>
     </LinearLayout>
     </LinearLayout>
 </FrameLayout>

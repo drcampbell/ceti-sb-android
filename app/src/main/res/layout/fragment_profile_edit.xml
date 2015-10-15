@@ -143,6 +143,7 @@
                     style="@style/Button"
                     android:text="Find My School"
                     android:id="@+id/find_school_button"
+                    android:onClick="onClick"
                     android:layout_weight="1"/>
                 <!--android:onClick="onClick"-->
             </LinearLayout>

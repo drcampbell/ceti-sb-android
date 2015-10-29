@@ -7,16 +7,13 @@ import android.content.SharedPreferences;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,12 +35,12 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class MainActivity extends FragmentActivity
@@ -52,18 +49,20 @@ public class MainActivity extends FragmentActivity
 		EventCreateFragment.OnEventCreatorListener,
 		SchoolViewFragment.OnSchoolViewInteractionListener,
 		UserViewFragment.OnUserViewInteractionListener,
+		UserProfileFragment.OnUserProfileListener,
 		ClaimViewFragment.OnClaimViewInteractionListener,
 		SearchOptionsFragment.OnSearchInteractionListener,
 		HomeFragment.OnWelcomeInteractionListener,
 		SearchManager.OnDismissListener,
 		DeleteEventDialogFragment.DeleteEventDialogListener,
-		EventTabFragment.OnEventTabListener,
+		TabFragment.OnEventTabListener,
 		FragmentTabHost.OnTabChangeListener,
 		ProfileFragment.OnProfileInteractionListener,
 		ProfileEditFragment.OnProfileEditListener,
 		AccountEditFragment.OnEditAccountListener,
 		SettingsFragment.OnSettingsListener,
-		MessageFragment.OnMessageListener
+		MessageFragment.OnMessageListener,
+		AwardBadgeFragment.AwardBadgeListener
 {
 
 	private final String TAG = "Event";
@@ -97,18 +96,22 @@ public class MainActivity extends FragmentActivity
 	private Fragment blankSearch;
 	private SearchOptionsFragment searchOptionsFragment;
 	private View mainView;
-	private ImageLoader imageLoader;
+	public ImageLoader imageLoader;
 	private SearchView searchView;
 	private String restore_model;
 	private String restore_id;
+	private UserProfileFragment userProfileFragment;
+	private UserBadgesFragment userBadgesFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mainView = getWindow().getDecorView().getRootView();
-		handleIntent(getIntent());
+		Intent intent = getIntent();
+		handleIntent(intent);
 		SchoolBusiness.loadLogin(this);
+
 		/* Get GCM Token */
 		mRegistrationBroadcastReceiver = new BroadcastReceiver(){
 			@Override
@@ -125,7 +128,7 @@ public class MainActivity extends FragmentActivity
 
 		/* Start Registration Service */
 		if (checkPlayServices()){
-			Intent intent = new Intent(this, RegistrationIntentService.class);
+			intent = new Intent(this, RegistrationIntentService.class);
 			getApplicationContext().startService(intent);
 		}
 
@@ -162,6 +165,7 @@ public class MainActivity extends FragmentActivity
 					.add(R.id.fragment_container, homeFragment, FRAG_MAIN)
 					.commit();
 		}
+
 	}
 
 	/**
@@ -198,6 +202,7 @@ public class MainActivity extends FragmentActivity
 			startActivity(intent);
 		}
 		super.onResume();
+		//getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter("notification_filter"));
 	}
 
 	@Override
@@ -210,6 +215,7 @@ public class MainActivity extends FragmentActivity
 			SchoolBusiness.saveLogin(getApplicationContext());
 		}
 		super.onPause();
+		//getApplicationContext().unregisterReceiver(mMessageReceiver);
 	}
 
 	@Override
@@ -286,6 +292,11 @@ public class MainActivity extends FragmentActivity
 			case R.id.menu_logout:
 				Log.d(TAG, "User selected Logout");
 				sendVolley(Request.Method.DELETE, "sign_out", USERS, null, false);
+				SchoolBusiness.clearLogin(getApplicationContext());
+				Intent intent = new Intent(this, LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+				finish();
 				return true;
 		}
 
@@ -313,12 +324,32 @@ public class MainActivity extends FragmentActivity
 		//Log.d(TAG, intent.getDataString());
 		if (intent.getAction() != null) {
 			Log.d(TAG, intent.getAction().toString());
+			if (Intent.ACTION_SEARCH.equals(intent.getAction())){
+				String query = intent.getStringExtra(SearchManager.QUERY);
+				sendSearchVolley(query, searchModel, false);
+			}
+			Bundle extras = intent.getExtras();
+			if (intent.getAction().equals(SchoolBusiness.ACTION_NOTIFICATION) && extras != null){
+				String notification_type = extras.getString("n_type");
+				Log.d("Notification Type", "" + notification_type);
+				switch (notification_type){
+					case "award_badge":
+						AwardBadgeFragment awardBadgeFragment = AwardBadgeFragment.newInstance(
+								extras.getString("event_name"),
+								extras.getString("speaker_name"),
+								extras.getString("event_id"));
+						swapFragment(awardBadgeFragment, R.id.fragment_container, FRAG_MAIN, true);
+						break;
+					case "message":
+						break;
+					default:
+						sendVolley(Request.Method.GET, extras.getString("event_id"),
+								EVENTS, null, true);
+						break;
+				}
+			}
 		} else {
 			Log.d(TAG, "Intent but no action");
-		}
-		if (Intent.ACTION_SEARCH.equals(intent.getAction())){
-			String query = intent.getStringExtra(SearchManager.QUERY);
-			sendSearchVolley(query, searchModel, false);
 		}
 	}
 
@@ -464,6 +495,28 @@ public class MainActivity extends FragmentActivity
 		swapFragment(event_list, R.id.tab_content, TAB_CONTENT, false);
 	}
 
+	public void onBadgesLoad(View view, Map<Integer, String> badges){
+		Iterator it = badges.entrySet().iterator();
+		NetworkImageView badge;
+		Map.Entry pair;
+		while (it.hasNext()){
+			pair = (Map.Entry)it.next();
+			badge = (NetworkImageView) view.findViewById((int) pair.getKey());
+			badge.setImageUrl(SchoolBusiness.AWS_S3 + pair.getValue(), imageLoader);
+		}
+	}
+
+	public void awardBadge(Boolean award, int event_id){
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put("award", award);
+			obj.put("event_id", event_id);
+		} catch (JSONException e){
+
+		}
+		sendVolley(Request.Method.POST, "award_badge", USERS, obj, true);
+	}
+
 	public void makeMySchool(String id){
 		sendVolley(Request.Method.GET, "make_mine/" + id, SCHOOLS, null, true);
 	}
@@ -471,7 +524,9 @@ public class MainActivity extends FragmentActivity
 	public void onCreateTab(int tab){
 		CAN_GET_TABS = true;
 		Log.d(TAG, "Creating Tabs");
-		tabContainer = EventTabFragment.newInstance(mTab);
+		String[] event_tab_names = {"all", "approval", "claims", "confirmed"};
+		String[] event_tab_display = {"All","Approval", "Claims", "Confirmed"};
+		tabContainer = TabFragment.newInstance(mTab, event_tab_names, event_tab_display);
 		swapFragment(tabContainer, R.id.tab_container, TAB_CONTAINER, false);
 	}
 
@@ -516,8 +571,17 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void createUserFeed(JSONObject response){
+		String[] tab_names = {"profile", "badges"};
+		String[] tab_display = {"Profile", "Badges"};
+		userProfileFragment = UserProfileFragment.newInstance(response.toString());
+		userBadgesFragment = UserBadgesFragment.newInstance(response.toString());
+		TabFragment tabFragment = TabFragment.newInstance(0, tab_names, tab_display);
+		getSupportFragmentManager().beginTransaction().add(R.id.user_tab, tabFragment).commit();
+		getSupportFragmentManager().beginTransaction()
+				.add(R.id.user_tab_content, userProfileFragment).commit();
 		ListItemFragment event_list = ListItemFragment.newInstance(response, "events");
 		swapFragment(event_list, R.id.tab_content, TAB_CONTENT, false);
+		CAN_GET_TABS = true;
 	}
 
 	public void onContactUser(String id, String name){
@@ -548,6 +612,14 @@ public class MainActivity extends FragmentActivity
 			case "confirmed":
 				mTab = 3;
 				sendVolley(Request.Method.GET, "confirmed", EVENTS, null, false);
+				break;
+			case "profile":
+				getSupportFragmentManager().beginTransaction()
+						.replace(R.id.user_tab_content, userProfileFragment, "USER_TAB").commit();
+				break;
+			case "badges":
+				getSupportFragmentManager().beginTransaction()
+						.replace(R.id.user_tab_content, userBadgesFragment, "USER_TAB").commit();
 				break;
 			default:
 				break;
@@ -880,6 +952,9 @@ public class MainActivity extends FragmentActivity
 								Toast.LENGTH_LONG).show();
 						return;
 				}
+			case "award_badge":
+				onBackPressed();
+				return;
 			default:
 				break;
 		}
@@ -891,8 +966,8 @@ public class MainActivity extends FragmentActivity
 					Log.d(TAG, "Posting User Profile");
 					JSONObject user = response.getJSONObject("user");
 					SchoolBusiness.updateProfile(user);
-					onBackPressed();
-					onBackPressed();
+					getSupportFragmentManager().popBackStack();
+					getSupportFragmentManager().popBackStack();
 					ProfileFragment profileFragment = ProfileFragment.newInstance(response);
 					swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				} catch (JSONException e) {
@@ -908,20 +983,14 @@ public class MainActivity extends FragmentActivity
 				swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				break;
 			case Request.Method.DELETE:
-				Log.d(TAG, "Logging user out");
-				try {
-					Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
-				} catch (JSONException e) {
-					Toast.makeText(getApplicationContext(),
-							"Error: " + e.getMessage(),
-							Toast.LENGTH_LONG).show();
-				}
-				SchoolBusiness.clearLogin(getApplicationContext());
-
-				Intent intent = new Intent(this, LoginActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-				finish();
+				//Log.d(TAG, "Logging user out");
+//				try {
+//					;//Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
+//				} catch (JSONException e) {
+//					Toast.makeText(getApplicationContext(),
+//							"Error: " + e.getMessage(),
+//							Toast.LENGTH_LONG).show();
+//				}
 				break;
 		}
 	}

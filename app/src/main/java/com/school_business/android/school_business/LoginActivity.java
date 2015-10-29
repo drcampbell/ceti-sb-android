@@ -36,7 +36,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    Log.d(TAG, "Login Activity Created");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+		Intent intent = getIntent();
         userEmailText = (EditText) findViewById(R.id.email);
         userPasswordText = (EditText) findViewById(R.id.password);
 	    saveLoginCheckBox = (CheckBox) findViewById(R.id.saveLoginCheckBox);
@@ -44,7 +44,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    if (SchoolBusiness.loadLogin(getApplicationContext())) {
 		    saveLoginCheckBox.setChecked(true);
 		    if (isValid(SchoolBusiness.getUserAuth())){
-				startMain();
+				startMain(intent);
 		    }
 	    }
 
@@ -80,7 +80,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 				public void onResponse(JSONObject response){
 					SchoolBusiness.setProfile(response);
 					saveLogin();
-					startMain();
+					startMain(null);
 				}
 			}, new Response.ErrorListener() {
 				@Override
@@ -116,9 +116,16 @@ public class LoginActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	public void startMain(){
+	public void startMain(Intent in){
+
 		Intent intent = new Intent(this, MainActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		if (in != null) {
+			Bundle b = in.getExtras();
+			if (b != null) {
+				intent.putExtras(b);
+			}
+		}
 		startActivity(intent);
 		if (isFinishing()){
 			;

@@ -17,6 +17,7 @@ import java.util.Iterator;
  * Created by david on 6/11/15.
  */
 public class SchoolBusiness extends Application{
+
 	public static final Boolean DEBUG = true;
 	public static final String TARGET = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/";
 	public static final String AWS_S3 = "https://s3-us-west-1.amazonaws.com/ceti-sb/badges/";
@@ -36,6 +37,7 @@ public class SchoolBusiness extends Application{
 	private static JSONObject notifications;
 	private static SharedPreferences loginPreferences;
 	private static SharedPreferences.Editor loginPrefsEditor;
+	public static final String ACTION_NOTIFICATION = "com.school_business.android.action.NOTIFICATION";
 
 	public static final String[] time_zones = {"Eastern Time (US & Canada)"};
 	@Override

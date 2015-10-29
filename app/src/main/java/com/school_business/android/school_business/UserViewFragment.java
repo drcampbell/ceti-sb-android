@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTabHost;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,6 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 	private String name;
 	private String mParam1;
 	private String mParam2;
-
 	private OnUserViewInteractionListener mListener;
 
 	/**
@@ -127,15 +127,6 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 		public void onContactUser(String id, String name);
 	}
 
-	public String get_id(int res){
-		switch (res){
-			case R.id.tv_location:
-				return "school_id";
-			default:
-				return "";
-		}
-	}
-
 	private void renderUser(View view, String str_response){
 		try {
 			JSONObject response = new JSONObject(str_response);
@@ -144,35 +135,16 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 			JSONObject user = response.getJSONObject("user");
 			user_id = user.getString("id");
 			name = user.getString("name");
-			int[] resource = {R.id.tv_name, R.id.tv_location, R.id.tv_grades,R.id.tv_job,R.id.tv_business,R.id.tv_role,R.id.tv_bio};
-			String[] name = {"name", "school_name", "grades", "job_title", "business", "role", "biography"};
 			TextView tv;
 			if (user_id.equals(SchoolBusiness.getUserAttr("id"))) {
 				view.findViewById(R.id.contact_user_button).setVisibility(View.GONE);
 			} else {
 				view.findViewById(R.id.contact_user_button).setOnClickListener(this);
 			}
-			if (user.getString("role").equals("Teacher")) {
-				((LinearLayout) view.findViewById(R.id.layout_user_business)).setVisibility(View.GONE);
-			} else if (user.getString("role").equals("Speaker")) {
-				((LinearLayout) view.findViewById(R.id.layout_user_teacher)).setVisibility(View.GONE);
-			}
-			for (int i = 0; i < resource.length; i++) {
-				tv = (TextView) view.findViewById(resource[i]);
-
-				link = get_id(resource[i]);
-				if (!link.equals("")) {
-					link = user.getString(link);
-					tv.setOnClickListener(UserViewFragment.this);
-					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
-				} else {
-					link = "0";
-				}
-				str = name[i];
-				str = SchoolBusiness.toDisplayCase(user.getString(str));
-				tv.setTag(link);
-				tv.setText(str);
-			}
+			tv = (TextView) view.findViewById(R.id.tv_name);
+			str = SchoolBusiness.toDisplayCase(name);
+			tv.setTag(link);
+			tv.setText(str);
 			mListener.createUserFeed(response);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -181,4 +153,50 @@ public class UserViewFragment extends Fragment implements View.OnClickListener{
 					Toast.LENGTH_LONG).show();
 		}
 	}
+
+//	private void renderUser(View view, String str_response){
+//		try {
+//			JSONObject response = new JSONObject(str_response);
+//			String str;
+//			String link = "";
+//			JSONObject user = response.getJSONObject("user");
+//			user_id = user.getString("id");
+//			name = user.getString("name");
+//			int[] resource = {R.id.tv_name, R.id.tv_location, R.id.tv_grades,R.id.tv_job,R.id.tv_business,R.id.tv_role,R.id.tv_bio};
+//			String[] name = {"name", "school_name", "grades", "job_title", "business", "role", "biography"};
+//			TextView tv;
+//			if (user_id.equals(SchoolBusiness.getUserAttr("id"))) {
+//				view.findViewById(R.id.contact_user_button).setVisibility(View.GONE);
+//			} else {
+//				view.findViewById(R.id.contact_user_button).setOnClickListener(this);
+//			}
+//			if (user.getString("role").equals("Teacher")) {
+//				((LinearLayout) view.findViewById(R.id.layout_user_business)).setVisibility(View.GONE);
+//			} else if (user.getString("role").equals("Speaker")) {
+//				((LinearLayout) view.findViewById(R.id.layout_user_teacher)).setVisibility(View.GONE);
+//			}
+//			for (int i = 0; i < resource.length; i++) {
+//				tv = (TextView) view.findViewById(resource[i]);
+//
+//				link = get_id(resource[i]);
+//				if (!link.equals("")) {
+//					link = user.getString(link);
+//					tv.setOnClickListener(UserViewFragment.this);
+//					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+//				} else {
+//					link = "0";
+//				}
+//				str = name[i];
+//				str = SchoolBusiness.toDisplayCase(user.getString(str));
+//				tv.setTag(link);
+//				tv.setText(str);
+//			}
+//			mListener.createUserFeed(response);
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//			Toast.makeText(getActivity().getApplicationContext(),
+//					"Error: " + e.getMessage(),
+//					Toast.LENGTH_LONG).show();
+//		}
+//	}
 }

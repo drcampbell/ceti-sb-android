@@ -16,15 +16,19 @@ import com.google.android.gms.gcm.GcmListenerService;
 
 public class MyGcmListenerService extends GcmListenerService {
 	public static final String TAG = "GCMListenerService";
-
+	private int rcode = 0;
 	public MyGcmListenerService() {
 	}
 
 	@Override
 	public void onMessageReceived(String from, Bundle data){
 		String message = data.getString("message");
+		String event_id = data.getString("event_id");
+		String n_type = data.getString("n_type");
 		Log.d(TAG, "From: " + from);
 		Log.d(TAG, "Message: " + message);
+		Log.d(TAG, "Notification: " + n_type);
+		Log.d(TAG, "Event: " + event_id);
 
 		if (from.startsWith("/topics/")) {
 			// message received from some topic.
@@ -43,7 +47,7 @@ public class MyGcmListenerService extends GcmListenerService {
 		 * In some cases it may be useful to show a notification indicating to the user
 		 * that a message was received.
 		 */
-		sendNotification(message);
+		sendNotification(message, data);
 	}
 
 	/**
@@ -51,13 +55,16 @@ public class MyGcmListenerService extends GcmListenerService {
 	 *
 	 * @param message GCM message received.
 	 */
-	private void sendNotification(String message) {
+	private void sendNotification(String message, Bundle data) {
 
 		Intent intent = new Intent(this, MainActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setAction(SchoolBusiness.ACTION_NOTIFICATION);
+		intent.putExtras(data);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, rcode++ /* Request code */, intent,
 				PendingIntent.FLAG_ONE_SHOT);
 
+		Log.d("message", message);
 		Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
 				.setSmallIcon(R.drawable.ic_launcher)

@@ -228,6 +228,7 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 				return null;
 			}
 			account.put("current_password", current_password);
+			
 			JSONObject user = new JSONObject();
 			user.put("user", account);
 			return user;
@@ -243,7 +244,7 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 	public Boolean validateNewPassword(String new_password, String confirm){
 		if (!new_password.isEmpty() && !confirm.isEmpty()){
 			if (new_password.equals(confirm)) {
-				if (new_password.length() > 8) {
+				if (new_password.length() > 7) {
 					return true;
 				} else {
 					Toast.makeText(getActivity().getApplicationContext(), PASSWORD_LENGTH, Toast.LENGTH_LONG).show();

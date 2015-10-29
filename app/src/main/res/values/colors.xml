@@ -4,4 +4,9 @@
     <color name="DefButtonColor">#0000FF</color>
     <color name="InactiveButton">#ff868687</color>
     <color name="PressedButtonColor">#000099</color>
+    <color name="PosPressedButtonColor">#01621a</color>
+    <color name="NegPressedButtonColor">#99000e</color>
+    <color name="PosButtonColor">#06c313</color>
+    <color name="NegButtonColor">#ff001d</color>
+
 </resources>

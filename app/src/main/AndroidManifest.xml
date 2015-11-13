@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.school_business.android.school_business" >
+    package="com.ceti_sb.android" >
 
     <uses-sdk android:minSdkVersion="8" />
     <!-- To access Google+ APIs: -->
@@ -24,10 +24,10 @@
     <uses-permission android:name="com.google.android.c2dm.permission.SEND" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <permission
-        android:name="com.school_business.android.school_business.permission.C2D_MESSAGE"
+        android:name="com.ceti_sb.android.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.school_business.android.school_business.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.ceti_sb.android.permission.C2D_MESSAGE" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -38,6 +38,10 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"
+            />
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -45,9 +49,14 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
-                <category android:name="com.school_business.android.school_business" />
+                <category android:name="com.ceti_sb.android" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
             </intent-filter>
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.SEND" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<data android:mimeType="text/*" />-->
+            <!--</intent-filter>-->
         </receiver>
 
         <service android:name=".RegistrationIntentService"
@@ -78,6 +87,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <!--<data android:scheme="school-business"/>-->
+                <data android:scheme="http"
+                      android:host="ceti-production-spnenzsmun.elasticbeanstalk.com"
+                      android:pathPrefix="/android"/>
+                <data android:scheme="https"
+                      android:host="ceti-production-spnenzsmun.elasticbeanstalk.com"
+                      android:pathPrefix="/android"/>
+                <data android:host="ceti-production-spnenzsmun.elasticbeanstalk.com"/>
+            </intent-filter>
         </activity>
 
         <meta-data
@@ -90,12 +111,12 @@
             android:parentActivityName=".LoginActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.school_business.android.school_business.LoginActivity" />
+                android:value="com.ceti_sb.android.LoginActivity" />
         </activity>
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_event"
+            android:label="@string/app_name"
             android:launchMode="singleTop" >
             <meta-data
                 android:name="android.app.default_searchable"
@@ -106,10 +127,23 @@
             <intent-filter>
                 <action android:name="com.school_business.android.action.NOTIFICATION" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="school-business"/>
+            </intent-filter>
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
         </activity>
+        <activity android:name="com.facebook.FacebookActivity"
+                  android:configChanges=
+                      "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:label="@string/app_name"/>
+        <provider android:authorities="com.facebook.app.FacebookContentProvider530937237063329"
+                  android:name="com.facebook.FacebookContentProvider"
+                  android:exported="true" />
     </application>
 
 </manifest>

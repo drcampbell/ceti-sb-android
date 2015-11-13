@@ -10,7 +10,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context="com.school_business.android.school_business.MainActivity"
+        tools:context="com.ceti_sb.android.MainActivity"
         android:id="@+id/search_options_container"
         tools:ignore="MergeRootFrame">
     </FrameLayout>
@@ -19,7 +19,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context="com.school_business.android.school_business.MainActivity"
+        tools:context="com.ceti_sb.android.MainActivity"
         android:id="@+id/title_container"
         tools:ignore="MergeRootFrame"
         >
@@ -30,7 +30,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context="com.school_business.android.school_business.MainActivity"
+        tools:context="com.ceti_sb.android.MainActivity"
         android:id="@+id/fragment_container"
         tools:ignore="MergeRootFrame"
         />

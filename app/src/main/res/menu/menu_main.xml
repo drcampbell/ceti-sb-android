@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.school_business.android.school_business.EventFragActivity">
+      tools:context="com.ceti_sb.android.EventFragActivity">
     <item android:id="@+id/event_search"
           android:title="@string/search_title"
           android:icon="@drawable/ic_search_black_48dp"
@@ -13,6 +13,10 @@
           android:title="0"
           android:showAsAction="collapseActionView|ifRoom"
           />
+    <item android:id="@+id/share"
+          android:title="Share"
+          android:orderInCategory="100"
+          app:showAsAction="ifRoom|withText" />
     <item android:id="@+id/menu_home"
           android:title="Home"
           android:orderInCategory="100"

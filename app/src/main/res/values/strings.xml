@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="facebook_app_id">530937237063329</string>
+
+    <string name="facebook">com.facebook.katana</string>
+    <string name="twitter">com.twitter.android</string>
+    <string name="linkedin">com.linkedin.android</string>
+
     <string name="app_name">School-Business</string>
     <string name="title_activity_sign_up">SignUpActivity</string>
     <string name="hello_world">Hello world!</string>

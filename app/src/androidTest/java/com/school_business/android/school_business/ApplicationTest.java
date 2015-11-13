@@ -1,4 +1,4 @@
-package com.school_business.android.school_business;
+package com.ceti_sb.android;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

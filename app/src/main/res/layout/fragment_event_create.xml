@@ -1,0 +1,206 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.ceti_sb.android.EventCreateFragment">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView2"
+        android:layout_gravity="center_horizontal">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_horizontal"
+            android:transitionGroup="true"
+            android:weightSum="1">
+
+            <TextView
+                style="@style/TV_Style_Title"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Title"
+                android:id="@+id/TV_Title"
+                />
+
+            <EditText
+                style="@style/ET_Style"
+                android:id="@+id/ET_title"/>
+
+            <TextView
+                style="@style/TV_Style_Title"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Content"
+                android:id="@+id/TV_Content"
+                />
+
+            <EditText
+                style="@style/ET_Style"
+                android:id="@+id/ET_content"
+                android:layout_weight="0.22"/>
+
+            <TextView
+                style="@style/TV_Style_Title"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Tags"
+                android:id="@+id/TV_tags"/>
+
+            <EditText
+                style="@style/ET_Style"
+                android:id="@+id/ET_tags"/>
+
+            <Spinner
+                android:id="@+id/TimeZoneEntry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                style="@style/TV_Style_Title"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Event Start"
+                android:id="@+id/event_start"/>
+
+
+            <LinearLayout
+                style="@style/LL_Horizontal"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+                <EditText
+                    style="@style/datetime"
+                    android:inputType="date"
+                    android:ems="8"
+                    android:id="@+id/start_month"
+                    android:layout_weight="1"
+                    android:hint="Month"/>
+
+                <EditText
+                    style="@style/datetime"
+                    android:inputType="date"
+                    android:ems="8"
+                    android:id="@+id/start_day"
+                    android:layout_weight="1"
+                    android:hint="Day"/>
+
+                <EditText
+                    style="@style/datetime"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/start_year"
+                    android:layout_weight="1"
+                    android:hint="Year"
+                    android:numeric="integer"/>
+
+                <EditText
+                    style="@style/datetime"
+                    android:inputType="time"
+                    android:ems="8"
+                    android:id="@+id/start_hour"
+                    android:layout_weight="1"
+                    android:hint="Hour"/>
+
+                <EditText
+                    style="@style/datetime"
+                    android:inputType="time"
+                    android:ems="8"
+                    android:id="@+id/start_minutes"
+                    android:layout_weight="1"
+                    android:numeric="integer"
+                    android:hint="Min"
+                    />
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PM"
+                    android:id="@+id/start_pm"
+                    android:checked="false"/>
+            </LinearLayout>
+
+            <TextView
+                style="@style/TV_Style_Title"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Event End"
+                android:id="@+id/event_end"/>
+            <LinearLayout
+                style="@style/LL_Horizontal"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="8">
+
+                <EditText
+                    style="@style/datetime"
+                    android:inputType="date"
+                    android:ems="8"
+                    android:id="@+id/end_month"
+                    android:layout_weight="1"
+                    android:hint="Month"/>
+
+                <EditText
+                    style="@style/datetime"
+                    android:inputType="date"
+                    android:ems="8"
+                    android:id="@+id/end_day"
+                    android:layout_weight="1"
+                    android:hint="Day"/>
+
+                <EditText
+                    style="@style/datetime"
+                    android:ems="10"
+                    android:id="@+id/end_year"
+                    android:layout_weight="1"
+                    android:inputType="number"
+                    android:numeric="integer"
+                    android:hint="Year"/>
+
+                <EditText
+                    style="@style/datetime"
+                    android:inputType="time"
+                    android:ems="8"
+                    android:id="@+id/end_hour"
+                    android:layout_weight="1"
+                    android:hint="Hour"/>
+
+                <EditText
+                    style="@style/datetime"
+                    android:inputType="time"
+                    android:ems="8"
+                    android:id="@+id/end_minutes"
+                    android:layout_weight="1"
+                    android:numeric="integer"
+                    android:hint="Min"/>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PM"
+                    android:id="@+id/end_pm"
+                    android:checked="false"/>
+            </LinearLayout>
+
+            <Button
+                android:text="Post Event"
+                android:id="@+id/post_event_button"
+                android:layout_gravity="center_horizontal"
+                style="@style/Button"
+                android:onClick="onClick"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

@@ -13,7 +13,7 @@ android {
     compileSdkVersion 22
     buildToolsVersion '22.0.1'
     defaultConfig {
-        applicationId 'com.CETI_Android.android.school_business'
+        applicationId 'com.ceti_sb.android'
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
@@ -44,4 +44,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services-gcm:7.8.0'
     compile 'com.loopj.android:android-async-http:1.4.5'
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+    compile 'com.github.asne:asne-facebook:0.3.3'
+    compile 'com.github.asne:asne-linkedin:0.3.3'
+    compile 'com.github.asne:asne-twitter:0.3.3'
 }

@@ -2,7 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.school_business.android.school_business.SearchOptionsFragment">
+             tools:context="com.ceti_sb.android.SearchOptionsFragment">
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.school_business.android.school_business.SignUpActivity" >
+    tools:context="com.ceti_sb.android.SignUpActivity" >
     <item android:id="@+id/action_settings"
         android:title="@string/menu_login"
         android:orderInCategory="100"

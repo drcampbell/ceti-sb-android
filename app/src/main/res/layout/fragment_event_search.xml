@@ -3,7 +3,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:layout_gravity="center"
-             tools:context="com.school_business.android.school_business.EventSearchFragment">
+             tools:context="com.ceti_sb.android.EventSearchFragment">
 <LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"

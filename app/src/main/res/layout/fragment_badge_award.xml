@@ -1,0 +1,70 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.ceti_sb.android.BadgeAwardFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal|top">
+
+
+            <TextView
+                style="@style/TV_Style_Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Award Badge to "
+                android:id="@+id/award_badge"/>
+            <TextView
+                style="@style/TV_Style_Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/tv_name"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:id="@+id/badge_display"></LinearLayout>
+            <TextView
+                style="@style/TV_Style_Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="For Event: "
+                />
+            <TextView
+                style="@style/TV_Style_Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/tv_event"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="bottom"
+            android:layout_alignParentBottom="true">
+        <Button
+            style="@style/PositiveButton"
+            android:text="Award Badge"
+            android:id="@+id/award_badge_button"
+            android:layout_gravity="center_horizontal"/>
+
+        <Button
+            style="@style/NegativeButton"
+            android:text="DON&apos;T AWARD"
+            android:id="@+id/reject_award_button"
+            android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
+
+</RelativeLayout>
+</FrameLayout>

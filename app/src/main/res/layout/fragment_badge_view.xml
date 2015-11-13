@@ -1,0 +1,48 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="fill_parent"
+             tools:context="com.ceti_sb.android.BadgeViewFragment">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/TV_Style_Title"
+            android:text="Congratulations!"
+
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"/>
+        <LinearLayout
+            android:id="@+id/badge_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+        </LinearLayout>
+        <TextView
+            android:id="@+id/badge_message"
+            style="@style/TV_Style_Title"
+            android:text="You have been awarded a badge for "
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"/>
+
+        <com.facebook.share.widget.ShareButton
+            android:id="@+id/fb_share_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center|bottom"
+            android:orientation="vertical"
+            android:baselineAligned="false"
+            />
+            <!--android:onClick=""-->
+
+    </LinearLayout>
+
+</FrameLayout>

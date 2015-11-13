@@ -3,7 +3,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.school_business.android.school_business.EventViewFragment"
+             tools:context="com.ceti_sb.android.EventViewFragment"
              android:id="@+id/container_fragment_event">
     <RelativeLayout
         android:orientation="vertical"

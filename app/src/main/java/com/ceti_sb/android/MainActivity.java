@@ -537,12 +537,8 @@ public class MainActivity extends FragmentActivity
 	public void selectBadge(String user_id, String badge_id){
 		sendVolley(Request.Method.GET, ""+user_id+"/badges/"+badge_id,USERS,null,true);
 	}
-	public void onShareBadgeFacebook(Uri badgeUrl){
-//		ShareLinkContent content = new ShareLinkContent.Builder()
-//				.setContentUrl(Uri.parse("https://developers.facebook.com"))
-//				.build();
-//		BadgeView badgeView = (BadgeView) findViewById(R.id.badge_image_view);
 
+	public void onShareBadgeFacebook(Uri badgeUrl){
 		ShareLinkContent content = new ShareLinkContent.Builder()
 				.setContentUrl(Uri.parse(SchoolBusiness.URL))
 				.setContentTitle(SchoolBusiness.getUserAttr("name") +

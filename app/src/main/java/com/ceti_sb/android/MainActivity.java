@@ -42,8 +42,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import bolts.AppLinks;
@@ -338,35 +340,51 @@ public class MainActivity extends FragmentActivity
 	private void handleIntent(Intent intent){
 		//Log.d(TAG, intent.getAction());
 		//Log.d(TAG, intent.getDataString());
-		if (intent.getAction() != null) {
-			Log.d(TAG, intent.getAction().toString());
-			if (Intent.ACTION_SEARCH.equals(intent.getAction())){
+		if (intent.getAction() == null) {
+			Log.d(TAG, "Intent but no action");
+			return;
+		}
+		Log.d(TAG, intent.getAction().toString());
+		switch (intent.getAction()) {
+			case Intent.ACTION_SEARCH:
 				String query = intent.getStringExtra(SearchManager.QUERY);
 				sendSearchVolley(query, searchModel, false);
-			}
-			Bundle extras = intent.getExtras();
-			if (intent.getAction().equals(SchoolBusiness.ACTION_NOTIFICATION) && extras != null){
-				String notification_type = extras.getString("n_type");
-				Log.d("Notification Type", "" + notification_type);
-				switch (notification_type){
-					case "award_badge":
-						BadgeAwardFragment badgeAwardFragment = BadgeAwardFragment.newInstance(extras);
-						swapFragment(badgeAwardFragment, R.id.fragment_container, FRAG_MAIN, true);
-						break;
-					case "new_badge":
-						BadgeViewFragment badgeViewFragment = BadgeViewFragment.newInstance(extras, true);
-						swapFragment(badgeViewFragment, R.id.fragment_container, FRAG_MAIN, true);
-						break;
-					case "message":
-						break;
-					default:
-						sendVolley(Request.Method.GET, extras.getString("event_id"),
-								EVENTS, null, true);
-						break;
+				break;
+			case SchoolBusiness.ACTION_NOTIFICATION:
+				Bundle extras = intent.getExtras();
+				if (extras != null) {
+					String notification_type = extras.getString("n_type");
+					Log.d("Notification Type", "" + notification_type);
+					switch (notification_type) {
+						case "award_badge":
+							BadgeAwardFragment badgeAwardFragment = BadgeAwardFragment.newInstance(extras);
+							swapFragment(badgeAwardFragment, R.id.fragment_container, FRAG_MAIN, true);
+							break;
+						case "new_badge":
+							BadgeViewFragment badgeViewFragment = BadgeViewFragment.newInstance(extras, true);
+							swapFragment(badgeViewFragment, R.id.fragment_container, FRAG_MAIN, true);
+							break;
+						case "message":
+							break;
+						default:
+							sendVolley(Request.Method.GET, extras.getString("event_id"),
+									EVENTS, null, true);
+							break;
+					}
 				}
-			}
-		} else {
-			Log.d(TAG, "Intent but no action");
+				break;
+			case Intent.ACTION_VIEW:
+				android.net.Uri uri = intent.getData();
+				if (uri != null) {
+					String path = uri.toString();
+					path.replace(SchoolBusiness.TARGET, "");
+					if (path.split("/").length >= 2) {
+						String amodel = path.split("/", 1)[0];
+						String aid = path.split("/", 1)[1];
+						sendVolley(Request.Method.GET, aid, amodel, null, true);
+					}
+				}
+				break;
 		}
 	}
 

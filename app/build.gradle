@@ -1,5 +1,11 @@
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     signingConfigs {
@@ -40,7 +46,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':volley')
-    compile files('libs/gson-2.3.1.jar')
+
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services-gcm:7.8.0'
     compile 'com.loopj.android:android-async-http:1.4.5'
@@ -48,4 +54,8 @@ dependencies {
     compile 'com.github.asne:asne-facebook:0.3.3'
     compile 'com.github.asne:asne-linkedin:0.3.3'
     compile 'com.github.asne:asne-twitter:0.3.3'
+    compile('com.twitter.sdk.android:twitter:1.10.0@aar') {
+        transitive = true;
+        exclude module: 'gson'
+    }
 }

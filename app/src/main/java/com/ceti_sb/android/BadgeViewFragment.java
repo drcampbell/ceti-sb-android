@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -41,7 +42,9 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 	private String mBadge;
 	private String school_name;
 	private int badge_id;
-
+	private Uri badge_uri;
+	private String url;
+	private Boolean notification;
 	private OnBadgeReceiveListener mListener;
 
 	/**
@@ -71,7 +74,7 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
 			Bundle badge = getArguments().getBundle("badge");
-			Boolean notification = getArguments().getBoolean("notification");
+			notification = getArguments().getBoolean("notification");
 			user_id = Integer.parseInt(badge.getString("user_id"));
 			user_name = badge.getString("user_name");
 			event_owner = badge.getString("event_owner");
@@ -86,6 +89,7 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
+		String content;
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_badge_view, container, false);
 		LinearLayout display = (LinearLayout) view.findViewById(R.id.badge_display);
@@ -99,21 +103,38 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 		badge.getLayoutParams().width = 512;
 		TextView tv = (TextView) view.findViewById(R.id.badge_message);
 		String addressee = (user_id == Integer.parseInt(SchoolBusiness.getUserAttr("id"))) ? "you" : user_name;
-		tv.setText(event_owner + " awards you a badge for event: " + event_name);
+		if (notification) {
+			content = event_owner + " awards you a badge for speaking at the event: " + event_name
+					+ ", at " + school_name;
+			tv.setText(content);
+		} else {
+			view.findViewById(R.id.title).setVisibility(View.GONE);
+			 content = event_owner + " awarded " + user_name + " a badge for speaking at the event:"
+					+ " " + event_name + ", at " + school_name;
+			tv.setText(content);
+		}
 
-		final ShareLinkContent content = new ShareLinkContent.Builder()
-				.setContentUrl(Uri.parse(SchoolBusiness.URL+"users/"+
-						SchoolBusiness.getUserAttr("id")+"/badges/"+badge_id))
-				.setContentTitle(SchoolBusiness.getUserAttr("name")+
-						" was awarded a badge!")
-				.setContentDescription("Badge awarded for speaking at event" + event_name
-						+ ", at " + school_name)
-				.setImageUrl(Uri.parse(badge_str))
-				.build();
+		if (user_id == Integer.parseInt(SchoolBusiness.getUserAttr("id"))) {
+			badge_uri = Uri.parse(badge_str);
+			url = SchoolBusiness.URL + "users/" + SchoolBusiness.getUserAttr("id") + "/badges/" + badge_id;
+			final ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+					.setContentUrl(Uri.parse(url))
+					.setContentTitle(SchoolBusiness.getUserAttr("name") +
+							" was awarded a badge!")
+					.setContentDescription("Badge awarded for speaking at the event" + event_name
+							+ ", at " + school_name)
+					.setImageUrl(badge_uri)
+					.build();
 
-		final ShareButton shareButton = (ShareButton)view.findViewById(R.id.fb_share_button);
-		shareButton.setClickable(true);
-		shareButton.setShareContent(content);
+			final ShareButton shareButton = (ShareButton) view.findViewById(R.id.fb_share_button);
+			shareButton.setClickable(true);
+			shareButton.setShareContent(shareLinkContent);
+			Button tweet = (Button) view.findViewById(R.id.tweet_button);
+			tweet.setOnClickListener(this);
+		} else {
+			view.findViewById(R.id.tweet_button).setVisibility(View.GONE);
+			view.findViewById(R.id.fb_share_button).setVisibility(View.GONE);
+		}
 		return view;
 	}
 
@@ -146,6 +167,9 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 		switch(view.getId()){
 			case R.id.fb_share_button:
 				break;
+			case R.id.tweet_button:
+				mListener.onTweetBadge(badge_uri, url);
+				break;
 		}
 	}
 	/**
@@ -161,6 +185,7 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 	public interface OnBadgeReceiveListener {
 		// TODO: Update argument type and name
 		public void onShareBadgeFacebook(Uri uri);
+		public void onTweetBadge(Uri uri, String url);
 	}
 
 }

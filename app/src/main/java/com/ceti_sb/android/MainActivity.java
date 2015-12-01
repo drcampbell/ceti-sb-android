@@ -33,8 +33,13 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
+
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareLinkContent;
+
+import io.fabric.sdk.android.Fabric;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -42,7 +47,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -112,7 +119,7 @@ public class MainActivity extends FragmentActivity
 	private String restore_id;
 	private UserProfileFragment userProfileFragment;
 	private UserBadgesFragment userBadgesFragment;
-
+	public TwitterClient twitter;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -122,7 +129,8 @@ public class MainActivity extends FragmentActivity
 		handleIntent(intent);
 		SchoolBusiness.loadLogin(this);
 		FacebookSdk.sdkInitialize(getApplicationContext());
-
+		twitter = new TwitterClient();
+		twitter.initialize(this);
 		Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
 		if (targetUrl != null) {
 			Log.i("Activity", "App Link Target URL: "+targetUrl.toString());
@@ -556,6 +564,7 @@ public class MainActivity extends FragmentActivity
 		sendVolley(Request.Method.GET, ""+user_id+"/badges/"+badge_id,USERS,null,true);
 	}
 
+	/* Social Media Integration Functions */
 	public void onShareBadgeFacebook(Uri badgeUrl){
 		ShareLinkContent content = new ShareLinkContent.Builder()
 				.setContentUrl(Uri.parse(SchoolBusiness.URL))
@@ -566,6 +575,16 @@ public class MainActivity extends FragmentActivity
 				.build();
 	}
 
+	public void onTweetBadge(Uri badgeUrl, String url){
+		try {
+			twitter.composeTweet(this, SchoolBusiness.getUserAttr("name") + " was awarded a badge!",
+					new URL(url),
+					badgeUrl
+					);
+		} catch (MalformedURLException e){
+			;
+		}
+	}
 	public void makeMySchool(String id){
 		sendVolley(Request.Method.GET, "make_mine/" + id, SCHOOLS, null, true);
 	}
@@ -948,6 +967,7 @@ public class MainActivity extends FragmentActivity
 	public void handleClaimResponse(int method, String model, String id, JSONObject response){
 		try {
 			switch (method) {
+				/* Handle a GET Claims Call */
 				case Request.Method.GET:
 					if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN)
 									.getClass().equals(EventViewFragment.class)) {
@@ -961,6 +981,7 @@ public class MainActivity extends FragmentActivity
 						}
 					}
 					break;
+				/* Handle a POST for a new claim */
 				case Request.Method.POST:
 					if (response.getString("status").equals("0")) {
 						JSONObject event = response.getJSONObject("event");
@@ -1049,7 +1070,7 @@ public class MainActivity extends FragmentActivity
 				swapFragment(userViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				break;
 			case Request.Method.DELETE:
-				//Log.d(TAG, "Logging user out");
+				/* Logging User Out */
 //				try {
 //					;//Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
 //				} catch (JSONException e) {
@@ -1068,16 +1089,4 @@ public class MainActivity extends FragmentActivity
 		startActivity(Intent.createChooser(intent, "Share using"));
 	}
 
-		//intent.setType("image/*");
-		//intent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-
-//		boolean installed = isAppInstalledOrNot(application);
-//		if (installed) {
-//			intent.setPackage(application);
-//			startActivity(intent);
-//		} else {
-//			Toast.makeText(getApplicationContext(),
-//					"Install application first", Toast.LENGTH_LONG).show();
-//		}
-//	}
 }

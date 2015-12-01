@@ -318,11 +318,7 @@ public class MainActivity extends FragmentActivity
 			case R.id.menu_logout:
 				Log.d(TAG, "User selected Logout");
 				sendVolley(Request.Method.DELETE, "sign_out", USERS, null, false);
-				SchoolBusiness.clearLogin(getApplicationContext());
-				Intent intent = new Intent(this, LoginActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-				finish();
+
 				return true;
 		}
 
@@ -905,7 +901,6 @@ public class MainActivity extends FragmentActivity
 					break;
 				/* Cancel an event */
 				case Request.Method.DELETE:
-
 					Intent intent = new Intent(this, LoginActivity.class);
 					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 					startActivity(intent);
@@ -1071,6 +1066,11 @@ public class MainActivity extends FragmentActivity
 				break;
 			case Request.Method.DELETE:
 				/* Logging User Out */
+				SchoolBusiness.clearLogin(getApplicationContext());
+				Intent intent = new Intent(this, LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+				finish();
 //				try {
 //					;//Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
 //				} catch (JSONException e) {

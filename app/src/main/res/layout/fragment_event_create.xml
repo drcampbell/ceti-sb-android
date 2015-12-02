@@ -50,7 +50,7 @@
 
             <EditText
                 style="@style/ET_Style"
-                android:id="@+id/ET_tags"/>
+                android:id="@+id/et_tags"/>
 
             <Spinner
                 android:id="@+id/TimeZoneEntry"

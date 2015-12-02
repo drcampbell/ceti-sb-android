@@ -151,26 +151,35 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				event.put("id", mId);
 			}
 			EditText data;
-			int[] resource = {R.id.ET_content, R.id.ET_title, R.id.ET_tags};
-			String[] headers = {"content", "title", "tags",};
+			int[] resource = {R.id.ET_content, R.id.ET_title, R.id.et_tags};
+			String[] headers = {"content", "title", "tag_list",};
 
 			int[] start = {R.id.start_year, R.id.start_month, R.id.start_day, R.id.start_hour, R.id.start_minutes};
 			int[] end = {R.id.end_year, R.id.end_month, R.id.end_day, R.id.end_hour, R.id.end_minutes};
 
 			String event_start = createDate(getView().getRootView(), start, R.id.start_pm);
 			String event_end = createDate(getView().getRootView(), end, R.id.end_pm);
+
 			if (event_start.isEmpty() || event_end.isEmpty()){
 				return null;
 			}
 			if (!compareDates(event_start, event_end)){
-				toast.cancel();
-				toast = Toast.makeText(getActivity(), "Error: Can't Post\nEvent Finishes Before It Begins!", Toast.LENGTH_LONG);
-				toast.show();
+				toaster("Error: Can't Post\nEvent Finishes Before It Begins!");
 				return null;
 			}
 			for (int i = 0; i < resource.length; i++) {
 				data = (EditText) getActivity().findViewById(resource[i]);
 				event.put(headers[i], data.getText().toString());
+			}
+			Log.d("EVENT", event.getString("title"));
+			Log.d("EVENT", event.getString("title").trim());
+			if (event.getString("title").trim().length() == 0){
+				toaster("Error: Title must consist of alphanumeric characters");
+				return null;
+			}
+			if (event.getString("title").length() > 255){
+				toaster("Error: Title must be less than 255 characters");
+				return null;
 			}
 			event.put("time_zone", mSpinner.getSelectedItem());
 			Log.d("FJADSFJAK", event.getString("time_zone"));
@@ -182,6 +191,12 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			Log.d("OOPS", "Something went wrong with packaging an event");
 			return new JSONObject();
 		}
+	}
+	public void toaster(String message){
+		toast.cancel();
+		toast = Toast.makeText(getActivity(), message,
+				Toast.LENGTH_LONG);
+		toast.show();
 	}
 	public String createDate(View view, int[] resource, int cb){
 		//DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -201,15 +216,11 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			try {
 				x[i] = Integer.parseInt(et.getText().toString());
 				if (x[i] < time_min[i] || x[i] > time_max[i]){
-					toast.cancel();
-					toast = Toast.makeText(getActivity().getApplicationContext(), "Values for "+name[i]+" must be between "+time_min[i]+" and "+time_max[i], Toast.LENGTH_LONG);
-					toast.show();
+					toaster("Values for " + name[i] + " must be between " + time_min[i] + " and " + time_max[i]);
 					return "";
 				}
 			} catch (NumberFormatException e){
-				toast.cancel();
-				toast = Toast.makeText(getActivity().getApplicationContext(), "You must enter a valid value for " + name[i],Toast.LENGTH_LONG);
-				toast.show();
+				toaster("You must enter a valid value for " + name[i]);
 				return "";
 			}
 			if (cal_res[i]==Calendar.MONTH){
@@ -224,15 +235,10 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			}
 		}
 		cal.set(x[0],x[1],x[2],x[3],x[4],0);
-	//	try {
-			date = cal.getTime();
+		date = cal.getTime();
 		String strdate = dateFormat.format(date);
 		Log.d("test", strdate);
 		Log.d("test", date.toString());
-//		} catch (ParseException e){
-//			// TODO Write error code or ignore
-//			date = new Date();
-//		}
 		return strdate;
 	}
 
@@ -283,7 +289,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				((EditText) view.findViewById(R.id.ET_title)).setText(event.getString("title"));
 				((EditText) view.findViewById(R.id.ET_content)).setText(event.getString("content"));
 				if (event.has("tags")){
-					((EditText) view.findViewById(R.id.ET_tags)).setText(event.getString("tags"));
+					((EditText) view.findViewById(R.id.et_tags)).setText(event.getString("tags"));
 				}
 
 				cal.setTime(parseDate(event.getString("event_start")));

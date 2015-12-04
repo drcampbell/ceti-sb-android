@@ -41,7 +41,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "edit";
 	private static final String ARG_PARAM2 = "param2";
-	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm z");
+	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm aa z");
 	Toast toast;
 	// TODO: Rename and change types of parameters
 	private Boolean mEdit;

@@ -35,8 +35,12 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 	private String mParam2;
 	private String event;
 	private String event_id;
+	private String claim_id;
+
 	private RelativeLayout mLayout;
 	private onEventViewInteractionListener mListener;
+	public final int CANCEL_EVENT = 0; public final int CANCEL_CLAIM = 1; public final int CANCEL_SPEAKER = 2;
+	private int mode;
 
 	/*
 	 * Use this factory method to create a new instance of
@@ -147,7 +151,18 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				mListener.onClaimEvent(event);
 				break;
 			case R.id.delete_button:
-				mListener.onDeleteEvent(event_id);
+				switch (mode){
+					case CANCEL_CLAIM:
+						mListener.onCancelClaim(claim_id);
+						break;
+					case CANCEL_EVENT:
+						mListener.onDeleteEvent(event_id);
+						break;
+					case CANCEL_SPEAKER:
+						mListener.onCancelClaim(claim_id);
+						break;
+				}
+
 				break;
 		}
 	}
@@ -169,6 +184,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 		public void onClaimEvent(String event);
 		public void onDeleteEvent(String id);
 		public void getClaims(String id);
+		public void onCancelClaim(String claim_id);
 	}
 
 	public String get_id(int res) {
@@ -187,6 +203,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 	public void renderEvent(View view, JSONObject response) {
 		try {
 			event_id = response.getString("id");
+			claim_id = response.getString("claim_id");
 			String str;
 			String link = "";
 			int[] resource = {R.id.tv_title, R.id.tv_speaker, R.id.tv_start,R.id.tv_end,R.id.tv_location,R.id.tv_name,R.id.tv_content};
@@ -195,22 +212,35 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 
 			event = response.toString();
 			Log.d("WHATISEVENT", event);
+			/* Check whether user is event owner */
 			if (!response.getString("user_id").equals(SchoolBusiness.getUserAttr("id"))){
 				((Button) view.findViewById(R.id.edit_button)).setVisibility(View.GONE);
 				((Button) view.findViewById(R.id.delete_button)).setVisibility(View.GONE);
+				/* Is user the speaker of the event? */
 				if (response.getString("speaker_id").equals(SchoolBusiness.getUserAttr("id"))) {
 					((Button) view.findViewById(R.id.claim_button)).setVisibility(View.GONE);
-				} else if (response.getBoolean("claim")) {
+					((Button) view.findViewById(R.id.delete_button)).setVisibility(View.VISIBLE);
+					((Button) view.findViewById(R.id.delete_button)).setText("Cancel");
+					((Button) view.findViewById(R.id.delete_button)).setOnClickListener(EventViewFragment.this);
+					mode = CANCEL_SPEAKER;
+				/* Does user have a claim on event? " */
+				} else if (Integer.parseInt(response.getString("claim_id")) > 0) {
 					((Button) view.findViewById(R.id.claim_button)).setText("Claimed: Pending Approval");
 					((Button) view.findViewById(R.id.claim_button)).setBackgroundColor(getResources().getColor(R.color.InactiveButton));
 					((Button) view.findViewById(R.id.claim_button)).setClickable(false);
+					((Button) view.findViewById(R.id.delete_button)).setVisibility(View.VISIBLE);
+					((Button) view.findViewById(R.id.delete_button)).setText("Cancel Claim");
+					((Button) view.findViewById(R.id.delete_button)).setOnClickListener(EventViewFragment.this);
+					mode = CANCEL_CLAIM;
 				} else {
 					((Button) view.findViewById(R.id.claim_button)).setOnClickListener(EventViewFragment.this);
 				}
+			/* Owner View */
 			} else {
 				((Button) view.findViewById(R.id.edit_button)).setOnClickListener(EventViewFragment.this);
 				((Button) view.findViewById(R.id.delete_button)).setOnClickListener(EventViewFragment.this);
 				((Button) view.findViewById(R.id.claim_button)).setVisibility(View.GONE);
+				mode = CANCEL_EVENT;
 			}
 			for (int i = 0; i < resource.length; i++) {
 				tv = (TextView) view.findViewById(resource[i]);

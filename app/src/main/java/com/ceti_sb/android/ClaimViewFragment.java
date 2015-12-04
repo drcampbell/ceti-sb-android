@@ -31,6 +31,8 @@ public class ClaimViewFragment extends Fragment implements View.OnClickListener{
 
 	private String event_id;
 	private String claim_id;
+	private String user_id;
+	private String user_name;
 	private OnClaimViewInteractionListener mListener;
 
 	/**
@@ -113,6 +115,7 @@ public class ClaimViewFragment extends Fragment implements View.OnClickListener{
 				mListener.onRejectClaim(event_id, claim_id);
 				break;
 			case R.id.message_button:
+				mListener.onContactUser(user_id, user_name);
 				break;
 		}
 	}
@@ -128,8 +131,9 @@ public class ClaimViewFragment extends Fragment implements View.OnClickListener{
 	 */
 	public interface OnClaimViewInteractionListener {
 		// TODO: Update argument type and name
-		public void onAcceptClaim(String ev_id, String us_id);
-		public void onRejectClaim(String ev_id, String us_id);
+		public void onAcceptClaim(String ev_id, String claim_id);
+		public void onRejectClaim(String ev_id, String claim_id);
+		public void onContactUser(String id, String name);
 	}
 
 	public String get_id(int res){
@@ -146,6 +150,8 @@ public class ClaimViewFragment extends Fragment implements View.OnClickListener{
 			JSONObject response = new JSONObject(str_response);
 			event_id = response.getString("event_id");
 			claim_id = response.getString("claim_id");
+			user_id = response.getString("user_id");
+			user_name = response.getString("user_name");
 			String str;
 			String link = "";
 			int[] resource = {R.id.tv_title, R.id.tv_job, R.id.tv_business};

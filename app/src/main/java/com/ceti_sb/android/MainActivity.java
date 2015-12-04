@@ -502,8 +502,14 @@ public class MainActivity extends FragmentActivity
 		sendVolley(Request.Method.POST, res, CLAIMS, null, true);
 	}
 
-	public void onRejectClaim(String event_id, String user_id){
+	public void onRejectClaim(String event_id, String claim_id){
+		String res = claim_id+"/reject";
+		sendVolley(Request.Method.DELETE, res, CLAIMS, null, true);
+	}
 
+	public void onCancelClaim(String claim_id){
+		String res = claim_id+"/cancel";
+		sendVolley(Request.Method.DELETE, res, CLAIMS, null, true);
 	}
 
 	public void onDeleteEvent(String id){
@@ -515,7 +521,7 @@ public class MainActivity extends FragmentActivity
 
 	public void onDeleteEventPositiveClick(DialogFragment dialog){
 		dialog.dismiss();
-		sendVolley(Request.Method.DELETE, event_id, EVENTS, null, false);
+		sendVolley(Request.Method.DELETE, event_id + "/cancel", EVENTS, null, false);
 	}
 
 	public void onDeleteEventNegativeClick(DialogFragment dialog){
@@ -627,7 +633,7 @@ public class MainActivity extends FragmentActivity
 
 
 	public void onSaveSettings(JSONObject settings){
-		findViewById(R.id.save_account_button).setClickable(false);
+		findViewById(R.id.save_settings_button).setClickable(false);
 		sendVolley(Request.Method.PUT, "settings", USERS, settings, true);
 	}
 
@@ -901,10 +907,7 @@ public class MainActivity extends FragmentActivity
 					break;
 				/* Cancel an event */
 				case Request.Method.DELETE:
-					Intent intent = new Intent(this, LoginActivity.class);
-					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(intent);
-					finish();
+					refreshApp();
 					break;
 				/* Update an event */
 				case Request.Method.PATCH:
@@ -986,6 +989,17 @@ public class MainActivity extends FragmentActivity
 						swapFragment(eventViewFragment, R.id.fragment_container, FRAG_MAIN, true);//FRAG_EVENT, true);
 					}
 					break;
+				case Request.Method.DELETE:
+					if (id.contains("reject")){
+						Toast.makeText(this, "You have rejected " + response.getString("user_name")
+										+ "'s claim to event " + response.getString("event_title"),
+										Toast.LENGTH_LONG).show();
+						refreshApp();
+					} else if (id.contains("cancel")){
+						refreshApp();
+					}
+					break;
+
 			}
 		}catch(JSONException e) {
 			Toast.makeText(getApplicationContext(),
@@ -1032,6 +1046,7 @@ public class MainActivity extends FragmentActivity
 						Toast.makeText(getApplicationContext(),
 								"Settings Saved",
 								Toast.LENGTH_LONG).show();
+						findViewById(R.id.save_settings_button).setClickable(true);
 						return;
 				}
 			case "award_badge":
@@ -1067,17 +1082,7 @@ public class MainActivity extends FragmentActivity
 			case Request.Method.DELETE:
 				/* Logging User Out */
 				SchoolBusiness.clearLogin(getApplicationContext());
-				Intent intent = new Intent(this, LoginActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-				finish();
-//				try {
-//					;//Toast.makeText(getApplicationContext(), response.getString("message"), Toast.LENGTH_LONG).show();
-//				} catch (JSONException e) {
-//					Toast.makeText(getApplicationContext(),
-//							"Error: " + e.getMessage(),
-//							Toast.LENGTH_LONG).show();
-//				}
+				refreshApp();
 				break;
 		}
 	}
@@ -1089,4 +1094,10 @@ public class MainActivity extends FragmentActivity
 		startActivity(Intent.createChooser(intent, "Share using"));
 	}
 
+	public void refreshApp(){
+		Intent intent = new Intent(this, LoginActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
+		finish();
+	}
 }

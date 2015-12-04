@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 public class SignUpActivity extends Activity implements View.OnClickListener
 {
+	Toast toast;
 	String role;
 	final String TAG = "SignUp";
     @Override
@@ -79,6 +80,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 				JSONObject user = new JSONObject();
 				Log.d(TAG, "Button clicked?");
 				try {
+
 					if (!comparePassword(params)){
 						Toast.makeText(getApplicationContext(), "Passwords Do Not Match!", Toast.LENGTH_LONG).show();
 					}
@@ -89,6 +91,18 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 						Toast.makeText(getApplicationContext(), "Please Select a Role", Toast.LENGTH_LONG).show();
 					} else if (!hasName(params.getString("name"))){
 						Toast.makeText(getApplicationContext(), "Please Enter Your Name", Toast.LENGTH_LONG).show();
+					}
+					if (params.getString("name").length() > 255){
+						toaster("Name should be under 255 characters");
+					}
+					if (params.getString("name").trim().length() < 2){
+						toaster("Name should be more than 2 characters");
+					}
+					if (params.getString("email").length() > 255){
+						toaster("Email should be under 255 characters");
+					}
+					if (params.getString("password").length() > 255){
+						toaster("Password should be under 255 characters");
 					}
 					else {
 						Log.d(TAG, "Parameters are present");
@@ -105,6 +119,12 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 		}
 	}
 
+	private void toaster(String message){
+		toast.cancel();
+		toast = Toast.makeText(this, message,
+				Toast.LENGTH_LONG);
+		toast.show();
+	}
 	private Boolean hasName(String name){
 		return !name.equals("");
 	}
@@ -160,12 +180,12 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 					public void onResponse(JSONObject response){
 						try {
 							if (response.getString("state").equals("1")){
+								findViewById(R.id.register_button).setClickable(true);
 								JSONArray messages = response.getJSONArray("messages");
 								for (int i = 0; i < messages.length(); i++ ){
 									String message = messages.getString(i);
 									Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 								}
-								findViewById(R.id.register_button).setClickable(true);
 							} else if (response.getString("state").equals("0")) {
 								JSONObject user = response.getJSONObject("data");
 								SchoolBusiness.setProfile(user);

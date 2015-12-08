@@ -92,16 +92,16 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 					} else if (!hasName(params.getString("name"))){
 						Toast.makeText(getApplicationContext(), "Please Enter Your Name", Toast.LENGTH_LONG).show();
 					}
-					if (params.getString("name").length() > 255){
+					else if (params.getString("name").length() > 255){
 						toaster("Name should be under 255 characters");
 					}
-					if (params.getString("name").trim().length() < 2){
+					else if (params.getString("name").trim().length() < 2){
 						toaster("Name should be more than 2 characters");
 					}
-					if (params.getString("email").length() > 255){
+					else if (params.getString("email").length() > 255){
 						toaster("Email should be under 255 characters");
 					}
-					if (params.getString("password").length() > 255){
+					else if (params.getString("password").length() > 255){
 						toaster("Password should be under 255 characters");
 					}
 					else {

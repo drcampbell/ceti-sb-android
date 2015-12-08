@@ -34,6 +34,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+	    toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
     }
 
 
@@ -75,24 +76,21 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 	public void onClick(View view) {
 		switch (view.getId()) {
 			case R.id.register_button:
-				view.findViewById(R.id.register_button).setClickable(false);
 				JSONObject params = getParams();
 				JSONObject user = new JSONObject();
 				Log.d(TAG, "Button clicked?");
 				try {
 
 					if (!comparePassword(params)){
-						Toast.makeText(getApplicationContext(), "Passwords Do Not Match!", Toast.LENGTH_LONG).show();
+						toaster("Passwords Do Not Match!");
 					}
 					else if (!validateEmail(params.getString("email"))){
-						Toast.makeText(getApplicationContext(), "Email is Invalid or Missing", Toast.LENGTH_LONG).show();
-					}
-					else if (!hasRole()) {
-						Toast.makeText(getApplicationContext(), "Please Select a Role", Toast.LENGTH_LONG).show();
+						toaster("Email is Invalid or Missing");
+					} else if (!hasRole()) {
+						toaster("Please Select a Role");
 					} else if (!hasName(params.getString("name"))){
-						Toast.makeText(getApplicationContext(), "Please Enter Your Name", Toast.LENGTH_LONG).show();
-					}
-					else if (params.getString("name").length() > 255){
+						toaster("Please Enter Your Name");
+					} else if (params.getString("name").length() > 255){
 						toaster("Name should be under 255 characters");
 					}
 					else if (params.getString("name").trim().length() < 2){
@@ -184,7 +182,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 								JSONArray messages = response.getJSONArray("messages");
 								for (int i = 0; i < messages.length(); i++ ){
 									String message = messages.getString(i);
-									Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+									toaster(message);
 								}
 							} else if (response.getString("state").equals("0")) {
 								JSONObject user = response.getJSONObject("data");

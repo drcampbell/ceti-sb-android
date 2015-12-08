@@ -192,12 +192,14 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			return new JSONObject();
 		}
 	}
+
 	public void toaster(String message){
 		toast.cancel();
 		toast = Toast.makeText(getActivity(), message,
 				Toast.LENGTH_LONG);
 		toast.show();
 	}
+
 	public String createDate(View view, int[] resource, int cb){
 		//DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		int[] cal_res = {Calendar.YEAR, Calendar.MONTH, Calendar.DATE, Calendar.HOUR_OF_DAY, Calendar.MINUTE};

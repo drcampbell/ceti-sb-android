@@ -30,10 +30,7 @@ public class SchoolBusiness extends Application{
 	public static final String BOTH = "Both";
 	public static final String STUDENT = "Student";
 	public static final String[] roles = {"None", "Teacher", "Speaker", "Both", "Student"};
-
-	public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
-	public static final String REGISTRATION_COMPLETE = "registrationComplete";
-
+	
 	private static final String TAG = "school_business";
 	private static String id;
 	private static JSONObject profile;
@@ -191,18 +188,18 @@ public class SchoolBusiness extends Application{
 	}
 
 	public static void saveLogin(Context context){
-		loginPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		loginPrefsEditor = loginPreferences.edit();
-		loginPrefsEditor.putBoolean("saveLogin", true);
-		loginPrefsEditor.putString("profile", profile.toString());
+		loginPrefsEditor.putBoolean(Constants.SaveLoginString, true);
+		loginPrefsEditor.putString(Constants.ProfileString, profile.toString());
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile Saved");
 	}
 
 	public static boolean loadLogin(Context context){
 		String str_profile;
-		loginPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
-		str_profile = loginPreferences.getString("profile","");
+		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
+		str_profile = loginPreferences.getString(Constants.ProfileString,"");
 		if (str_profile.equals("")){
 			return false;
 		} else {
@@ -218,10 +215,10 @@ public class SchoolBusiness extends Application{
 	}
 
 	public static void clearLogin(Context context){
-		loginPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		loginPrefsEditor = loginPreferences.edit();
 		profile = null;
-		loginPrefsEditor.putString("profile", "");
+		loginPrefsEditor.putString(Constants.ProfileString, "");
 		loginPrefsEditor.clear();
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile cleared");

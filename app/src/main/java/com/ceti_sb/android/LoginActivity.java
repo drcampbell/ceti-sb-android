@@ -124,26 +124,24 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	public void startMain(Intent in){
 
-		Intent intent = new Intent(this, MainActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		Intent freshIntent = new Intent(this, MainActivity.class);
+		freshIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		if (in != null){
 			if (in.getAction() != null) {
 				Log.d(TAG, in.getAction());
 				if (in.getAction().equals(Intent.ACTION_VIEW)) {
 					Log.d(TAG, in.getData().toString());
 				}
-				intent.setAction(in.getAction());
+				freshIntent.setAction(in.getAction());
 			}
 			Bundle b = in.getExtras();
 			if (b != null) {
-				intent.putExtras(b);
+				freshIntent.putExtras(b);
 			}
-			intent.setData(in.getData());
+			freshIntent.setData(in.getData());
 		}
-		startActivity(intent);
-		if (isFinishing()){
-			;
-		} else {
+		startActivity(freshIntent);
+		if (!isFinishing()){
 			finish();
 		}
 	}

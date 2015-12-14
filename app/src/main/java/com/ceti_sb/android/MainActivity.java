@@ -140,7 +140,7 @@ public class MainActivity extends FragmentActivity
 			@Override
 			public void onReceive(Context context, Intent intent){
 				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-				boolean sentToken = sharedPreferences.getBoolean(SchoolBusiness.SENT_TOKEN_TO_SERVER, false);
+				boolean sentToken = sharedPreferences.getBoolean(Constants.SENT_TOKEN_TO_SERVER, false);
 				if (sentToken){
 					Log.d(TAG, "Received GCM Token");
 				} else {
@@ -216,7 +216,7 @@ public class MainActivity extends FragmentActivity
 		if (SchoolBusiness.loadLogin(getApplicationContext())){
 
 			LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-				new IntentFilter(SchoolBusiness.REGISTRATION_COMPLETE));
+				new IntentFilter(Constants.REGISTRATION_COMPLETE));
 			if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
 				onCreateTab(mTab);
 			}
@@ -563,7 +563,7 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void selectBadge(String user_id, String badge_id){
-		sendVolley(Request.Method.GET, ""+user_id+"/badges/"+badge_id,USERS,null,true);
+		sendVolley(Request.Method.GET, "" + user_id + "/badges/" + badge_id, USERS, null, true);
 	}
 
 	/* Social Media Integration Functions */

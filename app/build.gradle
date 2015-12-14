@@ -60,3 +60,7 @@ dependencies {
         exclude module: 'gson'
     }
 }
+
+dependencies{
+    androidTestCompile fileTree(dir: 'libs', include: ['robotium-solo-5.5.3.jar'])
+}

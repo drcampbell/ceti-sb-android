@@ -123,12 +123,12 @@ public class MainActivity extends FragmentActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		FacebookSdk.sdkInitialize(getApplicationContext());
 		setContentView(R.layout.activity_main);
 		mainView = getWindow().getDecorView().getRootView();
 		Intent intent = getIntent();
 		handleIntent(intent);
 		SchoolBusiness.loadLogin(this);
-		FacebookSdk.sdkInitialize(getApplicationContext());
 		twitter = new TwitterClient();
 		twitter.initialize(this);
 		Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());

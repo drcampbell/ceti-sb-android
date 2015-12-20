@@ -36,17 +36,19 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	//private static final ArrayList<Java.Lang.String> ARG_PARAM1 = new ArrayList<>();
-	private static final String ARG_PARAM1 = "ids";
-	private static final String ARG_PARAM2 = "titles";
-	private static final String ARG_PARAM3 = "starts";
-	private static final String ARG_MODEL = "model";
+	private static final String ARG_IDS_PARAM = "ids";
+	private static final String ARG_TITLES_PARAM = "titles";
+	private static final String ARG_AUX_PARAM = "starts";
+	private static final String ARG_AUX_ID_PARAMS = "aux_ids";
+	private static final String ARG_MODEL_PARAM = "model";
 //	private static final ArrayList<String> ARG_PARAM2 = new ArrayList<>();
 //	private static final ArrayList<String> ARG_PARAM3 = new ArrayList<>();
 
 	// TODO: Rename and change types of parameters
-	private ArrayList<String> mParam1 = new ArrayList<String>();
-	private ArrayList<String> mParam2 = new ArrayList<String>();
-	private ArrayList<String> mParam3 = new ArrayList<String>();
+	private ArrayList<String> idParams = new ArrayList<>();
+	private ArrayList<String> titleParams = new ArrayList<>();
+	private ArrayList<String> auxParams = new ArrayList<>();
+	private ArrayList<String> auxIdParams = new ArrayList<>();
 	private String mModel;
 
 	public static final String NOTIFICATIONS = "notifications";
@@ -88,6 +90,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		ArrayList<String> ids = new ArrayList<>();
 		ArrayList<String> titles = new ArrayList<>();
 		ArrayList<String> starts = new ArrayList<>();
+		ArrayList<String> auxIds = new ArrayList<>();
         try {			
 			JSONObject obj;
 			JSONArray obj_arr = response.getJSONArray(model);
@@ -99,18 +102,21 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 					case EVENTS:
 						ids.add   (obj.getString(key[0]));
 						titles.add(obj.getString(key[1]));
-						//starts.add(SchoolBusiness.parseTime(obj.getString(key[2])));
 						starts.add(obj.getString(key[2]));
+						//starts.add(SchoolBusiness.parseTime(obj.getString(key[2])));
 						break;
 					case NOTIFICATIONS:
 						int n_type = Integer.parseInt(obj.getString("n_type"));
 						ids.add(obj.getString("event_id"));
 						titles.add(obj.getString("act_user_name"));
+						Boolean read = obj.getBoolean("read");
+						
 						if (n_type != 3 && n_type != 4) {
 							starts.add(notification(obj.getString("event_title"), n_type));
 						} else {
 							starts.add(notification("", n_type));
 						}
+						auxIds.add(obj.getString("notif_id"));
 						break;
 					default:
 						ids.add   (obj.getString(key[0]));
@@ -127,14 +133,15 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		}
 		ListItemFragment fragment = new ListItemFragment();
 		Bundle args = new Bundle();
-		args.putStringArrayList(ARG_PARAM1, ids);
-		args.putStringArrayList(ARG_PARAM2, titles);
-		args.putStringArrayList(ARG_PARAM3, starts);
+		args.putStringArrayList(ARG_IDS_PARAM, ids);
+		args.putStringArrayList(ARG_TITLES_PARAM, titles);
+		args.putStringArrayList(ARG_AUX_PARAM, starts);
+		args.putStringArrayList(ARG_AUX_ID_PARAMS, auxIds);
 		Log.d("ListItem", model);
 		if (model.equals(NOTIFICATIONS)){
-			args.putString(ARG_MODEL, EVENTS);
+			args.putString(ARG_MODEL_PARAM, EVENTS);
 		} else {
-			args.putString(ARG_MODEL, model);
+			args.putString(ARG_MODEL_PARAM, model);
 		}
 		fragment.setArguments(args);
 		return fragment;
@@ -153,24 +160,25 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		super.onCreate(savedInstanceState);
 
 		if (getArguments() != null) {
-			mParam1 = getArguments().getStringArrayList(ARG_PARAM1);
-			mParam2 = getArguments().getStringArrayList(ARG_PARAM2);
-			mParam3 = getArguments().getStringArrayList(ARG_PARAM3);
-			mModel = getArguments().getString(ARG_MODEL);
-			//mParam2 = getArguments().getString(ARG_PARAM2);
+			idParams = getArguments().getStringArrayList(ARG_IDS_PARAM);
+			titleParams = getArguments().getStringArrayList(ARG_TITLES_PARAM);
+			auxParams = getArguments().getStringArrayList(ARG_AUX_PARAM);
+			auxIdParams = getArguments().getStringArrayList(ARG_AUX_ID_PARAMS);
+			mModel = getArguments().getString(ARG_MODEL_PARAM);
+			//titleParams = getArguments().getString(ARG_PARAM2);
 		}
 
 
 		mAdapter = new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_list_item_2, android.R.id.text1, mParam2){
+				android.R.layout.simple_list_item_2, android.R.id.text1, titleParams){
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent){
 				View view = super.getView(position, convertView, parent);
 				TextView text1 = (TextView) view.findViewById(android.R.id.text1);
 				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-				text1.setText(mParam2.get(position));
-				text2.setText(mParam3.get(position));
+				text1.setText(titleParams.get(position));
+				text2.setText(auxParams.get(position));
 				return view;
 			}
 		};
@@ -188,7 +196,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		// Set OnItemClickListener so we can be notified on item clicks
 		mListView.setOnItemClickListener(this);
 
-		if (mParam1.isEmpty()){
+		if (idParams.isEmpty()){
 			setEmptyText(view, "No "+mModel+" found");
 		}
 
@@ -218,7 +226,10 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
-			mListener.onListItemSelected(mParam1.get(position), mModel);
+			mListener.onListItemSelected(idParams.get(position), mModel);
+			if (mModel.equals(NOTIFICATIONS)){
+				mListener.onNotificationViewed(auxIdParams.get(position));
+			}
 		}
 	}
 
@@ -246,6 +257,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	public interface OnListItemInteractionListener {
 		// TODO: Update argument type and name
 		public void onListItemSelected(String id, String model);
+		public void onNotificationViewed(String id);
 	}
 
 	public static String notification(String event_title, int n_type){
@@ -260,6 +272,16 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 				return "has sent you a message via email";
 			case 4:
 				return "has awarded you a badge!";
+			case 5:
+				return "Award them a badge!";
+			case 6:
+				return "has canceled their event";
+			case 7:
+				return "has chosen a different candidate";
+			case 8:
+				return "has canceled their claim";
+			case 9:
+				return "has canceled their speaking engagement";
 			default:
 				return event_title;
 		}

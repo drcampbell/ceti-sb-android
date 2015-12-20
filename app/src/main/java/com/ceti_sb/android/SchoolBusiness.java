@@ -35,6 +35,7 @@ public class SchoolBusiness extends Application{
 	private static String id;
 	private static JSONObject profile;
 	private static JSONObject notifications;
+	private static String n_notifications = "0";
 	private static SharedPreferences loginPreferences;
 	private static SharedPreferences.Editor loginPrefsEditor;
 	public static final String ACTION_NOTIFICATION = "com.school_business.android.action.NOTIFICATION";
@@ -47,6 +48,11 @@ public class SchoolBusiness extends Application{
 		init();
 	}
 
+
+	public static String getNotificationCount(){ return n_notifications;}
+	public static void setNotificationCount(String count){
+		n_notifications = count;
+	}
 	public static JSONObject getNotifications(){
 		return notifications;
 	}
@@ -192,6 +198,7 @@ public class SchoolBusiness extends Application{
 		loginPrefsEditor = loginPreferences.edit();
 		loginPrefsEditor.putBoolean(Constants.SaveLoginString, true);
 		loginPrefsEditor.putString(Constants.ProfileString, profile.toString());
+		loginPrefsEditor.putString(Constants.NOTIFICATIONS, getNotificationCount());
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile Saved");
 	}
@@ -199,7 +206,8 @@ public class SchoolBusiness extends Application{
 	public static boolean loadLogin(Context context){
 		String str_profile;
 		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
-		str_profile = loginPreferences.getString(Constants.ProfileString,"");
+		str_profile = loginPreferences.getString(Constants.ProfileString, "");
+		setNotificationCount(loginPreferences.getString(Constants.NOTIFICATIONS, "0"));
 		if (str_profile.equals("")){
 			return false;
 		} else {

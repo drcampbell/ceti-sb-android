@@ -10,13 +10,9 @@
           android:actionViewClass="android.widget.SearchView"
           />
     <item android:id="@+id/notifications"
-          android:title="0"
+          android:title="@string/notification_count"
           android:showAsAction="collapseActionView|ifRoom"
           />
-    <item android:id="@+id/share"
-          android:title="Share"
-          android:orderInCategory="100"
-          app:showAsAction="ifRoom|withText" />
     <item android:id="@+id/menu_home"
           android:title="Home"
           android:orderInCategory="100"

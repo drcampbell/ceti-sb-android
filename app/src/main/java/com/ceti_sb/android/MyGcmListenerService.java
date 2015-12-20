@@ -25,6 +25,7 @@ public class MyGcmListenerService extends GcmListenerService {
 		String message = data.getString("message");
 		String event_id = data.getString("event_id");
 		String n_type = data.getString("n_type");
+		String notif_count = data.getString("count");
 		Log.d(TAG, "From: " + from);
 		Log.d(TAG, "Message: " + message);
 		Log.d(TAG, "Notification: " + n_type);
@@ -47,6 +48,7 @@ public class MyGcmListenerService extends GcmListenerService {
 		 * In some cases it may be useful to show a notification indicating to the user
 		 * that a message was received.
 		 */
+		SchoolBusiness.setNotificationCount(notif_count);
 		sendNotification(message, data);
 	}
 

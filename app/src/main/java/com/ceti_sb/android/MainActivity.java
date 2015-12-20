@@ -105,6 +105,7 @@ public class MainActivity extends FragmentActivity
 	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	private Boolean CAN_GET_TABS = false;
 
+	MenuItem notifications;
 	private BroadcastReceiver mRegistrationBroadcastReceiver;
 	private Fragment tabContent;
 	private Fragment tabContainer;
@@ -251,7 +252,10 @@ public class MainActivity extends FragmentActivity
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
-
+		/* Set the notifications counter to the current value in class */
+		notifications = menu.findItem(R.id.notifications);
+		notifications.setTitle(SchoolBusiness.getNotificationCount());
+		/* Initialize the Search View */
 		SearchManager searchManager =
 				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
@@ -264,7 +268,6 @@ public class MainActivity extends FragmentActivity
 				if (!hasFocus) {
 					if (searchView != null) {
 						if (!searchView.isIconified()) {
-							Log.d(TAG, "Sanity");
 							getSupportFragmentManager().beginTransaction()
 									.hide(searchOptionsFragment)
 									.show(blankSearch)
@@ -295,9 +298,6 @@ public class MainActivity extends FragmentActivity
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		switch (item.getItemId()){
-			case R.id.share:
-				SharingToSocialMedia("@string/facebook");
-				return true;
 			case R.id.notifications:
 				sendVolley(Request.Method.GET, "", NOTIFICATIONS, null, true);
 				return true;
@@ -441,6 +441,10 @@ public class MainActivity extends FragmentActivity
 	public void onListItemSelected(String id, String model) {
 		Boolean backtrack = true;
 		sendVolley(Request.Method.GET, id, model, null, backtrack);
+	}
+
+	public void onNotificationViewed(String id){
+		sendVolley(Request.Method.POST, id, NOTIFICATIONS, null, true);
 	}
 
 	public void onEventViewInteraction(String id, String model){
@@ -827,8 +831,7 @@ public class MainActivity extends FragmentActivity
 										Toast.makeText(getApplicationContext(), "You have entered an incorrect password", Toast.LENGTH_LONG).show();
 									}
 								} catch (JSONException e) {
-									Toast.makeText(getApplicationContext(),
-											e.getMessage(), Toast.LENGTH_SHORT).show();
+									handleJSONException(e);
 								}
 								break;
 							case "send_message":
@@ -841,14 +844,12 @@ public class MainActivity extends FragmentActivity
 										Toast.makeText(getApplicationContext(), "Message  Unsuccessful", Toast.LENGTH_LONG).show();
 									}
 								} catch (JSONException e) {
-									Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+									handleJSONException(e);
 									findViewById(R.id.send_message_button).setClickable(true);
 								}
 								break;
 							case NOTIFICATIONS:
-								ListItemFragment notifications = ListItemFragment.newInstance(response, NOTIFICATIONS);
-								swapFragment(notifications, R.id.fragment_container, FRAG_MAIN, backtrack);
-								clearTabs();
+								handleNotificationResponse(response, id, backtrack);
 								break;
 							case EVENTS:
 								handleEventResponse(method, model, id, response, backtrack);
@@ -951,8 +952,7 @@ public class MainActivity extends FragmentActivity
 					break;
 			}
 		}catch (JSONException e){
-			Toast.makeText(getApplicationContext(),
-					e.getMessage(), Toast.LENGTH_SHORT).show();
+			handleJSONException(e);
 		}
 	}
 
@@ -1002,8 +1002,7 @@ public class MainActivity extends FragmentActivity
 
 			}
 		}catch(JSONException e) {
-			Toast.makeText(getApplicationContext(),
-					e.getMessage(), Toast.LENGTH_SHORT).show();
+			handleJSONException(e);
 		}
 	}
 
@@ -1068,10 +1067,7 @@ public class MainActivity extends FragmentActivity
 					ProfileFragment profileFragment = ProfileFragment.newInstance(response);
 					swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				} catch (JSONException e) {
-					e.printStackTrace();
-					Toast.makeText(getApplicationContext(),
-							"Error: " + e.getMessage(),
-							Toast.LENGTH_LONG).show();
+					handleJSONException(e);
 				}
 				break;
 			case Request.Method.GET:
@@ -1087,6 +1083,21 @@ public class MainActivity extends FragmentActivity
 		}
 	}
 
+	public void handleNotificationResponse(JSONObject response, String id, Boolean backtrack){
+		try {
+			if (id.equals("")){
+				SchoolBusiness.setNotificationCount(response.getString("count"));
+				updateNotifications();
+			} else {
+				ListItemFragment notifications = ListItemFragment.newInstance(response, NOTIFICATIONS);
+				swapFragment(notifications, R.id.fragment_container, FRAG_MAIN, backtrack);
+				clearTabs();
+			}
+		} catch (JSONException e){
+			handleJSONException(e);
+		}
+	}
+
 	public void SharingToSocialMedia(String application) {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("plain/text");
@@ -1099,5 +1110,16 @@ public class MainActivity extends FragmentActivity
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(intent);
 		finish();
+	}
+
+	public void updateNotifications(){
+		notifications.setTitle(SchoolBusiness.getNotificationCount());
+	}
+
+	public void handleJSONException(JSONException e){
+		e.printStackTrace();
+		Toast.makeText(getApplicationContext(),
+				"Error: " + e.getMessage(),
+				Toast.LENGTH_LONG).show();
 	}
 }

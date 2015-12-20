@@ -11,7 +11,7 @@ public class Constants {
 
     public static String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static String REGISTRATION_COMPLETE = "registrationComplete";
-
+    public static String NOTIFICATIONS = "notifications";
 
 
 }

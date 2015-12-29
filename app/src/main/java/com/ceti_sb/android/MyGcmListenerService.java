@@ -22,6 +22,7 @@ public class MyGcmListenerService extends GcmListenerService {
 
 	@Override
 	public void onMessageReceived(String from, Bundle data){
+		Log.d(TAG, "Data"+data.toString());
 		String message = data.getString("message");
 		String event_id = data.getString("event_id");
 		String n_type = data.getString("n_type");

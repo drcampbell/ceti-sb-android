@@ -8,5 +8,6 @@
     <color name="NegPressedButtonColor">#99000e</color>
     <color name="PosButtonColor">#06c313</color>
     <color name="NegButtonColor">#ff001d</color>
+    <color name="UnreadColor">#aae4f7</color>
 
 </resources>

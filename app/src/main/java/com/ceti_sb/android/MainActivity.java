@@ -121,6 +121,7 @@ public class MainActivity extends FragmentActivity
 	private UserProfileFragment userProfileFragment;
 	private UserBadgesFragment userBadgesFragment;
 	public TwitterClient twitter;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -1086,12 +1087,12 @@ public class MainActivity extends FragmentActivity
 	public void handleNotificationResponse(JSONObject response, String id, Boolean backtrack){
 		try {
 			if (id.equals("")){
-				SchoolBusiness.setNotificationCount(response.getString("count"));
-				updateNotifications();
-			} else {
 				ListItemFragment notifications = ListItemFragment.newInstance(response, NOTIFICATIONS);
 				swapFragment(notifications, R.id.fragment_container, FRAG_MAIN, backtrack);
 				clearTabs();
+			} else {
+				SchoolBusiness.setNotificationCount(response.getString("count"));
+				updateNotifications();
 			}
 		} catch (JSONException e){
 			handleJSONException(e);

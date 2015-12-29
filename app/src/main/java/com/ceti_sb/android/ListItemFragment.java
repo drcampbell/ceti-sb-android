@@ -18,9 +18,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.ceti_sb.android.R.color.DefButtonColor;
 
 /**
  * A fragment representing a list of Items.
@@ -40,6 +44,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	private static final String ARG_TITLES_PARAM = "titles";
 	private static final String ARG_AUX_PARAM = "starts";
 	private static final String ARG_AUX_ID_PARAMS = "aux_ids";
+	private static final String ARG_READ_PARAMS = "read_states";
 	private static final String ARG_MODEL_PARAM = "model";
 //	private static final ArrayList<String> ARG_PARAM2 = new ArrayList<>();
 //	private static final ArrayList<String> ARG_PARAM3 = new ArrayList<>();
@@ -49,6 +54,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	private ArrayList<String> titleParams = new ArrayList<>();
 	private ArrayList<String> auxParams = new ArrayList<>();
 	private ArrayList<String> auxIdParams = new ArrayList<>();
+	private boolean[] readParams;
 	private String mModel;
 
 	public static final String NOTIFICATIONS = "notifications";
@@ -91,37 +97,40 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		ArrayList<String> titles = new ArrayList<>();
 		ArrayList<String> starts = new ArrayList<>();
 		ArrayList<String> auxIds = new ArrayList<>();
+		//Array readStates;// = new Array<Boolean>();
+		boolean[] readStates;
         try {			
 			JSONObject obj;
 			JSONArray obj_arr = response.getJSONArray(model);
-
+	        readStates = new boolean[obj_arr.length()];
+	        Arrays.fill(readStates, true);
 			for (int i = 0; i < obj_arr.length(); i++){
-
 				obj = (JSONObject) obj_arr.get(i);
 				switch (model){
 					case EVENTS:
 						ids.add   (obj.getString(key[0]));
 						titles.add(obj.getString(key[1]));
 						starts.add(obj.getString(key[2]));
+						readStates[i] = true;
 						//starts.add(SchoolBusiness.parseTime(obj.getString(key[2])));
 						break;
 					case NOTIFICATIONS:
 						int n_type = Integer.parseInt(obj.getString("n_type"));
 						ids.add(obj.getString("event_id"));
 						titles.add(obj.getString("act_user_name"));
-						Boolean read = obj.getBoolean("read");
-						
+						readStates[i] = obj.getBoolean("read");
 						if (n_type != 3 && n_type != 4) {
 							starts.add(notification(obj.getString("event_title"), n_type));
 						} else {
 							starts.add(notification("", n_type));
 						}
-						auxIds.add(obj.getString("notif_id"));
+						auxIds.add(obj.getString("id"));
 						break;
 					default:
 						ids.add   (obj.getString(key[0]));
 						titles.add(obj.getString(key[1]));
 						starts.add(obj.getString(key[2]));
+						readStates[i] = true;
 						break;
 				}
 			}
@@ -130,6 +139,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 //			Toast.makeText(getActivity().getApplicationContext(),
 //					"Error: " + e.getMessage(),
 //					Toast.LENGTH_LONG).show();
+	        return null;
 		}
 		ListItemFragment fragment = new ListItemFragment();
 		Bundle args = new Bundle();
@@ -137,9 +147,10 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		args.putStringArrayList(ARG_TITLES_PARAM, titles);
 		args.putStringArrayList(ARG_AUX_PARAM, starts);
 		args.putStringArrayList(ARG_AUX_ID_PARAMS, auxIds);
+		args.putBooleanArray(ARG_READ_PARAMS, readStates);
 		Log.d("ListItem", model);
 		if (model.equals(NOTIFICATIONS)){
-			args.putString(ARG_MODEL_PARAM, EVENTS);
+			args.putString(ARG_MODEL_PARAM, NOTIFICATIONS);
 		} else {
 			args.putString(ARG_MODEL_PARAM, model);
 		}
@@ -164,6 +175,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 			titleParams = getArguments().getStringArrayList(ARG_TITLES_PARAM);
 			auxParams = getArguments().getStringArrayList(ARG_AUX_PARAM);
 			auxIdParams = getArguments().getStringArrayList(ARG_AUX_ID_PARAMS);
+			readParams = getArguments().getBooleanArray(ARG_READ_PARAMS);
 			mModel = getArguments().getString(ARG_MODEL_PARAM);
 			//titleParams = getArguments().getString(ARG_PARAM2);
 		}
@@ -176,9 +188,14 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 				View view = super.getView(position, convertView, parent);
 				TextView text1 = (TextView) view.findViewById(android.R.id.text1);
 				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-
+				if (!readParams[position]){
+					view.setBackgroundColor(getResources().getColor(R.color.UnreadColor));
+				} else {
+					view.setBackgroundColor(getResources().getColor(R.color.tw__solid_white));
+				}
 				text1.setText(titleParams.get(position));
 				text2.setText(auxParams.get(position));
+
 				return view;
 			}
 		};
@@ -226,9 +243,13 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
-			mListener.onListItemSelected(idParams.get(position), mModel);
-			if (mModel.equals(NOTIFICATIONS)){
+
+			if (mModel.equals(getString(R.string.notifications))){
+				mListener.onListItemSelected(idParams.get(position), getString(R.string.events));
+				Log.d("NOTIFICATIONs", "Sanity "+auxIdParams.get(position));
 				mListener.onNotificationViewed(auxIdParams.get(position));
+			} else {
+				mListener.onListItemSelected(idParams.get(position), mModel);
 			}
 		}
 	}

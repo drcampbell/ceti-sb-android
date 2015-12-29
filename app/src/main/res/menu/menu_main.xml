@@ -10,7 +10,7 @@
           android:actionViewClass="android.widget.SearchView"
           />
     <item android:id="@+id/notifications"
-          android:title="@string/notification_count"
+          android:title="0"
           android:showAsAction="collapseActionView|ifRoom"
           />
     <item android:id="@+id/menu_home"

@@ -5,11 +5,23 @@
              android:layout_height="match_parent"
              tools:context="com.ceti_sb.android.ListItemFragment">
 
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            style="@style/Button"
+            android:id="@+id/clear_notifications_button"
+            android:visibility="gone"
+            android:text="Mark All Notifications As Read"
+            android:onClick="onClick"/>
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
     <TextView
         android:id="@+id/search_fail"
         android:layout_width="match_parent"

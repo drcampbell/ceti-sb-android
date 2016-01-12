@@ -21,8 +21,10 @@ import java.util.Iterator;
 public class SchoolBusiness extends Application{
 
 	public static final Boolean DEBUG = true;
-	public static final String URL = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/";
-	public static final String TARGET = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/";
+	//public static final String URL = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/";
+	public static final String URL = "https://www.school2biz.com";
+	//public static final String TARGET = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/";
+	public static final String TARGET = "https://www.school2biz.com/api/";
 	public static final String AWS_S3 = "https://s3-us-west-1.amazonaws.com/ceti-sb/badges/";
 	public static final String NONE = "None";
 	public static final String TEACHER = "Teacher";
@@ -41,10 +43,11 @@ public class SchoolBusiness extends Application{
 	public static final String ACTION_NOTIFICATION = "com.school_business.android.action.NOTIFICATION";
 
 	public static final String[] time_zones = {"Eastern Time (US & Canada)"};
+
 	@Override
 	public void onCreate(){
-		super.onCreate();
 
+		super.onCreate();
 		init();
 	}
 
@@ -60,7 +63,7 @@ public class SchoolBusiness extends Application{
 	public static void setProfile(JSONObject obj){
 		profile = obj;
 		try {
-			profile.put("role", translateRole(profile.get("role").toString()));
+			profile.put(Constants.ROLE, translateRole(profile.get(Constants.ROLE).toString()));
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
 		}
@@ -77,7 +80,7 @@ public class SchoolBusiness extends Application{
 				String key = (String) keys.next();
 				profile.put(key, obj.getString(key));
 			}
-			profile.put("role", translateRole(profile.get("role").toString()));
+			profile.put(Constants.ROLE, translateRole(profile.get(Constants.ROLE).toString()));
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
 		}
@@ -99,15 +102,15 @@ public class SchoolBusiness extends Application{
 
 	public static String getEmail(){
 		try {
-			return profile.getString("email");
+			return profile.getString(Constants.EMAIL);
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
-			return "";
+			return Constants.NULL;
 		}
 	}
 	public static void setEmail(String email) {
 		try {
-			profile.put("email", email);
+			profile.put(Constants.EMAIL, email);
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
 		}
@@ -115,16 +118,16 @@ public class SchoolBusiness extends Application{
 
 	public static String getRole(){
 		try {
-			return profile.getString("role");
+			return profile.getString(Constants.ROLE);
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
-			return "";
+			return Constants.NULL;
 		}
 	}
 
 	public static void setRole(String role){
 		try {
-			profile.put("role", role);
+			profile.put(Constants.ROLE, role);
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
 		}
@@ -135,7 +138,7 @@ public class SchoolBusiness extends Application{
 			return profile.getString("authentication_token");
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
-			return "";
+			return Constants.NULL;
 		}
 	}
 
@@ -155,7 +158,7 @@ public class SchoolBusiness extends Application{
 		if (date != null) {
 			return date.toString();
 		} else {
-			return "";
+			return Constants.NULL;
 		}
 	}
 	public static String toDisplayCase(String s) {
@@ -197,7 +200,7 @@ public class SchoolBusiness extends Application{
 		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		loginPrefsEditor = loginPreferences.edit();
 		loginPrefsEditor.putBoolean(Constants.SaveLoginString, true);
-		loginPrefsEditor.putString(Constants.ProfileString, profile.toString());
+		loginPrefsEditor.putString(Constants.PROFILE, profile.toString());
 		loginPrefsEditor.putString(Constants.NOTIFICATIONS, getNotificationCount());
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile Saved");
@@ -206,9 +209,9 @@ public class SchoolBusiness extends Application{
 	public static boolean loadLogin(Context context){
 		String str_profile;
 		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
-		str_profile = loginPreferences.getString(Constants.ProfileString, "");
+		str_profile = loginPreferences.getString(Constants.PROFILE, Constants.NULL);
 		setNotificationCount(loginPreferences.getString(Constants.NOTIFICATIONS, "0"));
-		if (str_profile.equals("")){
+		if (str_profile.equals(Constants.NULL)){
 			return false;
 		} else {
 			try {
@@ -226,7 +229,7 @@ public class SchoolBusiness extends Application{
 		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		loginPrefsEditor = loginPreferences.edit();
 		profile = null;
-		loginPrefsEditor.putString(Constants.ProfileString, "");
+		loginPrefsEditor.putString(Constants.PROFILE, Constants.NULL);
 		loginPrefsEditor.clear();
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile cleared");

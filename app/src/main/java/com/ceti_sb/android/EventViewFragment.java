@@ -84,9 +84,9 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 			try {
 				JSONObject obj = new JSONObject(getArguments().getString(JSON_RESPONSE));
 				renderEvent(view, obj);
-				id = obj.getString("id");
+				id = obj.getString(Constants.ID);
 				event_owner = obj.getString("user_id");
-				if (obj.getString("speaker").equals("TBA")){
+				if (obj.getString(Constants.SPEAKER).equals("TBA")){
 					displayClaims = true;
 				}
 			} catch (JSONException e) {
@@ -96,7 +96,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 			}
 			//mParam1 = getArguments().getString(JSON_RESPONSE);
 			//mParam2 = getArguments().getString(ARG_PARAM2);
-			if (displayClaims && event_owner.equals(SchoolBusiness.getUserAttr("id"))) {
+			if (displayClaims && event_owner.equals(SchoolBusiness.getUserAttr(Constants.ID))) {
 				mListener.getClaims(id);
 			} else {
 				view.findViewById(R.id.ll_claims).setVisibility(View.GONE);
@@ -196,28 +196,28 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 			case R.id.tv_speaker:
 				return "speaker_id";
 			default:
-				return "";
+				return Constants.NULL;
 		}
 	}
 
 	public void renderEvent(View view, JSONObject response) {
 		try {
-			event_id = response.getString("id");
+			event_id = response.getString(Constants.ID);
 			claim_id = response.getString("claim_id");
 			String str;
-			String link = "";
+			String link = Constants.NULL;
 			int[] resource = {R.id.tv_title, R.id.tv_speaker, R.id.tv_start,R.id.tv_end,R.id.tv_location,R.id.tv_name,R.id.tv_content};
-			String[] name = {"title", "speaker", "event_start", "event_end", "loc_name", "user_name", "content"};
+			String[] name = {Constants.TITLE, Constants.SPEAKER, "event_start", "event_end", "loc_name", Constants.USER_NAME, "content"};
 			TextView tv;
 
 			event = response.toString();
 			Log.d("WHATISEVENT", event);
 			/* Check whether user is event owner */
-			if (!response.getString("user_id").equals(SchoolBusiness.getUserAttr("id"))){
+			if (!response.getString("user_id").equals(SchoolBusiness.getUserAttr(Constants.ID))){
 				((Button) view.findViewById(R.id.edit_button)).setVisibility(View.GONE);
 				((Button) view.findViewById(R.id.delete_button)).setVisibility(View.GONE);
 				/* Is user the speaker of the event? */
-				if (response.getString("speaker_id").equals(SchoolBusiness.getUserAttr("id"))) {
+				if (response.getString("speaker_id").equals(SchoolBusiness.getUserAttr(Constants.ID))) {
 					((Button) view.findViewById(R.id.claim_button)).setVisibility(View.GONE);
 					((Button) view.findViewById(R.id.delete_button)).setVisibility(View.VISIBLE);
 					((Button) view.findViewById(R.id.delete_button)).setText("Cancel");
@@ -246,7 +246,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				tv = (TextView) view.findViewById(resource[i]);
 
 				link = get_id(resource[i]);
-				if (!link.equals("")) {
+				if (!link.equals(Constants.NULL)) {
 					link = response.getString(link);
 					tv.setOnClickListener(EventViewFragment.this);
 					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));

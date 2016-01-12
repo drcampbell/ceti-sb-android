@@ -34,7 +34,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-	    toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+	    toast = Toast.makeText(this, Constants.NULL, Toast.LENGTH_SHORT);
     }
 
 
@@ -84,22 +84,22 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 					if (!comparePassword(params)){
 						toaster("Passwords Do Not Match!");
 					}
-					else if (!validateEmail(params.getString("email"))){
+					else if (!validateEmail(params.getString(Constants.EMAIL))){
 						toaster("Email is Invalid or Missing");
 					} else if (!hasRole()) {
 						toaster("Please Select a Role");
-					} else if (!hasName(params.getString("name"))){
+					} else if (!hasName(params.getString(Constants.NAME))){
 						toaster("Please Enter Your Name");
-					} else if (params.getString("name").length() > 255){
+					} else if (params.getString(Constants.NAME).length() > 255){
 						toaster("Name should be under 255 characters");
 					}
-					else if (params.getString("name").trim().length() < 2){
+					else if (params.getString(Constants.NAME).trim().length() < 2){
 						toaster("Name should be more than 2 characters");
 					}
-					else if (params.getString("email").length() > 255){
+					else if (params.getString(Constants.EMAIL).length() > 255){
 						toaster("Email should be under 255 characters");
 					}
-					else if (params.getString("password").length() > 255){
+					else if (params.getString(Constants.PASSWORD).length() > 255){
 						toaster("Password should be under 255 characters");
 					}
 					else {
@@ -124,7 +124,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 		toast.show();
 	}
 	private Boolean hasName(String name){
-		return !name.equals("");
+		return !name.equals(Constants.NULL);
 	}
 
 	private Boolean hasRole(){
@@ -139,7 +139,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 
 	private Boolean comparePassword(JSONObject user) {
 		try {
-			return user.getString("password").equals(user.getString("confirm_password"));
+			return user.getString(Constants.PASSWORD).equals(user.getString(Constants.CONFIRM_PASSWORD));
 		} catch (JSONException e) {
 			return false;
 		}
@@ -151,14 +151,14 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 		EditText field;
 		try {
 			field = (EditText) findViewById(R.id.name);
-			user.put("name", field.getText());
+			user.put(Constants.NAME, field.getText());
 			field = (EditText) findViewById(R.id.email);
-			user.put("email", field.getText());
+			user.put(Constants.EMAIL, field.getText());
 			field = (EditText) findViewById(R.id.password);
-			user.put("password", field.getText());
+			user.put(Constants.PASSWORD, field.getText());
 			field = (EditText) findViewById(R.id.confirm_password);
-			user.put("confirm_password", field.getText());
-			user.put("role", role);
+			user.put(Constants.CONFIRM_PASSWORD, field.getText());
+			user.put(Constants.ROLE, role);
 			user.put("school_id", "1");
 		} catch (JSONException e) {
 			Log.d(TAG, "Get Params Failed");

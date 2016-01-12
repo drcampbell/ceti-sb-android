@@ -118,7 +118,7 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 	 */
 	public interface OnSchoolViewInteractionListener {
 		// TODO: Update argument type and name
-		public void createSchoolFeed(View view, JSONObject feed);
+		public void createSchoolFeed(View view, JSONObject feed, String id);
 		public void makeMySchool(String id);
 	}
 
@@ -127,12 +127,12 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 		try {
 			JSONObject response = new JSONObject(str_response);
 			JSONObject school = response.getJSONObject("school");
-			id = school.getString("id");
-			Boolean isClick = !id.equals("");
+			id = school.getString(Constants.ID);
+			Boolean isClick = !id.equals(Constants.NULL);
 			view.findViewById(R.id.make_my_school_button).setClickable(isClick);
 			view.findViewById(R.id.make_my_school_button).setOnClickListener(this);
 			int[] res = {R.id.tv_name,R.id.tv_address,R.id.tv_city, R.id.tv_state, R.id.tv_zip, R.id.tv_phone};
-			String[] get_str = {"name", "address", "city", "state", "zip", "phone"};
+			String[] get_str = {Constants.NAME, "address", "city", "state", "zip", "phone"};
 			for(int i = 0; i < get_str.length; i++) {
 				mTextView = (TextView) view.findViewById(res[i]);
 				if (get_str.equals("phone")) {
@@ -141,7 +141,7 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 					mTextView.setText(SchoolBusiness.toDisplayCase(school.getString(get_str[i])));
 				}
 			}
-			mListener.createSchoolFeed(view, response);
+			mListener.createSchoolFeed(view, response, id);
 		} catch (JSONException e){
 			e.printStackTrace();
 			Toast.makeText(getActivity().getApplicationContext(),

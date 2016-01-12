@@ -141,7 +141,7 @@ public class ClaimViewFragment extends Fragment implements View.OnClickListener{
 			case R.id.TV_School:
 				return "school_id";
 			default:
-				return "";
+				return Constants.NULL;
 		}
 	}
 
@@ -153,7 +153,7 @@ public class ClaimViewFragment extends Fragment implements View.OnClickListener{
 			user_id = response.getString("user_id");
 			user_name = response.getString("user_name");
 			String str;
-			String link = "";
+			String link = Constants.NULL;
 			int[] resource = {R.id.tv_title, R.id.tv_job, R.id.tv_business};
 			String[] name = {"user_name", "job_title", "business"};
 			TextView tv;
@@ -164,7 +164,7 @@ public class ClaimViewFragment extends Fragment implements View.OnClickListener{
 				tv = (TextView) view.findViewById(resource[i]);
 
 				link = get_id(resource[i]);
-				if (!link.equals("")) {
+				if (!link.equals(Constants.NULL)) {
 					link = response.getString(link);
 					tv.setOnClickListener(ClaimViewFragment.this);
 					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));

@@ -41,7 +41,7 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 	// TODO: Rename and change types of parameters
 	private String mParam1;
 	private String mParam2;
-	private String role = "";
+	private String role = Constants.NULL;
 	private OnEditAccountListener mListener;
 
 	/**
@@ -171,9 +171,9 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 		view.findViewById(R.id.register_both).setOnClickListener(this);
 
 		try {
-			((EditText) view.findViewById(R.id.et_name)).setText(profile.getString("name"));
-			((EditText) view.findViewById(R.id.et_email)).setText(profile.getString("email"));
-			role = profile.getString("role");
+			((EditText) view.findViewById(R.id.et_name)).setText(profile.getString(Constants.NAME));
+			((EditText) view.findViewById(R.id.et_email)).setText(profile.getString(Constants.EMAIL));
+			role = profile.getString(Constants.ROLE);
 
 			switch (role){
 				case SchoolBusiness.TEACHER:
@@ -199,26 +199,26 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 			String name = ((EditText) getActivity().findViewById(R.id.et_name)).getText().toString();
 			String email = ((EditText) getActivity().findViewById(R.id.et_email)).getText().toString();
 			if (validateName(name)) {
-				account.put("name", name);
+				account.put(Constants.NAME, name);
 			} else {
 				Toast.makeText(getActivity().getApplicationContext(), NAME_INVALID, Toast.LENGTH_LONG).show();
 				return null;
 			}
 			if (validateEmail(email)) {
-				account.put("email", email);
+				account.put(Constants.EMAIL, email);
 			} else {
 				Toast.makeText(getActivity().getApplicationContext(), EMAIL_INVALID, Toast.LENGTH_LONG).show();
 				return null;
 			}
 			// Rails handles roles in a stupid way.  (Takes as input alpha, provides numeric output)
-			account.put("role", SchoolBusiness.getRole());
+			account.put(Constants.ROLE, SchoolBusiness.getRole());
 			String new_password = ((EditText) getActivity().findViewById(R.id.new_password)).getText().toString();
 			String confirm_password = ((EditText) getActivity().findViewById(R.id.confirm_password)).getText().toString();
 			String current_password = ((EditText) getActivity().findViewById(R.id.password)).getText().toString();
 			if (!new_password.isEmpty() || !confirm_password.isEmpty()){
 				if (validateNewPassword(new_password, confirm_password)){
-					account.put("password", new_password);
-					account.put("confirm_password", confirm_password);
+					account.put(Constants.PASSWORD, new_password);
+					account.put(Constants.CONFIRM_PASSWORD, confirm_password);
 				} else {
 					return null;
 				}
@@ -259,7 +259,7 @@ public class AccountEditFragment extends Fragment implements View.OnClickListene
 	}
 
 	private Boolean validateName(String name){
-		return !name.equals("");
+		return !name.equals(Constants.NULL);
 	}
 
 	private Boolean hasRole(){

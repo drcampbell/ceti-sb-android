@@ -117,7 +117,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 		JSONObject profile = SchoolBusiness.getProfile();
 		try {
 			int[] resource = {R.id.tv_name, R.id.tv_email, R.id.tv_location, R.id.tv_grades, R.id.tv_bio, R.id.tv_business, R.id.tv_job};
-			String[] id = {"name", "email", "school_name", "grades", "biography", "business", "job_title"};
+			String[] id = {Constants.NAME, Constants.EMAIL, "school_name", "grades", "biography", "business", "job_title"};
 			((Button) view.findViewById(R.id.edit_profile_button)).setOnClickListener(ProfileFragment.this);
 			((Button) view.findViewById(R.id.edit_account_button)).setOnClickListener(ProfileFragment.this);
 			for (int i = 0; i < resource.length; i++){
@@ -130,7 +130,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 							.getColor(android.R.color.holo_blue_dark));
 				}
 			}
-			((TextView) view.findViewById(R.id.tv_role)).setText(SchoolBusiness.getRole());//profile.getString("role")));
+			((TextView) view.findViewById(R.id.tv_role)).setText(SchoolBusiness.getRole());//profile.getString(Constants.ROLE)));
 
 		} catch (JSONException e) {
 			e.printStackTrace();

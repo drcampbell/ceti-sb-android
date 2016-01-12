@@ -131,7 +131,7 @@ public class ProfileEditFragment extends Fragment implements View.OnClickListene
 		((Button) view.findViewById(R.id.save_profile_button)).setOnClickListener(ProfileEditFragment.this);
 		JSONObject profile = SchoolBusiness.getProfile();
 		try {
-			((TextView) view.findViewById(R.id.tv_name)).setText(profile.getString("name"));
+			((TextView) view.findViewById(R.id.tv_name)).setText(profile.getString(Constants.NAME));
 			((TextView) view.findViewById(R.id.tv_location)).setText(profile.getString("school_name"));
 			((EditText) view.findViewById(R.id.et_grades)).setText(profile.getString("grades"));
 			((EditText) view.findViewById(R.id.et_bio)).setText(profile.getString("biography"));
@@ -150,8 +150,8 @@ public class ProfileEditFragment extends Fragment implements View.OnClickListene
 			JSONObject profile = SchoolBusiness.getProfile();
 
 			// Rails handles roles in a stupid way.  (Takes as input alpha, provides numeric output)
-			if (SchoolBusiness.isNumeric(profile.getString("role"))) {
-				profile.put("role", SchoolBusiness.translateRole(profile.getString("role")));
+			if (SchoolBusiness.isNumeric(profile.getString(Constants.ROLE))) {
+				profile.put(Constants.ROLE, SchoolBusiness.translateRole(profile.getString(Constants.ROLE)));
 			}
 			profile.put("grades", ((EditText) getActivity().findViewById(R.id.et_grades)).getText());
 			profile.put("biography", ((EditText) getActivity().findViewById(R.id.et_bio)).getText());

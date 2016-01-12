@@ -62,7 +62,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 		if (getArguments() != null) {
 			event_name = getArguments().getString("event_name");
 			speaker_name = getArguments().getString("speaker_name");
-			event_id = Integer.parseInt(getArguments().getString("event_id"));
+			event_id = Integer.parseInt(getArguments().getString(Constants.EVENT_ID));
 			badge_url = getArguments().getString("badge_url");
 		}
 	}

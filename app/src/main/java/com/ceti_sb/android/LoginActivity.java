@@ -73,8 +73,8 @@ public class LoginActivity extends Activity implements OnClickListener {
         final String password = this.userPasswordText.getText().toString();
 
 	    HashMap<String, String> inner = new HashMap<String, String>();
-	    inner.put("email", email);
-	    inner.put("password", password);
+	    inner.put(Constants.EMAIL, email);
+	    inner.put(Constants.PASSWORD, password);
 	    HashMap<String, HashMap<String, String>> outer = new HashMap<String, HashMap<String, String>>();
 		outer.put("user", inner);
 		JSONObject obj = new JSONObject(outer);

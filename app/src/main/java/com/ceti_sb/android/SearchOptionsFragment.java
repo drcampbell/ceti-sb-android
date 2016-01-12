@@ -82,7 +82,7 @@ public class SearchOptionsFragment extends Fragment implements View.OnClickListe
 		switch (view.getId()){
 			case R.id.events_checkBox:
 				if (checked){
-					mListener.onSearchInteraction("events");
+					mListener.onSearchInteraction(Constants.EVENTS);
 					((CheckBox) view.findViewById(R.id.schools_checkBox)).setChecked(false);
 					((CheckBox) view.findViewById(R.id.user_checkBox)).setChecked(false);
 				}

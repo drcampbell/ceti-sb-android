@@ -79,7 +79,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			mEdit = getArguments().getBoolean(ARG_PARAM1);
 			mEvent = getArguments().getString(ARG_PARAM2);
 		}
-		toast = Toast.makeText(getActivity().getApplicationContext(), "", Toast.LENGTH_SHORT);
+		toast = Toast.makeText(getActivity().getApplicationContext(), Constants.NULL, Toast.LENGTH_SHORT);
 	}
 
 	@Override
@@ -148,11 +148,11 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		try {
 			JSONObject event = new JSONObject();
 			if (mId != null){
-				event.put("id", mId);
+				event.put(Constants.ID, mId);
 			}
 			EditText data;
 			int[] resource = {R.id.ET_content, R.id.ET_title, R.id.et_tags};
-			String[] headers = {"content", "title", "tag_list",};
+			String[] headers = {"content", Constants.TITLE, "tag_list",};
 
 			int[] start = {R.id.start_year, R.id.start_month, R.id.start_day, R.id.start_hour, R.id.start_minutes};
 			int[] end = {R.id.end_year, R.id.end_month, R.id.end_day, R.id.end_hour, R.id.end_minutes};
@@ -171,13 +171,13 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				data = (EditText) getActivity().findViewById(resource[i]);
 				event.put(headers[i], data.getText().toString());
 			}
-			Log.d("EVENT", event.getString("title"));
-			Log.d("EVENT", event.getString("title").trim());
-			if (event.getString("title").trim().length() == 0){
+			Log.d("EVENT", event.getString(Constants.TITLE));
+			Log.d("EVENT", event.getString(Constants.TITLE).trim());
+			if (event.getString(Constants.TITLE).trim().length() == 0){
 				toaster("Error: Title must consist of alphanumeric characters");
 				return null;
 			}
-			if (event.getString("title").length() > 255){
+			if (event.getString(Constants.TITLE).length() > 255){
 				toaster("Error: Title must be less than 255 characters");
 				return null;
 			}
@@ -219,11 +219,11 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				x[i] = Integer.parseInt(et.getText().toString());
 				if (x[i] < time_min[i] || x[i] > time_max[i]){
 					toaster("Values for " + name[i] + " must be between " + time_min[i] + " and " + time_max[i]);
-					return "";
+					return Constants.NULL;
 				}
 			} catch (NumberFormatException e){
 				toaster("You must enter a valid value for " + name[i]);
-				return "";
+				return Constants.NULL;
 			}
 			if (cal_res[i]==Calendar.MONTH){
 				x[i] = (x[i]-1) % 12;
@@ -287,8 +287,8 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		if (mEdit){
 			try {
 				JSONObject event = new JSONObject(mEvent);
-				mId = event.getString("id");
-				((EditText) view.findViewById(R.id.ET_title)).setText(event.getString("title"));
+				mId = event.getString(Constants.ID);
+				((EditText) view.findViewById(R.id.ET_title)).setText(event.getString(Constants.TITLE));
 				((EditText) view.findViewById(R.id.ET_content)).setText(event.getString("content"));
 				if (event.has("tags")){
 					((EditText) view.findViewById(R.id.et_tags)).setText(event.getString("tags"));
@@ -305,7 +305,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				Log.d("JSONException", e.getMessage().toString());
 			}
 		} else {
-			cal.setTime(parseDate(""));
+			cal.setTime(parseDate(Constants.NULL));
 
 			// Set start time
 			cal.set(Calendar.HOUR_OF_DAY, (cal.get(Calendar.HOUR_OF_DAY) + 1 % 24));
@@ -329,11 +329,11 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				cb.setChecked(true);
 			}
 			if (cal_res[i] == Calendar.MONTH){
-				et.setText(""+(cal.get(cal_res[i])+1));
+				et.setText(Constants.NULL+(cal.get(cal_res[i])+1));
 			} else if (cal_res[i] == Calendar.HOUR && cal.get(Calendar.HOUR) == 0) {
 				et.setText("12");
 			}else {
-				et.setText("" + cal.get(cal_res[i]));
+				et.setText(Constants.NULL + cal.get(cal_res[i]));
 			}
 		}
 	}
@@ -366,7 +366,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 						Toast.LENGTH_LONG);
 				toast.show();
 			}
-			return "";
+			return Constants.NULL;
 		}
 
 		private boolean isInRange(int a, int b, int c) {

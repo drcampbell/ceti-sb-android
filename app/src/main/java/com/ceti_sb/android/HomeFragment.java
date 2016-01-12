@@ -78,7 +78,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 	public void onClick(View view){
 		switch (view.getId()){
 			case R.id.create_event:
-				mListener.onCreateEvent(false, "");
+				mListener.onCreateEvent(false, Constants.NULL);
 				break;
 		}
 	}

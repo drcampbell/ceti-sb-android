@@ -40,8 +40,8 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
         RequestQueue queue = NetworkVolley.getInstance(context)
                 .getRequestQueue();
         HashMap<String, String> inner = new HashMap<String, String>();
-        inner.put("email", "a@b.c");
-        inner.put("password", "1234");
+        inner.put(Constants.EMAIL, "a@b.c");
+        inner.put(Constants.PASSWORD, "1234");
         HashMap<String, HashMap<String, String>> outer = new HashMap<String, HashMap<String, String>>();
         outer.put("user", inner);
         JSONObject obj = new JSONObject(outer);

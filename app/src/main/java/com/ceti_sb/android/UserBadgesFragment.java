@@ -103,7 +103,7 @@ public class UserBadgesFragment extends Fragment implements View.OnClickListener
 	public void render(View view){
 		try {
 			JSONObject response = new JSONObject(str_response);
-			user_id = response.getJSONObject("user").getString("id");
+			user_id = response.getJSONObject("user").getString(Constants.ID);
 			JSONArray badges = response.getJSONArray("badges");
 			HashMap<Integer, String> bmap = new HashMap<>();
 			GridLayout display = (GridLayout) view.findViewById(R.id.badge_display);

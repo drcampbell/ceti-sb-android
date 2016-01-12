@@ -102,7 +102,7 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 		badge.getLayoutParams().height = 512;
 		badge.getLayoutParams().width = 512;
 		TextView tv = (TextView) view.findViewById(R.id.badge_message);
-		String addressee = (user_id == Integer.parseInt(SchoolBusiness.getUserAttr("id"))) ? "you" : user_name;
+		String addressee = (user_id == Integer.parseInt(SchoolBusiness.getUserAttr(Constants.ID))) ? "you" : user_name;
 		if (notification) {
 			content = event_owner + " awards you a badge for speaking at the event: " + event_name
 					+ ", at " + school_name;
@@ -114,12 +114,12 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 			tv.setText(content);
 		}
 
-		if (user_id == Integer.parseInt(SchoolBusiness.getUserAttr("id"))) {
+		if (user_id == Integer.parseInt(SchoolBusiness.getUserAttr(Constants.ID))) {
 			badge_uri = Uri.parse(badge_str);
-			url = SchoolBusiness.URL + "users/" + SchoolBusiness.getUserAttr("id") + "/badges/" + badge_id;
+			url = SchoolBusiness.URL + "users/" + SchoolBusiness.getUserAttr(Constants.ID) + "/badges/" + badge_id;
 			final ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
 					.setContentUrl(Uri.parse(url))
-					.setContentTitle(SchoolBusiness.getUserAttr("name") +
+					.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
 							" was awarded a badge!")
 					.setContentDescription("Badge awarded for speaking at the event" + event_name
 							+ ", at " + school_name)

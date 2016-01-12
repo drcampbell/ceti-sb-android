@@ -82,19 +82,10 @@ public class MainActivity extends FragmentActivity
 
 {
 
-	private final String TAG = "Event";
+	private final String TAG = "MainActivity";
 	private String event_id;
 	private int mTab = 0;
-	private final String EVENTS = "events";
-	private final String USERS = "users";
-	private final String CLAIMS = "claims";
-	private final String SCHOOLS = "schools";
-	private final String NOTIFICATIONS = "notifications";
-	private String searchModel = "events";
-
-	private final String TEACHER = "Teacher";
-	private final String SPEAKER = "Speaker";
-	private final String BOTH = "BOTH";
+	private String searchModel = Constants.EVENTS;
 
 	private String FRAG_SEARCH = "Event";
 	private String FRAG_MAIN = "Main";
@@ -300,7 +291,7 @@ public class MainActivity extends FragmentActivity
 		int id = item.getItemId();
 		switch (item.getItemId()){
 			case R.id.notifications:
-				sendVolley(Request.Method.GET, "", NOTIFICATIONS, null, true);
+				sendVolley(Request.Method.GET, Constants.NULL, Constants.NOTIFICATIONS, null, true);
 				return true;
 			case R.id.menu_home:
 				if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() != HomeFragment.class) {
@@ -310,15 +301,15 @@ public class MainActivity extends FragmentActivity
 				return true;
 			case R.id.menu_action_settings:
 				Log.d(TAG, "User selected get settings");
-				sendVolley(Request.Method.GET, "settings", USERS, null, true);
+				sendVolley(Request.Method.GET, Constants.SETTINGS, Constants.USERS, null, true);
 				return true;
 			case R.id.menu_profile:
 				Log.d(TAG, "User selected get profile");
-				sendVolley(Request.Method.GET, "profile", USERS, null, true);
+				sendVolley(Request.Method.GET, Constants.PROFILE, Constants.USERS, null, true);
 				return true;
 			case R.id.menu_logout:
 				Log.d(TAG, "User selected Logout");
-				sendVolley(Request.Method.DELETE, "sign_out", USERS, null, false);
+				sendVolley(Request.Method.DELETE, Constants.SIGN_OUT, Constants.USERS, null, false);
 
 				return true;
 		}
@@ -353,15 +344,20 @@ public class MainActivity extends FragmentActivity
 		switch (intent.getAction()) {
 			case Intent.ACTION_SEARCH:
 				String query = intent.getStringExtra(SearchManager.QUERY);
-				sendSearchVolley(query, searchModel, false);
+				String encodedQuery = null;
+				try {
+					encodedQuery = java.net.URLEncoder.encode(query, Constants.UTF8);
+				} catch (UnsupportedEncodingException ignored){/* Who Cares! */}
+				//sendSearchVolley(query, searchModel, false);
+				sendVolley(Request.Method.GET, "search="+encodedQuery, searchModel, null, true);
 				break;
 			case SchoolBusiness.ACTION_NOTIFICATION:
 				Bundle extras = intent.getExtras();
 				if (extras != null) {
-					String notification_type = extras.getString("n_type");
-					Log.d("Notification Type", "" + notification_type);
+					String notification_type = extras.getString(Constants.N_TYPE);
+					Log.d("Notification Type", Constants.NULL + notification_type);
 					switch (notification_type) {
-						case "award_badge":
+						case Constants.AWARD_BADGE:
 							BadgeAwardFragment badgeAwardFragment = BadgeAwardFragment.newInstance(extras);
 							swapFragment(badgeAwardFragment, R.id.fragment_container, FRAG_MAIN, true);
 							break;
@@ -372,8 +368,8 @@ public class MainActivity extends FragmentActivity
 						case "message":
 							break;
 						default:
-							sendVolley(Request.Method.GET, extras.getString("event_id"),
-									EVENTS, null, true);
+							sendVolley(Request.Method.GET, extras.getString(Constants.EVENT_ID),
+									Constants.EVENTS, null, true);
 							break;
 					}
 				}
@@ -382,7 +378,7 @@ public class MainActivity extends FragmentActivity
 				android.net.Uri uri = intent.getData();
 				if (uri != null) {
 					String path = uri.toString();
-					path.replace(SchoolBusiness.TARGET, "");
+					path.replace(SchoolBusiness.TARGET, Constants.NULL);
 					if (path.split("/").length >= 2) {
 						String amodel = path.split("/", 1)[0];
 						String aid = path.split("/", 1)[1];
@@ -399,21 +395,21 @@ public class MainActivity extends FragmentActivity
 		switch (view.getId()){
 			case R.id.events_checkBox:
 				if (checked){
-					searchModel = EVENTS;
+					searchModel = Constants.EVENTS;
 					((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
 					((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
 				}
 				break;
 			case R.id.schools_checkBox:
 				if (checked) {
-					searchModel = SCHOOLS;
+					searchModel = Constants.SCHOOLS;
 					((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
 					((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
 				}
 				break;
 			case R.id.user_checkBox:
 				if (checked) {
-					searchModel = USERS;
+					searchModel = Constants.USERS;
 					((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
 					((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
 				}
@@ -426,28 +422,37 @@ public class MainActivity extends FragmentActivity
 
 		switch (view.getId()) {
 			case R.id.register_teacher:
-				SchoolBusiness.setRole(TEACHER);
+				SchoolBusiness.setRole(Constants.TEACHER);
 				break;
 			case R.id.register_speaker:
-				SchoolBusiness.setRole(SPEAKER);
+				SchoolBusiness.setRole(Constants.SPEAKER);
 				break;
 			case R.id.register_both:
-				SchoolBusiness.setRole(BOTH);
+				SchoolBusiness.setRole(Constants.BOTH);
 				break;
 		}
 		Log.d(TAG, "Role is now set to " + SchoolBusiness.getRole());
 
 	}
 
+	/* Listener for ListItemFragment.java */
+	/* Listener for ProfileFragment.java */
 	public void onListItemSelected(String id, String model) {
 		Boolean backtrack = true;
 		sendVolley(Request.Method.GET, id, model, null, backtrack);
 	}
 
+	/* Listener for ListItemFragment.java */
 	public void onNotificationViewed(String id){
-		sendVolley(Request.Method.POST, id, NOTIFICATIONS, null, true);
+		sendVolley(Request.Method.POST, id, Constants.NOTIFICATIONS, null, true);
 	}
 
+	/* Listener for ListItemFragment.java */
+	public void markAllNotificationsRead(){
+		sendVolley(Request.Method.DELETE, Constants.NULL, Constants.NOTIFICATIONS, null, true);
+	}
+
+	/* Listener for EventViewFragment.java */
 	public void onEventViewInteraction(String id, String model){
 		Boolean backtrack = true;
 		sendVolley(Request.Method.GET, id, model, null, backtrack);
@@ -457,29 +462,34 @@ public class MainActivity extends FragmentActivity
 
 	}
 
+	/* Listener for UserProfileFragment.java */
+	/* Listener for UserViewFragment.java */
 	public void onUserViewInteraction(String id, String model){
 		Boolean backtrack = true;
 		sendVolley(Request.Method.GET, id, model, null, backtrack);
 	}
 
+	/* Listener for SearchOptionsFragment.java */
 	public void onSearchInteraction(String model){
 		searchModel = model;
 	}
 
+	/* Listener for HomeFragment.java */
+	/* Listener for EventViewFragment.java */
 	public void onCreateEvent(Boolean edit, String event){
 		EventCreateFragment eventCreateFragment = EventCreateFragment.newInstance(edit, event);
 		swapFragment(eventCreateFragment, R.id.fragment_container, FRAG_MAIN, true);//FRAG_CREATE_EVENT, true);
 	}
-
+	/* Listener for EventCreateFragment.java */
 	public void onPostEvent(JSONObject event, Boolean edit){
 		try {
 			if (edit) {
 				Log.d(TAG, event.toString());
-				String event_id = event.getString("id");
-				sendVolley(Request.Method.PATCH, event_id, EVENTS, event, true);
+				String event_id = event.getString(Constants.ID);
+				sendVolley(Request.Method.PATCH, event_id, Constants.EVENTS, event, true);
 			} else {
 				Log.d(TAG, event.toString());
-				sendVolley(Request.Method.POST, "create", EVENTS, event, true);
+				sendVolley(Request.Method.POST, "create", Constants.EVENTS, event, true);
 			}
 			//postEvent(event, E_Type.EVENT_CREATE);
 		} catch (JSONException e){
@@ -487,36 +497,43 @@ public class MainActivity extends FragmentActivity
 		}
 	}
 
+	/* Listener for EventViewFragment.java */
 	public void onClaimEvent(String event){
 		try{
 			//JSONObject jsonObject = new JSONObject(event);
 			//postEvent(jsonObject, E_Type.EVENT_CLAIM);
-			sendVolley(Request.Method.POST, "claim_event", EVENTS, new JSONObject(event), true);
+			sendVolley(Request.Method.POST, "claim_event", Constants.EVENTS, new JSONObject(event), true);
 		} catch (JSONException e){
 
 		}
 	}
 
+	/* Listener for EventViewFragment.java */
+	/* Gets claims for a particular event */
 	public void getClaims(String id){
 		String res = "pending_claims?event_id="+id;
-		sendVolley(Request.Method.GET, res, CLAIMS, null, false);
+		sendVolley(Request.Method.GET, res, Constants.CLAIMS, null, false);
 	}
 
+	/* Listener for ClaimViewFragment.java */
 	public void onAcceptClaim(String event_id, String claim_id){
 		String res = "teacher_confirm?event_id="+event_id+"&claim_id="+claim_id;
-		sendVolley(Request.Method.POST, res, CLAIMS, null, true);
+		sendVolley(Request.Method.POST, res, Constants.CLAIMS, null, true);
 	}
 
+	/* Listener for ClaimViewFragment.java */
 	public void onRejectClaim(String event_id, String claim_id){
 		String res = claim_id+"/reject";
-		sendVolley(Request.Method.DELETE, res, CLAIMS, null, true);
+		sendVolley(Request.Method.DELETE, res, Constants.CLAIMS, null, true);
 	}
 
+	/* Listener for EventViewFragment.java */
 	public void onCancelClaim(String claim_id){
 		String res = claim_id+"/cancel";
-		sendVolley(Request.Method.DELETE, res, CLAIMS, null, true);
+		sendVolley(Request.Method.DELETE, res, Constants.CLAIMS, null, true);
 	}
 
+	/* Listener for EventViewFragment.java */
 	public void onDeleteEvent(String id){
 		DeleteEventDialogFragment fragment = new DeleteEventDialogFragment();
 		fragment.show(getFragmentManager(), "delete_event");
@@ -524,16 +541,19 @@ public class MainActivity extends FragmentActivity
 
 	}
 
+	/* Listener for DeleteEventDialogFragment.java */
 	public void onDeleteEventPositiveClick(DialogFragment dialog){
 		dialog.dismiss();
-		sendVolley(Request.Method.DELETE, event_id + "/cancel", EVENTS, null, false);
+		sendVolley(Request.Method.DELETE, event_id + "/cancel", Constants.EVENTS, null, false);
 	}
 
+	/* Listener for DeleteEventDialogFragment.java */
 	public void onDeleteEventNegativeClick(DialogFragment dialog){
 		dialog.dismiss();
 	}
 
-	public void createSchoolFeed(View view, JSONObject response){
+	/* Listener for SchoolViewFragment.java */
+	public void createSchoolFeed(View view, JSONObject response, String id){
 		try {
 			imageLoader = NetworkVolley.getInstance(getApplicationContext()).getImageLoader();
 			NetworkImageView badge = (NetworkImageView) view.findViewById(R.id.school_badge);
@@ -541,10 +561,16 @@ public class MainActivity extends FragmentActivity
 		} catch (JSONException e){
 			;
 		}
-		ListItemFragment event_list = ListItemFragment.newInstance(response, "events");
+		ListItemFragment event_list = ListItemFragment.newInstance(response, Constants.EVENTS, "school_id="+id);
 		swapFragment(event_list, R.id.tab_content, TAB_CONTENT, false);
 	}
 
+	/* Listener for SchoolViewFragment.java */
+	public void makeMySchool(String id){
+		sendVolley(Request.Method.GET, "make_mine/" + id, Constants.SCHOOLS, null, true);
+	}
+
+	/* Listener for UserBadgesFragment.java */
 	public void onBadgesLoad(View view, Map<Integer, String> badges){
 		Iterator it = badges.entrySet().iterator();
 		NetworkImageView badge;
@@ -556,35 +582,39 @@ public class MainActivity extends FragmentActivity
 		}
 	}
 
+	/* Listener for BadgeAwardFragment.java */
 	public void awardBadge(Boolean award, int event_id){
 		JSONObject obj = new JSONObject();
 		try {
-			obj.put("award", award);
-			obj.put("event_id", event_id);
-		} catch (JSONException e){
+			obj.put(Constants.AWARD, award);
+			obj.put(Constants.EVENT_ID, event_id);
+		} catch (JSONException e) {
 
 		}
-		sendVolley(Request.Method.POST, "award_badge", USERS, obj, true);
+		sendVolley(Request.Method.POST, "award_badge", Constants.USERS, obj, true);
 	}
 
+	/* Listener for UserBadgesFragment.java */
 	public void selectBadge(String user_id, String badge_id){
-		sendVolley(Request.Method.GET, "" + user_id + "/badges/" + badge_id, USERS, null, true);
+		sendVolley(Request.Method.GET, Constants.NULL + user_id + "/badges/" + badge_id, Constants.USERS, null, true);
 	}
 
 	/* Social Media Integration Functions */
+	/* Listener for BadgeViewFragment.java */
 	public void onShareBadgeFacebook(Uri badgeUrl){
 		ShareLinkContent content = new ShareLinkContent.Builder()
 				.setContentUrl(Uri.parse(SchoolBusiness.URL))
-				.setContentTitle(SchoolBusiness.getUserAttr("name") +
-						" was awarded a badge!")
+				.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
+						getString(R.string.awarded_badge))
 				.setContentDescription("Badge awarded for speaking at")
 				.setImageUrl(badgeUrl)
 				.build();
 	}
 
-	public void onTweetBadge(Uri badgeUrl, String url){
+	/* Listener for BadgeViewFragment.java */
+	public void onTweetBadge(Uri badgeUrl, String url) {
 		try {
-			twitter.composeTweet(this, SchoolBusiness.getUserAttr("name") + " was awarded a badge!",
+			twitter.composeTweet(this, SchoolBusiness.getUserAttr(Constants.NAME) + getString(R.string.awarded_badge),
 					new URL(url),
 					badgeUrl
 					);
@@ -592,62 +622,66 @@ public class MainActivity extends FragmentActivity
 			;
 		}
 	}
-	public void makeMySchool(String id){
-		sendVolley(Request.Method.GET, "make_mine/" + id, SCHOOLS, null, true);
-	}
 
+	/* Listener for HomeFragment.java */
 	public void onCreateTab(int tab){
 		CAN_GET_TABS = true;
 		Log.d(TAG, "Creating Tabs");
-		String[] event_tab_names = {"all", "approval", "claims", "confirmed"};
+		String[] event_tab_names = {Constants.ALL, Constants.APPROVAL, Constants.CLAIMS, Constants.CONFIRMED};
 		String[] event_tab_display = {"All","Approval", "Claims", "Confirmed"};
 		tabContainer = TabFragment.newInstance(mTab, event_tab_names, event_tab_display);
 		swapFragment(tabContainer, R.id.tab_container, TAB_CONTAINER, false);
 	}
 
+	/* Listener for HomeFragment.java */
 	public void clearTabs(){
 //		swapFragment(new BlankFragment(),R.id.tab_container, TAB_CONTAINER, false);
 //		swapFragment(new BlankFragment(),R.id.tab_content, TAB_CONTENT, false);
 	}
 
+	/* Listener for ProfileFragment.java */
 	public void onEditProfile(){
 		ProfileEditFragment profileEditFragment = new ProfileEditFragment();
 		swapFragment(profileEditFragment, R.id.fragment_container, FRAG_MAIN, true);
 	}
 
-	public void onSaveProfile(JSONObject profile){
-		sendVolley(Request.Method.PUT, "", USERS, profile, true);
+	/* Listener for ProfileEditFragment.java */
+	public void onSaveProfile(JSONObject profile) {
+		sendVolley(Request.Method.PUT, Constants.NULL, Constants.USERS, profile, true);
 	}
 
+	/* Listener for ProfileEditFragment.java */
 	public void onFindMySchool(){
 		searchView.setIconified(false);
+		searchModel = Constants.SCHOOLS;
 		((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(true);
-		searchModel = SCHOOLS;
 		((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
 		((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
 	}
 
+	/* Listener for ProfileFragment.java */
 	public void onEditAccount(){
 		swapFragment(new AccountEditFragment(), R.id.fragment_container, FRAG_MAIN, true);
 	}
 
+	/* Listener for AccountEditFragment.java */
 	public void onSaveAccount(JSONObject account){
-		sendVolley(Request.Method.PUT, "", "account", account, true);
+		sendVolley(Request.Method.PUT, Constants.NULL, Constants.ACCOUNT, account, true);
 	}
 
-
-
+	/* Listener for SettingsFragment.java */
 	public void onSaveSettings(JSONObject settings){
 		findViewById(R.id.save_settings_button).setClickable(false);
-		sendVolley(Request.Method.PUT, "settings", USERS, settings, true);
+		sendVolley(Request.Method.PUT, Constants.SETTINGS, Constants.USERS, settings, true);
 	}
 
 	public void onEventTabSelected(String tab){
 
 	}
 
-	public void createUserFeed(JSONObject response){
-		String[] tab_names = {"profile", "badges"};
+	/* Listener for UserViewFragment.java */
+	public void createUserFeed(JSONObject response, String id){
+		String[] tab_names = {Constants.PROFILE, Constants.BADGES};
 		String[] tab_display = {"Profile", "Badges"};
 		userProfileFragment = UserProfileFragment.newInstance(response.toString());
 		userBadgesFragment = UserBadgesFragment.newInstance(response.toString());
@@ -655,45 +689,48 @@ public class MainActivity extends FragmentActivity
 		getSupportFragmentManager().beginTransaction().add(R.id.user_tab, tabFragment).commit();
 		getSupportFragmentManager().beginTransaction()
 				.add(R.id.user_tab_content, userProfileFragment).commit();
-		ListItemFragment event_list = ListItemFragment.newInstance(response, "events");
+		ListItemFragment event_list = ListItemFragment.newInstance(response, Constants.EVENTS, "user_id="+id);
 		swapFragment(event_list, R.id.tab_content, TAB_CONTENT, false);
 		CAN_GET_TABS = true;
 	}
 
+	/* Listener for ClaimViewFragment.java */
+	/* Listener for UserViewFragment.java */
 	public void onContactUser(String id, String name){
 		MessageFragment messageFragment = MessageFragment.newInstance(id, name);
 		swapFragment(messageFragment, R.id.fragment_container, FRAG_MAIN, true);
 	}
 
+	/* Listener for MessageFragment.java */
 	public void onSendMessage(String id, JSONObject message){
-		sendVolley(Request.Method.POST, id, "send_message", message, false);
+		sendVolley(Request.Method.POST, id, Constants.SEND_MESSAGE, message, false);
 	}
 
 	@Override
 	public void onTabChanged(String tab) {
 		if (!CAN_GET_TABS){return;}
 		switch (tab){
-			case "all":
+			case Constants.ALL:
 				mTab = 0;
-				sendVolley(Request.Method.GET, "my_events", EVENTS, null, false);
+				sendVolley(Request.Method.GET, Constants.MY_EVENTS, Constants.EVENTS, null, false);
 				break;
-			case "approval":
+			case Constants.APPROVAL:
 				mTab = 1;
-				sendVolley(Request.Method.GET, "pending_events", EVENTS, null, false);
+				sendVolley(Request.Method.GET, Constants.PENDING_EVENTS, Constants.EVENTS, null, false);
 				break;
-			case CLAIMS:
+			case Constants.CLAIMS:
 				mTab = 2;
-				sendVolley(Request.Method.GET, "pending_claims", EVENTS, null, false);
+				sendVolley(Request.Method.GET, Constants.PENDING_CLAIMS, Constants.EVENTS, null, false);
 				break;
-			case "confirmed":
+			case Constants.CONFIRMED:
 				mTab = 3;
-				sendVolley(Request.Method.GET, "confirmed", EVENTS, null, false);
+				sendVolley(Request.Method.GET, Constants.CONFIRMED, Constants.EVENTS, null, false);
 				break;
-			case "profile":
+			case Constants.PROFILE:
 				getSupportFragmentManager().beginTransaction()
 						.replace(R.id.user_tab_content, userProfileFragment, "USER_TAB").commit();
 				break;
-			case "badges":
+			case Constants.BADGES:
 				getSupportFragmentManager().beginTransaction()
 						.replace(R.id.user_tab_content, userBadgesFragment, "USER_TAB").commit();
 				break;
@@ -745,128 +782,157 @@ public class MainActivity extends FragmentActivity
 		});
 	}
 
-	public void sendSearchVolley(final String query, final String model, final boolean feed_mode)
-	{
-		String url = SchoolBusiness.TARGET + model;
-		String encodedUrl = null;
-		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
-				.getRequestQueue();
-		try {
-			if (feed_mode) {
-				encodedUrl = url + "?user=" + java.net.URLEncoder.encode(query, "UTF-8");//+"&event=");
+//	public void sendSearchVolley(final String query, final String model, final boolean feed_mode)
+//	{
+//		String url = SchoolBusiness.TARGET + model;
+//		String encodedUrl = null;
+//		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
+//				.getRequestQueue();
+//		try {
+//			if (feed_mode) {
+//				encodedUrl = url + "?user=" + java.net.URLEncoder.encode(query, Constants.UTF8);//+"&event=");
+//			} else {
+//				encodedUrl = url + "?search=" + java.net.URLEncoder.encode(query, Constants.UTF8);//+"&event=");
+//			}
+//		} catch (UnsupportedEncodingException ignored) {
+//			// Can be safely ignored
+//		}
+//		Log.d(TAG, query);
+//		JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,encodedUrl,null,
+//				new Response.Listener<JSONObject>() {
+//					@Override
+//					public void onResponse(JSONObject response){
+//						if(SchoolBusiness.DEBUG){Log.d("JSON", "Response: " + response.toString());}
+//						ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model, id);
+//						if (feed_mode){
+//							FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//							transaction.commit();
+//						} else {
+//							swapFragment(listItemFragment, R.id.fragment_container, FRAG_MAIN, true);
+//						}
+//					}
+//				}, new Response.ErrorListener() {
+//			@Override
+//			public void onErrorResponse(VolleyError error){
+//				VolleyLog.d(TAG, "Error: " + error.getMessage());
+//				Toast.makeText(getApplicationContext(),
+//						error.getMessage(), Toast.LENGTH_SHORT).show();
+//			}
+//		}){
+//			@Override
+//			public String getBodyContentType(){
+//				return "application/json";
+//			}
+//
+//			@Override public Map<String, String> getHeaders() throws AuthFailureError {
+//				Map<String, String> params = new HashMap<String, String>();
+//				params.put("Content-Type", "application/json");
+//				params.put("Accept", "application/json");
+//				params.put("X-User-Email", SchoolBusiness.getEmail());
+//				params.put("X-User-Token", SchoolBusiness.getUserAuth());
+//				params.put(Constants.SEARCH, query);
+////				Log.d(TAG,SchoolBusiness.getEmail()+" "+SchoolBusiness.getUserAuth());
+////				Log.d(TAG, params.toString());
+//				return params;
+//			}
+//			@Override
+//			public Map<String, String> getParams(){
+//				Map<String, String> params = new HashMap<String, String>();
+//				params.put(Constants.SEARCH, query);
+//				return params;
+//			}
+//		};
+//		queue.add(jsonRequest);
+//	}
+
+
+	public void sendVolley(final int method,
+	                       final String id,
+	                       final String model,
+	                       JSONObject obj,
+	                       final Boolean backtrack){
+		String delim;
+		final boolean search;
+		if (id.contains("search")){
+			delim = "?";
+			search = true;
+		} else {
+			if (id.isEmpty()){//   equals(Constants.NULL)){
+				delim = Constants.NULL;
 			} else {
-				encodedUrl = url + "?search=" + java.net.URLEncoder.encode(query, "UTF-8");//+"&event=");
+				delim = "/";
 			}
-		} catch (UnsupportedEncodingException ignored) {
-			// Can be safely ignored
+			search = false;
 		}
-		Log.d(TAG, query);
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,encodedUrl,null,
-				new Response.Listener<JSONObject>() {
-					@Override
-					public void onResponse(JSONObject response){
-						if(SchoolBusiness.DEBUG){Log.d("JSON", "Response: " + response.toString());}
-						ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model);
-						if (feed_mode){
-							FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-							transaction.commit();
-						} else {
-							swapFragment(listItemFragment, R.id.fragment_container, FRAG_MAIN, true);
-						}
-					}
-				}, new Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error){
-				VolleyLog.d(TAG, "Error: " + error.getMessage());
-				Toast.makeText(getApplicationContext(),
-						error.getMessage(), Toast.LENGTH_SHORT).show();
-			}
-		}){
-			@Override
-			public String getBodyContentType(){
-				return "application/json";
-			}
-
-			@Override public Map<String, String> getHeaders() throws AuthFailureError {
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("Content-Type", "application/json");
-				params.put("Accept", "application/json");
-				params.put("X-User-Email", SchoolBusiness.getEmail());
-				params.put("X-User-Token", SchoolBusiness.getUserAuth());
-				params.put("search", query);
-				Log.d(TAG,SchoolBusiness.getEmail()+" "+SchoolBusiness.getUserAuth());
-				Log.d(TAG, params.toString());
-				return params;
-			}
-			@Override
-			public Map<String, String> getParams(){
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("search", query);
-				return params;
-			}
-		};
-		queue.add(jsonRequest);
-	}
-
-
-	public void sendVolley(final int method, final String id, final String model, JSONObject obj, final Boolean backtrack){
-		String url = SchoolBusiness.TARGET + model + "/" + id;
+		String url = SchoolBusiness.TARGET + model + delim + id;
 		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
 				.getRequestQueue();
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(method,url,obj,
-				new Response.Listener<JSONObject>() {
-					@Override
-					public void onResponse(JSONObject response){
-						if(SchoolBusiness.DEBUG){Log.d("JSON", "Response: " + response.toString());}
-						switch (model) {
-							case "account":
-								try {
-									if (response.getString("state").equals("0")){
-										getSupportFragmentManager().popBackStack();
-										getSupportFragmentManager().popBackStack();
-										JSONObject profile = response.getJSONObject("user");
-										handleUserResponse(method, "profile", profile, backtrack);
-									}
-									else {
-										findViewById(R.id.save_account_button).setClickable(true);
-										Toast.makeText(getApplicationContext(), "You have entered an incorrect password", Toast.LENGTH_LONG).show();
-									}
-								} catch (JSONException e) {
-									handleJSONException(e);
-								}
-								break;
-							case "send_message":
-								try {
-									if (response.getString("state").equals("0")){
-										onBackPressed();
-										Toast.makeText(getApplicationContext(), "Message Sent Successfully", Toast.LENGTH_LONG).show();
-									} else {
-										findViewById(R.id.send_message_button).setClickable(true);
-										Toast.makeText(getApplicationContext(), "Message  Unsuccessful", Toast.LENGTH_LONG).show();
-									}
-								} catch (JSONException e) {
-									handleJSONException(e);
-									findViewById(R.id.send_message_button).setClickable(true);
-								}
-								break;
-							case NOTIFICATIONS:
-								handleNotificationResponse(response, id, backtrack);
-								break;
-							case EVENTS:
-								handleEventResponse(method, model, id, response, backtrack);
-								break;
-							case SCHOOLS:
-								handleSchoolResponse(method, id, response, backtrack);
-								break;
-							case USERS:
-								handleUserResponse(method, id, response, backtrack);
-								break;
-							case CLAIMS:
-								handleClaimResponse(method, model, id, response);
-								break;
+		/* Create the Request */
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(method,url,obj,new Response.Listener<JSONObject>()
+		{
+			@Override
+			public void onResponse(JSONObject response){
+				if(SchoolBusiness.DEBUG){Log.d("JSON", "Response: " + response.toString());}
+				if (search){
+					ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model, id);
+					swapFragment(listItemFragment, R.id.fragment_container, FRAG_MAIN, true);
+					return;
+				}
+				switch (model) {
+					case Constants.ACCOUNT:
+						try {
+							if (response.getString(Constants.STATE).equals(Constants.SUCCESS)){
+								getSupportFragmentManager().popBackStack();
+								getSupportFragmentManager().popBackStack();
+								JSONObject profile = response.getJSONObject(Constants.USER);
+								handleUserResponse(method, Constants.PROFILE, profile, backtrack);
+							}
+							else {
+								findViewById(R.id.save_account_button).setClickable(true);
+								Toast.makeText(getApplicationContext(),
+												getString(R.string.error_incorrect_password),
+												Toast.LENGTH_LONG).show();
+							}
+						} catch (JSONException e) {
+							handleJSONException(e);
 						}
-					}
-				}, new Response.ErrorListener() {
+						break;
+					case Constants.SEND_MESSAGE:
+						try {
+							if (response.getString(Constants.STATE).equals(Constants.SUCCESS)){
+								onBackPressed();
+								Toast.makeText(getApplicationContext(),
+										getString(R.string.success_message),
+										Toast.LENGTH_LONG).show();
+							} else {
+								findViewById(R.id.send_message_button).setClickable(true);
+								Toast.makeText(getApplicationContext(),
+										getString(R.string.failure_message),
+										Toast.LENGTH_LONG).show();
+							}
+						} catch (JSONException e) {
+							handleJSONException(e);
+							findViewById(R.id.send_message_button).setClickable(true);
+						}
+						break;
+					case Constants.NOTIFICATIONS:
+						handleNotificationResponse(response, id, backtrack);
+						break;
+					case Constants.EVENTS:
+						handleEventResponse(method, model, id, response, backtrack);
+						break;
+					case Constants.SCHOOLS:
+						handleSchoolResponse(method, id, response, backtrack);
+						break;
+					case Constants.USERS:
+						handleUserResponse(method, id, response, backtrack);
+						break;
+					case Constants.CLAIMS:
+						handleClaimResponse(method, model, id, response);
+						break;
+				}
+			}
+		}, new Response.ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error){
 				VolleyLog.d(TAG, "Error: " + error.getMessage());
@@ -891,12 +957,16 @@ public class MainActivity extends FragmentActivity
 		queue.add(jsonRequest);
 	}
 
-	public void handleEventResponse(int method, String model, String id, JSONObject response, Boolean backtrack){
+	public void handleEventResponse(int method,
+	                                String model,
+	                                String id,
+	                                JSONObject response,
+	                                Boolean backtrack){
 		EventViewFragment eventViewFragment;
 		/* Handle Tabs */
-		if (id.equals("my_events") || id.equals("confirmed") || id.equals("pending_events") || id.equals("pending_claims")){
+		if (id.equals(Constants.MY_EVENTS) || id.equals(Constants.CONFIRMED) || id.equals(Constants.PENDING_EVENTS) || id.equals(Constants.PENDING_CLAIMS)){
 			if (!CAN_GET_TABS){return;}
-			tabContent = ListItemFragment.newInstance(response, model);
+			tabContent = ListItemFragment.newInstance(response, model, id);
 			swapFragment(tabContent, R.id.tab_content, TAB_CONTENT, false);
 			return;
 		}
@@ -913,10 +983,10 @@ public class MainActivity extends FragmentActivity
 					break;
 				/* Update an event */
 				case Request.Method.PATCH:
-					if (response.getString("state").equals("0")) {
+					if (response.getString(Constants.STATE).equals(Constants.SUCCESS)) {
 						getSupportFragmentManager().popBackStack();
 						getSupportFragmentManager().popBackStack();
-						eventViewFragment = EventViewFragment.newInstance(response.getJSONObject("event"));
+						eventViewFragment = EventViewFragment.newInstance(response.getJSONObject(Constants.EVENT));
 						swapFragment(eventViewFragment, R.id.fragment_container, FRAG_MAIN, backtrack);//FRAG_EVENT, backtrack);
 					} else {
 						Log.d(TAG, response.getString("message"));
@@ -929,25 +999,25 @@ public class MainActivity extends FragmentActivity
 					/* Create an Event */
 					if (id.equals("create")) {
 
-						if (response.getString("state").equals("0")) {
+						if (response.getString(Constants.STATE).equals(Constants.SUCCESS)) {
 							Toast.makeText(getApplicationContext(),
 									"Event posted", Toast.LENGTH_SHORT).show();
-							data = new JSONObject(response.getString("event"));
+							data = new JSONObject(response.getString(Constants.EVENT));
 
 							getSupportFragmentManager().popBackStackImmediate();
-							sendVolley(Request.Method.GET, data.getString("id"), EVENTS, null, backtrack);
+							sendVolley(Request.Method.GET, data.getString(Constants.ID), Constants.EVENTS, null, backtrack);
 						} else {
 							Log.d(TAG, response.getString("messages"));
 							Toast.makeText(getApplicationContext(), "Failure to post event\n"+response.getString("messages"), Toast.LENGTH_LONG).show();
 							findViewById(R.id.post_event_button).setClickable(true);
 						}
 					} else { /* Claim an Event */
-						if (response.getString("state").equals("0")){
+						if (response.getString(Constants.STATE).equals(Constants.SUCCESS)){
 							Toast.makeText(getApplicationContext(),"Event Claimed", Toast.LENGTH_SHORT).show();
-							data = new JSONObject(response.getString("event"));
+							data = new JSONObject(response.getString(Constants.EVENT));
 							getSupportFragmentManager().popBackStack();
 							//getSupportFragmentManager().popBackStack();
-							sendVolley(Request.Method.GET, data.getString("id"), EVENTS, null, true);
+							sendVolley(Request.Method.GET, data.getString(Constants.ID), Constants.EVENTS, null, true);
 						}
 					}
 					break;
@@ -970,8 +1040,8 @@ public class MainActivity extends FragmentActivity
 				case Request.Method.GET:
 					if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN)
 									.getClass().equals(EventViewFragment.class)) {
-						if (id.contains("pending_claims")) {
-							ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model);
+						if (id.contains(Constants.PENDING_CLAIMS)) {
+							ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model, id);
 							swapFragment(listItemFragment, R.id.claim_container, FRAG_CLAIM, false);
 						} else {
 							findViewById(R.id.layout_event_buttons).setVisibility(View.GONE);
@@ -982,8 +1052,8 @@ public class MainActivity extends FragmentActivity
 					break;
 				/* Handle a POST for a new claim */
 				case Request.Method.POST:
-					if (response.getString("status").equals("0")) {
-						JSONObject event = response.getJSONObject("event");
+					if (response.getString("status").equals(Constants.SUCCESS)) {
+						JSONObject event = response.getJSONObject(Constants.EVENT);
 						getSupportFragmentManager().popBackStack();
 						getSupportFragmentManager().popBackStack();
 						EventViewFragment eventViewFragment = EventViewFragment.newInstance(event);
@@ -992,8 +1062,8 @@ public class MainActivity extends FragmentActivity
 					break;
 				case Request.Method.DELETE:
 					if (id.contains("reject")){
-						Toast.makeText(this, "You have rejected " + response.getString("user_name")
-										+ "'s claim to event " + response.getString("event_title"),
+						Toast.makeText(this, "You have rejected " + response.getString(Constants.USER_NAME)
+										+ "'s claim to event " + response.getString(Constants.EVENT_TITLE),
 										Toast.LENGTH_LONG).show();
 						refreshApp();
 					} else if (id.contains("cancel")){
@@ -1010,7 +1080,7 @@ public class MainActivity extends FragmentActivity
 	public void handleSchoolResponse(int method, String id, JSONObject response, Boolean backtrack) {
 		if (id.contains("make_mine")){
 			Log.d(TAG, "Set School as Users");
-			sendVolley(Request.Method.GET, "profile", USERS, null, true);
+			sendVolley(Request.Method.GET, Constants.PROFILE, Constants.USERS, null, true);
 			return;
 		}
 		Log.d(TAG, "Getting School");
@@ -1020,18 +1090,18 @@ public class MainActivity extends FragmentActivity
 
 
 	public void handleUserResponse(int method, String id, JSONObject response, Boolean backtrack) {
-		if (id.contains("badges")){
+		if (id.contains(Constants.BADGES)){
 			handleBadgeResponse(response);
 			return;
 		}
 		switch (id) {
-			case "profile":
+			case Constants.PROFILE:
 				Log.d(TAG, "Updating User Profile");
 				SchoolBusiness.updateProfile(response);
 				ProfileFragment profileFragment = ProfileFragment.newInstance(response);
 				swapFragment(profileFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
 				return;
-			case "settings":
+			case Constants.SETTINGS:
 				switch (method) {
 					case Request.Method.GET:
 						Log.d(TAG, "Getting User Settings");
@@ -1049,7 +1119,7 @@ public class MainActivity extends FragmentActivity
 						findViewById(R.id.save_settings_button).setClickable(true);
 						return;
 				}
-			case "award_badge":
+			case Constants.AWARD_BADGE:
 				onBackPressed();
 				return;
 			default:
@@ -1061,7 +1131,7 @@ public class MainActivity extends FragmentActivity
 			case Request.Method.PUT:
 				try {
 					Log.d(TAG, "Posting User Profile");
-					JSONObject user = response.getJSONObject("user");
+					JSONObject user = response.getJSONObject(Constants.USER);
 					SchoolBusiness.updateProfile(user);
 					getSupportFragmentManager().popBackStack();
 					getSupportFragmentManager().popBackStack();
@@ -1086,13 +1156,11 @@ public class MainActivity extends FragmentActivity
 
 	public void handleNotificationResponse(JSONObject response, String id, Boolean backtrack){
 		try {
-			if (id.equals("")){
-				ListItemFragment notifications = ListItemFragment.newInstance(response, NOTIFICATIONS);
+			updateNotifications(response.getString(Constants.COUNT));
+			if (id.equals(Constants.NULL)){
+				ListItemFragment notifications = ListItemFragment.newInstance(response, Constants.NOTIFICATIONS, id);
 				swapFragment(notifications, R.id.fragment_container, FRAG_MAIN, backtrack);
 				clearTabs();
-			} else {
-				SchoolBusiness.setNotificationCount(response.getString("count"));
-				updateNotifications();
 			}
 		} catch (JSONException e){
 			handleJSONException(e);
@@ -1113,7 +1181,8 @@ public class MainActivity extends FragmentActivity
 		finish();
 	}
 
-	public void updateNotifications(){
+	public void updateNotifications(String count){
+		SchoolBusiness.setNotificationCount(count);
 		notifications.setTitle(SchoolBusiness.getNotificationCount());
 	}
 

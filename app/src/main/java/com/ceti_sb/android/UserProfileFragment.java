@@ -117,30 +117,30 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 			case R.id.tv_location:
 				return "school_id";
 			default:
-				return "";
+				return Constants.NULL;
 		}
 	}
 	private void renderUser(View view, String str_response){
 		try {
 			JSONObject response = new JSONObject(str_response);
 			String str;
-			String link = "";
+			String link = Constants.NULL;
 			JSONObject user = response.getJSONObject("user");
-			String user_id = user.getString("id");
-			String name = user.getString("name");
+			String user_id = user.getString(Constants.ID);
+			String name = user.getString(Constants.NAME);
 			int[] resource = {R.id.tv_location, R.id.tv_grades,R.id.tv_job,R.id.tv_business,R.id.tv_role,R.id.tv_bio};
-			String[] names = {"school_name", "grades", "job_title", "business", "role", "biography"};
+			String[] names = {"school_name", "grades", "job_title", "business", Constants.ROLE, "biography"};
 			TextView tv;
-			if (user.getString("role").equals("Teacher")) {
+			if (user.getString(Constants.ROLE).equals("Teacher")) {
 				((LinearLayout) view.findViewById(R.id.layout_user_business)).setVisibility(View.GONE);
-			} else if (user.getString("role").equals("Speaker")) {
+			} else if (user.getString(Constants.ROLE).equals("Speaker")) {
 				((LinearLayout) view.findViewById(R.id.layout_user_teacher)).setVisibility(View.GONE);
 			}
 			for (int i = 0; i < resource.length; i++) {
 				tv = (TextView) view.findViewById(resource[i]);
 
 				link = get_id(resource[i]);
-				if (!link.equals("")) {
+				if (!link.equals(Constants.NULL)) {
 					link = user.getString(link);
 					tv.setOnClickListener(UserProfileFragment.this);
 					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));

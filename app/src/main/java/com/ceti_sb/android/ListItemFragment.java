@@ -77,6 +77,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	private List<Map<String, String>> mData;
 	private String mModel;
 	private String mId;
+	private String mDelim;
 	private int mPage;
 	private boolean mLock;
 
@@ -234,16 +235,13 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 			mId = getArguments().getString(ARG_ID);
 			mPage = 1;
 			mLock = false;
-			String delim;
 			if (mId.contains(Constants.SEARCH) || mId.contains(Constants.SCHOOL_ID) || mId.contains(Constants.USER_ID)){
-				delim = "?";
+				mDelim = "?";
 			} else if (mId.isEmpty()) {
-				delim = Constants.NULL;
+				mDelim = Constants.NULL;
 			} else {
-				delim = "/";
+				mDelim = "/";
 			}
-
-			mId = delim + mId;
 			Log.d(TAG, "onCreate: "+mId);
 			//titleParams = getArguments().getString(ARG_PARAM2);
 		}
@@ -358,7 +356,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
-
+			view.setBackgroundColor(getResources().getColor(R.color.tw__solid_white));
 			if (mModel.equals(getString(R.string.notifications))){
 				mListener.onListItemSelected(mData.get(position).get(Constants.ID), getString(R.string.events));//idParams.get(position), getString(R.string.events));
 				mListener.onNotificationViewed(mData.get(position).get(Constants.AUX_ID));//auxIdParams.get(position));
@@ -466,11 +464,11 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	}
 
 //	public String getQuery(String id){
-//		String delim;
+//		String mDelim;
 //		if (id.contains("search")){
-//			delim = "?";
+//			mDelim = "?";
 //		} else {
-//			delim = "/";
+//			mDelim = "/";
 //		}
 //		switch (mModel){
 //			case Constants.EVENTS:
@@ -486,11 +484,19 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 //		}
 //	}
 
+	public boolean checkId(){
+		return (mId.isEmpty()
+				|| mId.equals(Constants.PENDING_CLAIMS)
+				|| mId.equals(Constants.CONFIRMED)
+				|| mId.equals(Constants.MY_EVENTS)
+				|| mId.equals(Constants.PENDING_EVENTS));
+	}
+
 	public void loader(){
 		Log.d(TAG, "Preloader: "+mId);
 		String page;
-		page = (mId.isEmpty()) ? "?page=" : "&page=";
-		String url = SchoolBusiness.TARGET + mModel + mId + page + mPage;
+		page = checkId() ? "?page=" : "&page=";
+		String url = SchoolBusiness.TARGET + mModel + mDelim + mId + page + mPage;
 		Log.d(TAG, url);
 		RequestQueue queue = NetworkVolley.getInstance(getActivity().getApplicationContext())
 				.getRequestQueue();

@@ -217,6 +217,9 @@ public class MainActivity extends FragmentActivity
 			Intent intent = new Intent(this, LoginActivity.class);
 			startActivity(intent);
 		}
+		if (blankContainer == null || blankContent == null){
+			blankContainer = new BlankFragment(); blankContent = new BlankFragment();
+		}
 		super.onResume();
 		//getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter("notification_filter"));
 	}

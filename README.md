@@ -12,11 +12,13 @@ This README would normally document whatever steps are necessary to get your app
 ### How do I get set up? ###
 
 * Summary of set up
-  * Configuration
-  + Dependencies
-  * Google Volley
-* Facebook SDk
-* Twitter SDK
+* Configuration
+Install git
+[Install Android Studio](developer.android.com/sdk/index.html)
++ Dependencies
+    * Google Volley
+    * Facebook SDk
+    * Twitter SDK
 * Database configuration
 * How to run tests
 * Deployment instructions

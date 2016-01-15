@@ -12,9 +12,9 @@ This README would normally document whatever steps are necessary to get your app
 ### How do I get set up? ###
 
 * Summary of set up
-* Configuration
-+ Dependencies
-* Google Volley
+  * Configuration
+  + Dependencies
+  * Google Volley
 * Facebook SDk
 * Twitter SDK
 * Database configuration

@@ -13,8 +13,8 @@ This README would normally document whatever steps are necessary to get your app
 
 * Summary of set up
 * Configuration
-Install git
-[Install Android Studio](developer.android.com/sdk/index.html)
+    * Install git
+    * [Download and Install Android Studio](developer.android.com/sdk/index.html)
 + Dependencies
     * Google Volley
     * Facebook SDk

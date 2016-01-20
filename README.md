@@ -27,7 +27,7 @@ Install git
 #### Install Android Studio ####
 Ubuntu: Run this command to get the necessary libraries to install the Android SDK.
 
-`$ sudo apt-get install lib32stdc++6`
+`$ sudo apt-get install lib32stdc++6 lib32z1`
 
 [Download and Install Android Studio](developer.android.com/sdk/index.html)
 

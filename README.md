@@ -14,7 +14,10 @@ This README would normally document whatever steps are necessary to get your app
 * Summary of set up
 ### System Configuration ###
 Install your favorite JDK.  [Oracle Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+
 Install git
+
+`$ sudo apt-get install git-all`
 
 #### Install Android Studio ####
 Ubuntu: Run this command to get the necessary libraries to install the Android SDK.

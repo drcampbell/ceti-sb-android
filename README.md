@@ -56,4 +56,5 @@ This shouldn't...
 ### Who do I talk to? ###
 
 Email: campbell[dot][one][seven][six][zero][at]osu[dot]edu
-* Other community or team contact
+
+or ramnath.6[at]osu.edu

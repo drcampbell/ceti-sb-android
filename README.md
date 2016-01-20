@@ -12,16 +12,25 @@ This README would normally document whatever steps are necessary to get your app
 ### How do I get set up? ###
 
 * Summary of set up
-* Configuration
-    * Install your favorite JDK.  [Oracle Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-    * Install git
-    * Ubuntu: Run command `$ sudo apt-get install lib32stdc++6` to get c library.  
-    * [Download and Install Android Studio](developer.android.com/sdk/index.html)
-    * [Setup VM Acceleration on Linux](http://developer.android.com/tools/devices/emulator.html#vm-linux)
-+ Dependencies
-    * Google Volley
-    * Facebook SDk
-    * Twitter SDK
+### System Configuration ###
+Install your favorite JDK.  [Oracle Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+Install git
+
+#### Install Android Studio ####
+Ubuntu: Run this command to get the necessary libraries to install the Android SDK.
+
+`$ sudo apt-get install lib32stdc++6`
+
+[Download and Install Android Studio](developer.android.com/sdk/index.html)
+
+If you want to use the emulator, you may want to [Setup VM Acceleration on Linux](http://developer.android.com/tools/devices/emulator.html#vm-linux)
+### Android Dependencies ###
+The School2Biz Android App uses the Google Volley framework to send and receive RESTful HTTP/HTTPS messages.  To install enter:
+
+`git clone https://android.googlesource.com/platform/frameworks/volley`
+
+Facebook SDk
+Twitter SDK
 * Database configuration
 * How to run tests
 * Deployment instructions

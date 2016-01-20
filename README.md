@@ -13,8 +13,11 @@ This README would normally document whatever steps are necessary to get your app
 
 * Summary of set up
 * Configuration
+    * Install your favorite JDK.  [Oracle Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
     * Install git
+    * Ubuntu: Run command `$ sudo apt-get install lib32stdc++6` to get c library.  
     * [Download and Install Android Studio](developer.android.com/sdk/index.html)
+    * [Setup VM Acceleration on Linux](http://developer.android.com/tools/devices/emulator.html#vm-linux)
 + Dependencies
     * Google Volley
     * Facebook SDk

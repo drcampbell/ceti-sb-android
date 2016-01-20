@@ -35,7 +35,10 @@ If you want to use the emulator, you may want to [Setup VM Acceleration on Linux
 ### Android Dependencies ###
 The School2Biz Android App uses the Google Volley framework to send and receive RESTful HTTP/HTTPS messages.  To install enter:
 
-`git clone https://android.googlesource.com/platform/frameworks/volley`
+```
+$ cd volley
+$ git clone https://android.googlesource.com/platform/frameworks/volley
+```
 
 You may also need to install the Android SDK 22.
 ####Facebook SDk####

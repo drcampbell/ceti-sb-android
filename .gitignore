@@ -8,3 +8,5 @@
 *.iml
 *.swp
 *.apk
+.idea/*
+app/.idea/*

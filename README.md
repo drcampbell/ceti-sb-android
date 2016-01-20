@@ -37,6 +37,7 @@ The School2Biz Android App uses the Google Volley framework to send and receive 
 
 `git clone https://android.googlesource.com/platform/frameworks/volley`
 
+You may also need to install the Android SDK 22.
 ####Facebook SDk####
 This should work out of the box...
 

@@ -1,19 +1,24 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This document details how to setup the development environment for the School2Biz Android Application.
+This document was generated in Markdown. [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### What is this repository for? ###
 
 * Quick summary
-> This is the repository for the Android App for the Ceti School2Biz project, a collaboration between the Ceti Lab at The Ohio State University and the Delphos School District of Ohio.  
-* Version
+* This is the repository for the Android App for the Ceti School2Biz project, a collaboration between the Ceti Lab at The Ohio State University and the Delphos School District of Ohio.  
+* Version 0.6.1
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### How do I get set up? ###
 
 * Summary of set up
+		* lib32stdc++6 library
+		* Java 7 or 8
+		* Git
+
 ### System Configuration ###
-Install your favorite JDK.  [Oracle Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+Install your favorite JDK. Using the Oracle version is recommended. But you can probably use your favorite.    [Oracle Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 
 Install git
 
@@ -32,8 +37,12 @@ The School2Biz Android App uses the Google Volley framework to send and receive 
 
 `git clone https://android.googlesource.com/platform/frameworks/volley`
 
-Facebook SDk
-Twitter SDK
+####Facebook SDk####
+This should work out of the box...
+
+####Twitter SDK####
+This shouldn't...
+
 * Database configuration
 * How to run tests
 * Deployment instructions
@@ -46,5 +55,5 @@ Twitter SDK
 
 ### Who do I talk to? ###
 
-* Repo owner or admin
+Email: campbell[dot][one][seven][six][zero][at]osu[dot]edu
 * Other community or team contact

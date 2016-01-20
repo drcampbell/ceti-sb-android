@@ -39,10 +39,10 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
         String url = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/api/users/sign_in";
         RequestQueue queue = NetworkVolley.getInstance(context)
                 .getRequestQueue();
-        HashMap<String, String> inner = new HashMap<String, String>();
-        inner.put(Constants.EMAIL, "a@b.c");
-        inner.put(Constants.PASSWORD, "1234");
-        HashMap<String, HashMap<String, String>> outer = new HashMap<String, HashMap<String, String>>();
+        HashMap<String, String> inner = new HashMap<>();
+        inner.put("email", "a@b.c");
+        inner.put("password", "1234");
+        HashMap<String, HashMap<String, String>> outer = new HashMap<>();
         outer.put("user", inner);
         JSONObject obj = new JSONObject(outer);
 

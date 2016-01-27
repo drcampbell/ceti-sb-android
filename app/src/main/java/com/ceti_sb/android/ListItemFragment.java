@@ -233,7 +233,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 //			readParams = getArguments().getBooleanArray(ARG_READ_PARAMS);
 			mModel = getArguments().getString(ARG_MODEL_PARAM);
 			mId = getArguments().getString(ARG_ID);
-			mPage = 1;
+			mPage = 2;
 			mLock = false;
 			if (mId.contains(Constants.SEARCH) || mId.contains(Constants.SCHOOL_ID) || mId.contains(Constants.USER_ID)){
 				mDelim = "?";

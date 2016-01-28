@@ -78,7 +78,8 @@ public class MainActivity extends FragmentActivity
 		SettingsFragment.OnSettingsListener,
 		MessageFragment.OnMessageListener,
 		BadgeAwardFragment.AwardBadgeListener,
-		BadgeViewFragment.OnBadgeReceiveListener
+		BadgeViewFragment.OnBadgeReceiveListener,
+		SchoolBusiness.OnNotificationListener
 
 {
 
@@ -206,6 +207,8 @@ public class MainActivity extends FragmentActivity
 
 	@Override
 	protected void onResume(){
+		//SchoolBusiness.activityVisible = true;
+		SchoolBusiness.setUpMain(getApplicationContext(), this);
 		if (SchoolBusiness.loadLogin(getApplicationContext())){
 
 			LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
@@ -227,6 +230,7 @@ public class MainActivity extends FragmentActivity
 	@Override
 	protected void onPause(){
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+		//SchoolBusiness.activityVisible = false;
 		if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
 			clearTabs();
 		}
@@ -1194,5 +1198,15 @@ public class MainActivity extends FragmentActivity
 		Toast.makeText(getApplicationContext(),
 				"Error: " + e.getMessage(),
 				Toast.LENGTH_LONG).show();
+	}
+
+	public void updateCount(){
+		if (notifications != null) {
+			MainActivity.this.mainView.post(new Runnable() {
+				public void run() {
+					notifications.setTitle(SchoolBusiness.getNotificationCount());
+				}
+			});
+		}
 	}
 }

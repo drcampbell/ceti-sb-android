@@ -1,5 +1,6 @@
 package com.ceti_sb.android;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -41,8 +42,11 @@ public class SchoolBusiness extends Application{
 	private static SharedPreferences loginPreferences;
 	private static SharedPreferences.Editor loginPrefsEditor;
 	public static final String ACTION_NOTIFICATION = "com.school_business.android.action.NOTIFICATION";
-
+	private static boolean activityVisible;
+	private static Context mContext;
 	public static final String[] time_zones = {"Eastern Time (US & Canada)"};
+
+	private static OnNotificationListener mListener;
 
 	@Override
 	public void onCreate(){
@@ -52,9 +56,34 @@ public class SchoolBusiness extends Application{
 	}
 
 
-	public static String getNotificationCount(){ return n_notifications;}
+	public interface OnNotificationListener {
+		public void updateCount();
+	}
+
+	public static void setUpMain(Context context, Activity activity){
+		mContext = context;
+		if (activity.getClass() == MainActivity.class) {
+			mListener = (OnNotificationListener) activity;
+		}
+	}
+
+	public static String getNotificationCount(){
+		loginPreferences = mContext.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
+		n_notifications = loginPreferences.getString(Constants.NOTIFICATIONS, "0");
+		return n_notifications;
+	}
+
 	public static void setNotificationCount(String count){
+		if (mContext != null) {
+			loginPreferences = mContext.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
+			loginPrefsEditor = loginPreferences.edit();
+			loginPrefsEditor.putString(Constants.NOTIFICATIONS, count);
+			loginPrefsEditor.apply();
+		}
 		n_notifications = count;
+		if (mListener != null) {
+			mListener.updateCount();
+		}
 	}
 	public static JSONObject getNotifications(){
 		return notifications;
@@ -143,6 +172,7 @@ public class SchoolBusiness extends Application{
 	}
 
 	private void init() {
+		activityVisible = false;
 		NetworkVolley.getInstance(this.getApplicationContext());
 	}
 
@@ -265,5 +295,9 @@ public class SchoolBusiness extends Application{
 			Log.d("JSON EXCEPTION ERROR", e.toString());
 		}
 		return bundle;
+	}
+
+	public static boolean isActivityVisible(){
+		return activityVisible;
 	}
 }

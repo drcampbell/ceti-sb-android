@@ -7,7 +7,7 @@ import android.widget.AbsListView;
  */
 public abstract class InfiniteScrollListener implements AbsListView.OnScrollListener{
 	private int bufferItemCount = 10;
-	private int currentPage = 0;
+	private int currentPage = 1;
 	private int itemCount = 0;
 	private boolean isLoading = true;
 

@@ -40,7 +40,6 @@ public class LoginActivity extends Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
 	    Log.d(TAG, "Login Activity Created");
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_login);
 		Intent intent = getIntent();
         userEmailText = (EditText) findViewById(R.id.email);

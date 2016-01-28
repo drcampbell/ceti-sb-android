@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -44,12 +45,18 @@ public class MyGcmListenerService extends GcmListenerService {
 		 *     - Store message in local database.
 		 *     - Update UI.
 		 */
-
+		SharedPreferences sp = getApplicationContext().getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
+		SharedPreferences.Editor spEdit = sp.edit();
+		spEdit.putString(Constants.NOTIFICATIONS, notif_count);
+		spEdit.apply();
 		/**
 		 * In some cases it may be useful to show a notification indicating to the user
 		 * that a message was received.
 		 */
 		SchoolBusiness.setNotificationCount(notif_count);
+		if (SchoolBusiness.isActivityVisible()){
+
+		}
 		sendNotification(message, data);
 	}
 

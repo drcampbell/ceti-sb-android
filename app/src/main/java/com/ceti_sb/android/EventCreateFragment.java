@@ -169,7 +169,11 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			}
 			for (int i = 0; i < resource.length; i++) {
 				data = (EditText) getActivity().findViewById(resource[i]);
-				event.put(headers[i], data.getText().toString());
+				if (resource[i] == R.id.ET_title){
+					event.put(headers[i], data.getText().toString().replace('\n',' ').trim());
+				} else {
+					event.put(headers[i], data.getText().toString().trim());
+				}
 			}
 			Log.d("EVENT", event.getString(Constants.TITLE));
 			Log.d("EVENT", event.getString(Constants.TITLE).trim());

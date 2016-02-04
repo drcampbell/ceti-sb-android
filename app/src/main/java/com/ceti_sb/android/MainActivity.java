@@ -612,7 +612,7 @@ public class MainActivity extends FragmentActivity
 		ShareLinkContent content = new ShareLinkContent.Builder()
 				.setContentUrl(Uri.parse(SchoolBusiness.URL))
 				.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
-						getString(R.string.awarded_badge))
+						" "+getString(R.string.awarded_badge))
 				.setContentDescription("Badge awarded for speaking at")
 				.setImageUrl(badgeUrl)
 				.build();
@@ -621,7 +621,7 @@ public class MainActivity extends FragmentActivity
 	/* Listener for BadgeViewFragment.java */
 	public void onTweetBadge(Uri badgeUrl, String url) {
 		try {
-			twitter.composeTweet(this, SchoolBusiness.getUserAttr(Constants.NAME) + getString(R.string.awarded_badge),
+			twitter.composeTweet(this, SchoolBusiness.getUserAttr(Constants.NAME) + " "+getString(R.string.awarded_badge),
 					new URL(url),
 					badgeUrl
 					);

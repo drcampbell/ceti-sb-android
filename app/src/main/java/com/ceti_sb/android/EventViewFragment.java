@@ -1,6 +1,7 @@
 package com.ceti_sb.android;
 
 import android.app.Activity;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -205,7 +206,10 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 
 	public boolean renderEvent(View view, JSONObject response) {
 		Boolean future_event;
+		Boolean canceled;
 		try {
+			/* Was the Event Canceled? */
+			canceled = !response.getBoolean("active") && !response.getBoolean("complete");
 			event_id = response.getString(Constants.ID);
 			claim_id = response.getString("claim_id");
 			String str;
@@ -218,19 +222,18 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 			Log.d("WHATISEVENT", event);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm aa zzz");
 
+			/* Is the event occurring in the future? */
 			try {
 				future_event = sdf.parse(response.getString(Constants.EVENT_START)).after(new Date());
-				Log.d("TIMEDEBUG", future_event.toString());
-				Log.d("TIMEDEBUG", response.getString(Constants.EVENT_START));
-				Log.d("TIMEDEBUG", sdf.format(new Date()));
 			} catch (java.text.ParseException e){
 				future_event = false;
 			}
+
 			/* Is the user not the owner of the event? */
 			if (!response.getString("user_id").equals(SchoolBusiness.getUserAttr(Constants.ID))){
 				((Button) view.findViewById(R.id.edit_button)).setVisibility(View.GONE);
 				((Button) view.findViewById(R.id.delete_button)).setVisibility(View.GONE);
-				if (future_event) {
+				if (future_event && !canceled) {
 					/* Is user the speaker of the event? */
 					if (response.getString("speaker_id").equals(SchoolBusiness.getUserAttr(Constants.ID))) {
 						((Button) view.findViewById(R.id.claim_button)).setVisibility(View.GONE);
@@ -253,10 +256,10 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				} else {
 					view.findViewById(R.id.claim_button).setVisibility(View.GONE);
 				}
+
 			/* Owner View */
 			} else {
-
-				if (future_event) {
+				if (future_event && !canceled) {
 					((Button) view.findViewById(R.id.edit_button)).setOnClickListener(EventViewFragment.this);
 					((Button) view.findViewById(R.id.delete_button)).setOnClickListener(EventViewFragment.this);
 				} else {
@@ -266,9 +269,14 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				((Button) view.findViewById(R.id.claim_button)).setVisibility(View.GONE);
 				mode = CANCEL_EVENT;
 			}
+
 			for (int i = 0; i < resource.length; i++) {
 				tv = (TextView) view.findViewById(resource[i]);
-
+				/* If Event is canceled strike the text through */
+				if (canceled && resource[i] == R.id.tv_title){
+					tv.setPaintFlags(tv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+				}
+				/* Assign a link to the TV if needed */
 				link = get_id(resource[i]);
 				if (!link.equals(Constants.NULL)) {
 					link = response.getString(link);
@@ -277,6 +285,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				} else {
 					link = "0";
 				}
+				/* String Formatting - Everything besides event_start and end get display case */
 				str = name[i];
 				if (str.contains("event")) {
 					str = response.getString(str);

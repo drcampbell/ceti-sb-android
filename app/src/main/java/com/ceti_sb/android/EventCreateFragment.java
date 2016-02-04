@@ -21,6 +21,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +37,7 @@ import java.util.GregorianCalendar;
  * Use the {@link EventCreateFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EventCreateFragment extends Fragment implements View.OnClickListener{
+public class EventCreateFragment extends Fragment implements View.OnClickListener {
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "edit";
@@ -51,6 +52,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 
 	Spinner mSpinner;
 	ArrayAdapter<String> idAdapter;
+
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -84,7 +86,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
+							 Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_event_create, container, false);
 		formatView(view);
@@ -161,6 +163,10 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			String event_end = createDate(getView().getRootView(), end, R.id.end_pm);
 
 			if (event_start.isEmpty() || event_end.isEmpty()){
+				return null;
+			}
+			if (!compareDates(dateFormat.format(new Date()), event_start)){
+				toaster("Error: Event must begin in the future");
 				return null;
 			}
 			if (!compareDates(event_start, event_end)){

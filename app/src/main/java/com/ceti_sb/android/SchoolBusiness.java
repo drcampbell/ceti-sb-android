@@ -24,11 +24,11 @@ public class SchoolBusiness extends Application{
 	public static final Boolean DEBUG = true;
 	//public static final String URL = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/";
 //    if (false){
-//		public static final String URL = "https://www.school2biz.com";
-//		public static final String TARGET = "https://www.school2biz.com/api/";
+	public static final String URL = "https://www.school2biz.com";
+	public static final String TARGET = "https://www.school2biz.com/api/";
 //	} else {
-	public static final String URL = "https://ceti-test-env.elasticbeanstalk.com";
-	public static final String TARGET = "https://ceti-test-env.elasticbeanstalk.com/api/";
+//	public static final String URL = "https://ceti-test-env.elasticbeanstalk.com";
+//	public static final String TARGET = "https://ceti-test-env.elasticbeanstalk.com/api/";
 //	}
 	public static final String AWS_S3 = "https://s3-us-west-1.amazonaws.com/ceti-sb/badges/";
 	public static final String NONE = "None";

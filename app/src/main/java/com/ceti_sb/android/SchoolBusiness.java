@@ -22,14 +22,8 @@ import java.util.Iterator;
 public class SchoolBusiness extends Application{
 
 	public static final Boolean DEBUG = true;
-	//public static final String URL = "http://ceti-production-spnenzsmun.elasticbeanstalk.com/";
-//    if (false){
-	public static final String URL = "https://www.school2biz.com";
-	public static final String TARGET = "https://www.school2biz.com/api/";
-//	} else {
-//	public static final String URL = "https://ceti-test-env.elasticbeanstalk.com";
-//	public static final String TARGET = "https://ceti-test-env.elasticbeanstalk.com/api/";
-//	}
+	public static String URL;
+	public static String TARGET;
 	public static final String AWS_S3 = "https://s3-us-west-1.amazonaws.com/ceti-sb/badges/";
 	public static final String NONE = "None";
 	public static final String TEACHER = "Teacher";
@@ -54,7 +48,13 @@ public class SchoolBusiness extends Application{
 
 	@Override
 	public void onCreate(){
-
+		if (DEBUG){
+			URL = getString(R.string.URL_DEV);
+			TARGET = getString(R.string.TARGET_DEV);
+		} else {
+			URL = getString(R.string.URL_PRODUCTION);
+			TARGET = getString(R.string.TARGET_PRODUCTION);
+		}
 		super.onCreate();
 		init();
 	}

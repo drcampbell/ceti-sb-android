@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="URL_PRODUCTION">https://www.school2biz.com</string>
+    <string name="TARGET_PRODUCTION">https://www.school2biz.com/api/</string>
+    <string name="URL_DEV">https://ceti-test-env.elasticbeanstalk.com</string>
+    <string name="TARGET_DEV">https://ceti-test-env.elasticbeanstalk.com/api/</string>
+
     <string name="facebook_app_id">530937237063329</string>
 
     <string name="facebook">com.facebook.katana</string>

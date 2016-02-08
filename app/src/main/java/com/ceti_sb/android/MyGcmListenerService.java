@@ -53,7 +53,7 @@ public class MyGcmListenerService extends GcmListenerService {
 		 * In some cases it may be useful to show a notification indicating to the user
 		 * that a message was received.
 		 */
-		SchoolBusiness.setNotificationCount(notif_count);
+		SchoolBusiness.setNotificationCount(getApplicationContext(), notif_count);
 		if (SchoolBusiness.isActivityVisible()){
 
 		}

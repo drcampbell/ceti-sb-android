@@ -253,7 +253,7 @@ public class MainActivity extends FragmentActivity
 		getMenuInflater().inflate(R.menu.menu_main, menu);
 		/* Set the notifications counter to the current value in class */
 		notifications = menu.findItem(R.id.notifications);
-		notifications.setTitle(SchoolBusiness.getNotificationCount());
+		notifications.setTitle(SchoolBusiness.getNotificationCount(getApplicationContext()));
 		/* Initialize the Search View */
 		SearchManager searchManager =
 				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -1189,8 +1189,8 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void updateNotifications(String count){
-		SchoolBusiness.setNotificationCount(count);
-		notifications.setTitle(SchoolBusiness.getNotificationCount());
+		SchoolBusiness.setNotificationCount(getApplicationContext(), count);
+		notifications.setTitle(SchoolBusiness.getNotificationCount(getApplicationContext()));
 	}
 
 	public void handleJSONException(JSONException e){
@@ -1204,7 +1204,7 @@ public class MainActivity extends FragmentActivity
 		if (notifications != null) {
 			MainActivity.this.mainView.post(new Runnable() {
 				public void run() {
-					notifications.setTitle(SchoolBusiness.getNotificationCount());
+					notifications.setTitle(SchoolBusiness.getNotificationCount(getApplicationContext()));
 				}
 			});
 		}

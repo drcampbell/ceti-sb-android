@@ -71,15 +71,15 @@ public class SchoolBusiness extends Application{
 		}
 	}
 
-	public static String getNotificationCount(){
-		loginPreferences = mContext.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
+	public static String getNotificationCount(Context context){
+		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		n_notifications = loginPreferences.getString(Constants.NOTIFICATIONS, "0");
 		return n_notifications;
 	}
 
-	public static void setNotificationCount(String count){
+	public static void setNotificationCount(Context context, String count){
 		if (mContext != null) {
-			loginPreferences = mContext.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
+			loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 			loginPrefsEditor = loginPreferences.edit();
 			loginPrefsEditor.putString(Constants.NOTIFICATIONS, count);
 			loginPrefsEditor.apply();
@@ -235,7 +235,7 @@ public class SchoolBusiness extends Application{
 		loginPrefsEditor = loginPreferences.edit();
 		loginPrefsEditor.putBoolean(Constants.SaveLoginString, true);
 		loginPrefsEditor.putString(Constants.PROFILE, profile.toString());
-		loginPrefsEditor.putString(Constants.NOTIFICATIONS, getNotificationCount());
+		loginPrefsEditor.putString(Constants.NOTIFICATIONS, getNotificationCount(context));
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile Saved");
 	}
@@ -244,7 +244,7 @@ public class SchoolBusiness extends Application{
 		String str_profile;
 		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		str_profile = loginPreferences.getString(Constants.PROFILE, Constants.NULL);
-		setNotificationCount(loginPreferences.getString(Constants.NOTIFICATIONS, "0"));
+		setNotificationCount(context, loginPreferences.getString(Constants.NOTIFICATIONS, "0"));
 		if (str_profile.equals(Constants.NULL)){
 			return false;
 		} else {

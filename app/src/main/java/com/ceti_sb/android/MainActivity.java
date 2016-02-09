@@ -385,7 +385,7 @@ public class MainActivity extends FragmentActivity
 				android.net.Uri uri = intent.getData();
 				if (uri != null) {
 					String path = uri.toString();
-					path.replace(SchoolBusiness.TARGET, Constants.NULL);
+					path.replace(SchoolBusiness.getTarget(), Constants.NULL);
 					if (path.split("/").length >= 2) {
 						String amodel = path.split("/", 1)[0];
 						String aid = path.split("/", 1)[1];
@@ -610,7 +610,7 @@ public class MainActivity extends FragmentActivity
 	/* Listener for BadgeViewFragment.java */
 	public void onShareBadgeFacebook(Uri badgeUrl){
 		ShareLinkContent content = new ShareLinkContent.Builder()
-				.setContentUrl(Uri.parse(SchoolBusiness.URL))
+				.setContentUrl(Uri.parse(SchoolBusiness.getUrl()))
 				.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
 						" "+getString(R.string.awarded_badge))
 				.setContentDescription("Badge awarded for speaking at")
@@ -791,7 +791,7 @@ public class MainActivity extends FragmentActivity
 
 //	public void sendSearchVolley(final String query, final String model, final boolean feed_mode)
 //	{
-//		String url = SchoolBusiness.TARGET + model;
+//		String url = SchoolBusiness.getTarget() + model;
 //		String encodedUrl = null;
 //		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
 //				.getRequestQueue();
@@ -871,7 +871,7 @@ public class MainActivity extends FragmentActivity
 			}
 			search = false;
 		}
-		String url = SchoolBusiness.TARGET + model + delim + id;
+		String url = SchoolBusiness.getTarget() + model + delim + id;
 		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
 				.getRequestQueue();
 		/* Create the Request */

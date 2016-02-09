@@ -46,7 +46,7 @@ public class TwitterClient {
 	public void getCredentials(Context context){
 		RequestQueue queue = NetworkVolley.getInstance(context)
 				.getRequestQueue();
-		String url = SchoolBusiness.URL + "tk";
+		String url = SchoolBusiness.getUrl() + "tk";
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET,url,null,
 				new Response.Listener<JSONObject>() {
 					@Override

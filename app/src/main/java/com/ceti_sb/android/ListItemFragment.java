@@ -496,7 +496,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		Log.d(TAG, "Preloader: "+mId);
 		String page;
 		page = checkId() ? "?page=" : "&page=";
-		String url = SchoolBusiness.TARGET + mModel + mDelim + mId + page + mPage;
+		String url = SchoolBusiness.getTarget() + mModel + mDelim + mId + page + mPage;
 		Log.d(TAG, url);
 		RequestQueue queue = NetworkVolley.getInstance(getActivity().getApplicationContext())
 				.getRequestQueue();

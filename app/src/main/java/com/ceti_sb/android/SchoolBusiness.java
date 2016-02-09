@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,6 +23,10 @@ import java.util.Iterator;
 public class SchoolBusiness extends Application{
 
 	public static final Boolean DEBUG = true;
+	public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
+	public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
+    public static final String PRO_URL = "https://www.school2biz.com";
+    public static final String PRO_TARGET =  "https://www.school2biz.com/api/";
 	public static String URL;
 	public static String TARGET;
 	public static final String AWS_S3 = "https://s3-us-west-1.amazonaws.com/ceti-sb/badges/";
@@ -48,17 +53,9 @@ public class SchoolBusiness extends Application{
 
 	@Override
 	public void onCreate(){
-		if (DEBUG){
-			URL = getString(R.string.URL_DEV);
-			TARGET = getString(R.string.TARGET_DEV);
-		} else {
-			URL = getString(R.string.URL_PRODUCTION);
-			TARGET = getString(R.string.TARGET_PRODUCTION);
-		}
 		super.onCreate();
 		init();
 	}
-
 
 	public interface OnNotificationListener {
 		public void updateCount();
@@ -68,6 +65,22 @@ public class SchoolBusiness extends Application{
 		mContext = context;
 		if (activity.getClass() == MainActivity.class) {
 			mListener = (OnNotificationListener) activity;
+		}
+	}
+
+	public static String getUrl(){
+		if (DEBUG){
+			return DEV_URL;
+		} else {
+			return PRO_URL;
+		}
+	}
+
+	public static String getTarget(){
+		if (DEBUG){
+			return DEV_TARGET;
+		} else {
+			return DEV_URL;
 		}
 	}
 

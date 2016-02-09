@@ -116,7 +116,7 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 
 		if (user_id == Integer.parseInt(SchoolBusiness.getUserAttr(Constants.ID))) {
 			badge_uri = Uri.parse(badge_str);
-			url = SchoolBusiness.URL + "users/" + SchoolBusiness.getUserAttr(Constants.ID) + "/badges/" + badge_id;
+			url = SchoolBusiness.getUrl() + "users/" + SchoolBusiness.getUserAttr(Constants.ID) + "/badges/" + badge_id;
 			final ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
 					.setContentUrl(Uri.parse(url))
 					.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +

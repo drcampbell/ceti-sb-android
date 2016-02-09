@@ -129,7 +129,7 @@ public class RegistrationIntentService extends IntentService {
 	 * @param token The new token.
 	 */
 	private void sendRegistrationToServer(String token) {
-		String url = SchoolBusiness.TARGET + "register_device";
+		String url = SchoolBusiness.getTarget() + "register_device";
 		JSONObject registration = new JSONObject();
 		try {
 			registration.put("token", token);

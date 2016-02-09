@@ -64,7 +64,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	}
 
     private void checkLogin() {
-		String url = SchoolBusiness.TARGET + "users/sign_in";
+		String url = SchoolBusiness.getTarget() + "users/sign_in";
 	    RequestQueue queue = NetworkVolley.getInstance(this.getApplicationContext())
 			                                .getRequestQueue();
 

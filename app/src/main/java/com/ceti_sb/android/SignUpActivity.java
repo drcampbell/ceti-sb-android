@@ -168,7 +168,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 
 	public void register(JSONObject obj){
 		String user_auth;
-		String url = SchoolBusiness.TARGET + "users/sign_up";
+		String url = SchoolBusiness.getTarget() + "users/sign_up";
 		RequestQueue queue = NetworkVolley.getInstance(this.getApplicationContext())
 				.getRequestQueue();
 		Log.d(TAG, "Register?");

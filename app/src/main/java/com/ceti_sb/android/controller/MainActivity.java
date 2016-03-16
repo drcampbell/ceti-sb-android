@@ -854,7 +854,7 @@ public class MainActivity extends FragmentActivity
 							else {
 								findViewById(R.id.save_account_button).setClickable(true);
 								Toast.makeText(getApplicationContext(),
-												getString(R.string.error_incorrect_password),
+												response.getString("message"),
 												Toast.LENGTH_LONG).show();
 							}
 						} catch (JSONException e) {

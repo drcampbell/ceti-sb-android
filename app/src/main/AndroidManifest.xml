@@ -92,12 +92,12 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <!--<data android:scheme="school-business"/>-->
                 <data android:scheme="http"
-                      android:host="ceti-production-spnenzsmun.elasticbeanstalk.com"
+                      android:host="https://www.school2biz.com"
                       android:pathPrefix="/android"/>
                 <data android:scheme="https"
-                      android:host="ceti-production-spnenzsmun.elasticbeanstalk.com"
+                      android:host="https://www.school2biz.com
                       android:pathPrefix="/android"/>
-                <data android:host="ceti-production-spnenzsmun.elasticbeanstalk.com"/>
+                <data android:host="https://www.school2biz.com/>
             </intent-filter>
         </activity>
 

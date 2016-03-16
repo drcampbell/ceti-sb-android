@@ -14,3 +14,4 @@ app/gradlew
 app/gradlew.bat
 app/local.properties
 local.properties
+captures/*

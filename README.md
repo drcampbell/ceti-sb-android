@@ -33,11 +33,7 @@ Ubuntu: Run this command to get the necessary libraries to install the Android S
 
 If you want to use the emulator, you may want to [Setup VM Acceleration on Linux](http://developer.android.com/tools/devices/emulator.html#vm-linux)
 ### Android Dependencies ###
-The School2Biz Android App uses the Google Volley framework to send and receive RESTful HTTP/HTTPS messages.  To install enter:
-
-```
-$ git clone https://android.googlesource.com/platform/frameworks/volley
-```
+The School2Biz Android App uses the Google Volley framework to send and receive RESTful HTTP/HTTPS messages.  This is now a compiled dependency.  Yay!
 
 You may also need to install the Android SDK 22.
 ####Facebook SDk####

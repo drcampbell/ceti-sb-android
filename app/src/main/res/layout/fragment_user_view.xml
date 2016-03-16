@@ -2,7 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.ceti_sb.android.UserViewFragment">
+             tools:context=".users.UserViewFragment">
     <LinearLayout
         android:id="@+id/layout_fragment_user"
         android:orientation="vertical"

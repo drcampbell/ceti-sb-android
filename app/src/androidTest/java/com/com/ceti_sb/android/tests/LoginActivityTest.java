@@ -8,8 +8,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.ceti_sb.android.LoginActivity;
-import com.ceti_sb.android.NetworkVolley;
+import com.ceti_sb.android.registration.LoginActivity;
+import com.ceti_sb.android.volley.NetworkVolley;
 
 import org.json.JSONObject;
 

@@ -1,7 +1,7 @@
 package com.ceti_sb.android.test;
 
-import com.ceti_sb.android.LoginActivity;
-import com.ceti_sb.android.R;
+import com.ceti_sb.android.registration.LoginActivity;
+import com.ceti_sb.android.controller.MainActivity;
 import com.robotium.solo.*;
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -29,8 +29,8 @@ public class TestEditAccount extends ActivityInstrumentationTestCase2<LoginActiv
 
     public void testRun() {
         //Login to the application
-        //Wait for activity: 'com.ceti_sb.android.LoginActivity'
-        solo.waitForActivity(com.ceti_sb.android.LoginActivity.class, 2000);
+        //Wait for activity: 'com.ceti_sb.android.registration.LoginActivity'
+        solo.waitForActivity(LoginActivity.class, 2000);
         //Set default small timeout to 1000 milliseconds
         Timeout.setSmallTimeout(1000);
         //Enter the text: 'test@test.com'
@@ -43,8 +43,8 @@ public class TestEditAccount extends ActivityInstrumentationTestCase2<LoginActiv
         solo.enterText((android.widget.EditText) solo.getView(com.ceti_sb.android.R.id.password), "testtest");
         //Click on Sign in
         solo.clickOnView(solo.getView(com.ceti_sb.android.R.id.sign_in_button));
-        //Wait for activity: 'com.ceti_sb.android.MainActivity'
-        assertTrue("com.ceti_sb.android.MainActivity is not found!", solo.waitForActivity(com.ceti_sb.android.MainActivity.class));
+        //Wait for activity: 'com.ceti_sb.android.controller.MainActivity'
+        assertTrue("com.ceti_sb.android.controller.MainActivity is not found!", solo.waitForActivity(MainActivity.class));
 
         //Test edit account section of the application
         //Click on action bar item
@@ -63,7 +63,7 @@ public class TestEditAccount extends ActivityInstrumentationTestCase2<LoginActiv
         //Set default small timeout to 1000 milliseconds
         Timeout.setSmallTimeout(2000);
 
-        assertTrue("com.ceti_sb.android.MainActivity is not found!", solo.waitForActivity(com.ceti_sb.android.MainActivity.class));
+        assertTrue("com.ceti_sb.android.controller.MainActivity is not found!", solo.waitForActivity(MainActivity.class));
 
         //Click on Edit Account
         solo.clickOnView(solo.getView(com.ceti_sb.android.R.id.edit_account_button));
@@ -79,13 +79,13 @@ public class TestEditAccount extends ActivityInstrumentationTestCase2<LoginActiv
         //Set default small timeout to 1000 milliseconds
         Timeout.setSmallTimeout(1000);
 
-        assertTrue("com.ceti_sb.android.MainActivity is not found!", solo.waitForActivity(com.ceti_sb.android.MainActivity.class));
+        assertTrue("com.ceti_sb.android.controller.MainActivity is not found!", solo.waitForActivity(MainActivity.class));
 
         //Logout steps
         //Click on action bar item
         solo.clickOnActionBarItem(com.ceti_sb.android.R.id.menu_logout);
-        //Wait for activity: 'com.ceti_sb.android.LoginActivity'
-        assertTrue("com.ceti_sb.android.LoginActivity is not found!", solo.waitForActivity(com.ceti_sb.android.LoginActivity.class));
+        //Wait for activity: 'com.ceti_sb.android.registration.LoginActivity'
+        assertTrue("com.ceti_sb.android.registration.LoginActivity is not found!", solo.waitForActivity(LoginActivity.class));
         //Press menu back key
         solo.goBack();
     }

@@ -2,7 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.ceti_sb.android.SettingsFragment">
+             tools:context=".account.SettingsFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <RelativeLayout

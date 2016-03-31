@@ -95,9 +95,9 @@
                       android:host="https://www.school2biz.com"
                       android:pathPrefix="/android"/>
                 <data android:scheme="https"
-                      android:host="https://www.school2biz.com
+                      android:host="https://www.school2biz.com"
                       android:pathPrefix="/android"/>
-                <data android:host="https://www.school2biz.com/>
+                <data android:host="https://www.school2biz.com"/>
             </intent-filter>
         </activity>
 

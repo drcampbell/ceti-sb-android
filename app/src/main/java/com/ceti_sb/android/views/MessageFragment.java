@@ -1,6 +1,7 @@
 package com.ceti_sb.android.views;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -82,12 +83,12 @@ public class MessageFragment extends Fragment implements View.OnClickListener {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+	public void onAttach(Context context) {
+		super.onAttach(context);
 		try {
-			mListener = (OnMessageListener) activity;
+			mListener = (OnMessageListener) context;
 		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
+			throw new ClassCastException(context.toString()
 					+ " must implement OnFragmentInteractionListener");
 		}
 	}

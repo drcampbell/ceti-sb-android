@@ -106,7 +106,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".SignUpActivity"
+            android:name=".registration.SignUpActivity"
             android:label="Register"
             android:parentActivityName=".registration.LoginActivity" >
             <meta-data
@@ -120,7 +120,7 @@
             android:launchMode="singleTop" >
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".MainActivity" />
+                android:value=".controller.MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>

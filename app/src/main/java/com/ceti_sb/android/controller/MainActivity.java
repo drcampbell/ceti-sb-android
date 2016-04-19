@@ -25,6 +25,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -64,6 +65,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareLinkContent;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.json.JSONException;
@@ -212,10 +214,11 @@ public class MainActivity extends FragmentActivity
 	 * the Google Play Store or enable it in the device's system settings.
 	 */
 	private boolean checkPlayServices() {
-		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+		int resultCode = googleAPI.isGooglePlayServicesAvailable(this);
 		if (resultCode != ConnectionResult.SUCCESS) {
-			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+			if (googleAPI.isUserResolvableError(resultCode)) {
+				googleAPI.getErrorDialog(this, resultCode,
 						PLAY_SERVICES_RESOLUTION_REQUEST).show();
 			} else {
 				Log.i(TAG, "This device is not supported.");
@@ -230,7 +233,7 @@ public class MainActivity extends FragmentActivity
 	protected void onResume(){
 		//SchoolBusiness.activityVisible = true;
 		SchoolBusiness.setUpMain(getApplicationContext(), this);
-		if (SchoolBusiness.loadLogin(getApplicationContext())){
+		if (SchoolBusiness.getProfile() != null){
 
 			LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
 				new IntentFilter(Constants.REGISTRATION_COMPLETE));
@@ -316,7 +319,6 @@ public class MainActivity extends FragmentActivity
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
 		switch (item.getItemId()){
 			case R.id.notifications:
 				sendVolley(Request.Method.GET, Constants.NULL, Constants.NOTIFICATIONS, null, true);
@@ -368,7 +370,7 @@ public class MainActivity extends FragmentActivity
 			Log.d(TAG, "Intent but no action");
 			return;
 		}
-		Log.d(TAG, intent.getAction().toString());
+		Log.d(TAG, intent.getAction());
 		switch (intent.getAction()) {
 			case Intent.ACTION_SEARCH:
 				String query = intent.getStringExtra(SearchManager.QUERY);
@@ -382,7 +384,7 @@ public class MainActivity extends FragmentActivity
 			case SchoolBusiness.ACTION_NOTIFICATION:
 				Bundle extras = intent.getExtras();
 				if (extras != null) {
-					String notification_type = extras.getString(Constants.N_TYPE);
+					String notification_type = extras.getString(Constants.N_TYPE, "");
 					Log.d("Notification Type", Constants.NULL + notification_type);
 					switch (notification_type) {
 						case Constants.AWARD_BADGE:
@@ -406,11 +408,11 @@ public class MainActivity extends FragmentActivity
 				android.net.Uri uri = intent.getData();
 				if (uri != null) {
 					String path = uri.toString();
-					path.replace(SchoolBusiness.getTarget(), Constants.NULL);
+					path = path.replace(SchoolBusiness.getTarget(), Constants.NULL);
 					if (path.split("/").length >= 2) {
-						String amodel = path.split("/", 1)[0];
+						String action_model = path.split("/", 1)[0];
 						String aid = path.split("/", 1)[1];
-						sendVolley(Request.Method.GET, aid, amodel, null, true);
+						sendVolley(Request.Method.GET, aid, action_model, null, true);
 					}
 				}
 				break;
@@ -446,8 +448,6 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void onRadioButtonClicked(View view) {
-		boolean checked = ((RadioButton) view).isChecked();
-
 		switch (view.getId()) {
 			case R.id.register_teacher:
 				SchoolBusiness.setRole(Constants.TEACHER);
@@ -587,7 +587,7 @@ public class MainActivity extends FragmentActivity
 			NetworkImageView badge = (NetworkImageView) view.findViewById(R.id.school_badge);
 			badge.setImageUrl(SchoolBusiness.AWS_S3 + response.getString("badge_url"), imageLoader);
 		} catch (JSONException e){
-			;
+			handleJSONException(e);
 		}
 		ListItemFragment event_list = ListItemFragment.newInstance(response, Constants.EVENTS, "school_id="+id);
 		swapFragment(event_list, R.id.tab_content, TAB_CONTENT, false);
@@ -647,7 +647,6 @@ public class MainActivity extends FragmentActivity
 					badgeUrl
 					);
 		} catch (MalformedURLException e){
-			;
 		}
 	}
 
@@ -842,6 +841,7 @@ public class MainActivity extends FragmentActivity
 					swapFragment(listItemFragment, R.id.fragment_container, FRAG_MAIN, true);
 					return;
 				}
+				verify(response);
 				switch (model) {
 					case Constants.ACCOUNT:
 						try {
@@ -899,9 +899,19 @@ public class MainActivity extends FragmentActivity
 		}, new Response.ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error){
-				VolleyLog.d(TAG, "Error: " + error.getMessage());
-				Toast.makeText(getApplicationContext(),
-						error.getMessage(), Toast.LENGTH_LONG).show();
+				NetworkResponse response = error.networkResponse;
+				if (response != null && response.data != null){
+					switch(response.statusCode){
+						case 401:
+							SchoolBusiness.clearLogin(getApplicationContext());
+							refreshApp();
+					}
+				}
+//				SchoolBusiness.clearLogin(getApplicationContext());
+//				refreshApp();
+//				VolleyLog.d(TAG, "Error: " + error.getMessage());
+//				Toast.makeText(getApplicationContext(),
+//						error.getMessage(), Toast.LENGTH_LONG).show();
 			}
 		}){
 			@Override
@@ -910,7 +920,7 @@ public class MainActivity extends FragmentActivity
 			}
 
 			@Override public Map<String, String> getHeaders() throws AuthFailureError {
-				Map<String, String> params = new HashMap<String, String>();
+				Map<String, String> params = new HashMap<>();
 				params.put("Content-Type", "application/json");
 				params.put("Accept", "application/json");
 				params.put("X-User-Email", SchoolBusiness.getEmail());
@@ -1125,6 +1135,17 @@ public class MainActivity extends FragmentActivity
 				ListItemFragment notifications = ListItemFragment.newInstance(response, Constants.NOTIFICATIONS, id);
 				swapFragment(notifications, R.id.fragment_container, FRAG_MAIN, backtrack);
 				clearTabs();
+			}
+		} catch (JSONException e){
+			handleJSONException(e);
+		}
+	}
+
+	public void verify(JSONObject response){
+		try {
+			if (response.has("error") && response.getString("error").contains("sign in or sign up")){
+				SchoolBusiness.clearLogin(this);
+				refreshApp();
 			}
 		} catch (JSONException e){
 			handleJSONException(e);

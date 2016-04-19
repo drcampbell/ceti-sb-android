@@ -8,14 +8,15 @@ import com.android.volley.toolbox.StringRequest;
 public class Constants {
 
     public static final String UTF8 = "UTF-8";
-    public static String LoginPreferencesString = "loginPrefs";
-    public static String SaveLoginString = "saveLogin";
+    public final static String LoginPreferencesString = "loginPrefs";
+    public final static String REMEMBER_ME = "rememberMe";
     public final static String PROFILE = "profile";
     public final static String SETTINGS = "settings";
     public final static String SEARCH = "search";
     public final static String SIGN_OUT = "sign_out";
-    public static String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
-    public static String REGISTRATION_COMPLETE = "registrationComplete";
+    public final static String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+    public final static String REGISTRATION_COMPLETE = "registrationComplete";
+    public final static String TOKEN = "token";
 
     /* Roles */
     public final static String ROLE = "role";

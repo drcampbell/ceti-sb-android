@@ -24,6 +24,7 @@ import java.util.Iterator;
 public class SchoolBusiness extends Application{
 
 	public static final Boolean DEBUG = true;
+	public static Boolean remember = false;
 	public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
 	public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
     public static final String PRO_URL = "https://www.school2biz.com";
@@ -75,6 +76,14 @@ public class SchoolBusiness extends Application{
 		} else {
 			return PRO_URL;
 		}
+	}
+
+	public static void setRemember(Boolean yes){
+		remember = yes;
+	}
+
+	public static Boolean getRemember(){
+		return remember;
 	}
 
 	public static String getTarget(){
@@ -247,9 +256,9 @@ public class SchoolBusiness extends Application{
 	public static void saveLogin(Context context){
 		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		loginPrefsEditor = loginPreferences.edit();
-		loginPrefsEditor.putBoolean(Constants.SaveLoginString, true);
 		loginPrefsEditor.putString(Constants.PROFILE, profile.toString());
 		loginPrefsEditor.putString(Constants.NOTIFICATIONS, getNotificationCount(context));
+		loginPrefsEditor.putBoolean(Constants.REMEMBER_ME, remember);
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile Saved");
 	}
@@ -259,13 +268,17 @@ public class SchoolBusiness extends Application{
 		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		str_profile = loginPreferences.getString(Constants.PROFILE, Constants.NULL);
 		setNotificationCount(context, loginPreferences.getString(Constants.NOTIFICATIONS, "0"));
+		setRemember(loginPreferences.getBoolean(Constants.REMEMBER_ME, false));
 		if (str_profile.equals(Constants.NULL)){
 			return false;
 		} else {
 			try {
-				profile = new JSONObject(str_profile);
-				Log.d(TAG, "Profile Loaded");
-				return true;
+				setProfile(new JSONObject(str_profile));
+				if (getRemember()) {
+					Log.d(TAG, "Profile Loaded");
+
+					return true;
+				} else { return false;}
 			} catch (JSONException e) {
 				Log.d(TAG, e.getMessage());
 				return false;
@@ -278,6 +291,8 @@ public class SchoolBusiness extends Application{
 		loginPrefsEditor = loginPreferences.edit();
 		profile = null;
 		loginPrefsEditor.putString(Constants.PROFILE, Constants.NULL);
+		loginPrefsEditor.putBoolean(Constants.REMEMBER_ME, false);
+		loginPrefsEditor.putString(Constants.NOTIFICATIONS, "0");
 		loginPrefsEditor.clear();
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile cleared");

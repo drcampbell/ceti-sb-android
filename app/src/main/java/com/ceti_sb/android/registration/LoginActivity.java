@@ -27,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.facebook.appevents.AppEventsLogger;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginActivity extends Activity implements OnClickListener {
@@ -49,9 +50,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	    if (SchoolBusiness.loadLogin(getApplicationContext())) {
 		    saveLoginCheckBox.setChecked(true);
-		    if (isValid(SchoolBusiness.getUserAuth())){
-				startMain(intent);
-		    }
+		    startMain(intent);
 	    }
 
         View btnLogin = (Button) findViewById(R.id.sign_in_button);
@@ -60,32 +59,31 @@ public class LoginActivity extends Activity implements OnClickListener {
         btnRegister.setOnClickListener(this);
     }
 
-	private Boolean isValid(String user_auth){
-		return true;
-	}
-
     private void checkLogin() {
+	    JSONObject obj;
 		String url = SchoolBusiness.getTarget() + "users/sign_in";
 	    RequestQueue queue = NetworkVolley.getInstance(this.getApplicationContext())
 			                                .getRequestQueue();
-
-        final String email = this.userEmailText.getText().toString();
-        final String password = this.userPasswordText.getText().toString();
-
-	    HashMap<String, String> inner = new HashMap<String, String>();
-	    inner.put(Constants.EMAIL, email);
-	    inner.put(Constants.PASSWORD, password);
-	    HashMap<String, HashMap<String, String>> outer = new HashMap<String, HashMap<String, String>>();
-		outer.put("user", inner);
-		JSONObject obj = new JSONObject(outer);
-
+//		Log.d("isPASSWORD", "Password is present? " + isPassword);
+//	    if (!isPassword){
+//		    if (token.equals(Constants.NULL)){
+//			    return;
+//		    } else {
+//			    obj = useToken(token);
+//		    }
+//	    } else {
+		    obj = newLogin();
+//	    }
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST,url,obj,
 			new Response.Listener<JSONObject>() {
 				@Override
 				public void onResponse(JSONObject response){
 					SchoolBusiness.setProfile(response);
-					saveLogin();
+					if (saveLoginCheckBox.isChecked()){
+						SchoolBusiness.setRemember(true);
+					}
+					SchoolBusiness.saveLogin(getApplicationContext());
 					startMain(null);
 				}
 			}, new Response.ErrorListener() {
@@ -104,6 +102,28 @@ public class LoginActivity extends Activity implements OnClickListener {
 	    queue.add(jsonRequest);
 	}
 
+	private JSONObject useToken(String token){
+		final String email = SchoolBusiness.getEmail();
+		HashMap<String, String> inner = new HashMap<>();
+		inner.put(Constants.EMAIL, email);
+		inner.put(Constants.TOKEN, token);
+		HashMap<String, HashMap<String, String>> outer = new HashMap<>();
+		outer.put("user", inner);
+		return new JSONObject(outer);
+	}
+
+	private JSONObject newLogin(){
+		final String email = this.userEmailText.getText().toString();
+		final String password = this.userPasswordText.getText().toString();
+
+		HashMap<String, String> inner = new HashMap<String, String>();
+		inner.put(Constants.EMAIL, email);
+		inner.put(Constants.PASSWORD, password);
+		HashMap<String, HashMap<String, String>> outer = new HashMap<String, HashMap<String, String>>();
+		outer.put("user", inner);
+		return new JSONObject(outer);
+	}
+
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
@@ -116,29 +136,23 @@ public class LoginActivity extends Activity implements OnClickListener {
         }
     }
 
-	public void saveLogin(){
-		if (saveLoginCheckBox.isChecked()) {
-			SchoolBusiness.saveLogin(getApplicationContext());
-		}
-	}
-
-	public void startMain(Intent in){
+	public void startMain(Intent intent){
 
 		Intent freshIntent = new Intent(this, MainActivity.class);
 		freshIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-		if (in != null){
-			if (in.getAction() != null) {
-				Log.d(TAG, in.getAction());
-				if (in.getAction().equals(Intent.ACTION_VIEW)) {
-					Log.d(TAG, in.getData().toString());
+		if (intent != null){
+			if (intent.getAction() != null) {
+				Log.d(TAG, intent.getAction());
+				if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+					Log.d(TAG, intent.getData().toString());
 				}
-				freshIntent.setAction(in.getAction());
+				freshIntent.setAction(intent.getAction());
 			}
-			Bundle b = in.getExtras();
-			if (b != null) {
-				freshIntent.putExtras(b);
+			Bundle bundle = intent.getExtras();
+			if (bundle != null) {
+				freshIntent.putExtras(bundle);
 			}
-			freshIntent.setData(in.getData());
+			freshIntent.setData(intent.getData());
 		}
 		startActivity(freshIntent);
 		if (!isFinishing()){

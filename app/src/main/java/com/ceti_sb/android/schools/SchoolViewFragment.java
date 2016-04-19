@@ -130,14 +130,18 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 			JSONObject response = new JSONObject(str_response);
 			JSONObject school = response.getJSONObject("school");
 			id = school.getString(Constants.ID);
-			Boolean isClick = !id.equals(Constants.NULL);
-			view.findViewById(R.id.make_my_school_button).setClickable(isClick);
-			view.findViewById(R.id.make_my_school_button).setOnClickListener(this);
+			/* Check to make sure the school is selectable as a user's school */
+			if (id.equals("1") || id.equals(Constants.NULL)){
+				view.findViewById(R.id.make_my_school_button).setVisibility(View.INVISIBLE);
+			} else {
+				view.findViewById(R.id.make_my_school_button).setClickable(true);
+				view.findViewById(R.id.make_my_school_button).setOnClickListener(this);
+			}
 			int[] res = {R.id.tv_name,R.id.tv_address,R.id.tv_city, R.id.tv_state, R.id.tv_zip, R.id.tv_phone};
 			String[] get_str = {Constants.NAME, "address", "city", "state", "zip", "phone"};
 			for(int i = 0; i < get_str.length; i++) {
 				mTextView = (TextView) view.findViewById(res[i]);
-				if (get_str.equals("phone")) {
+				if (get_str[i].equals("phone")) {
 					mTextView.setText(SchoolBusiness.phoneNumber(school.getString(get_str[i])));
 				} else {
 					mTextView.setText(SchoolBusiness.toDisplayCase(school.getString(get_str[i])));

@@ -189,6 +189,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 							} else if (response.getString("state").equals("0")) {
 								JSONObject user = response.getJSONObject("data");
 								SchoolBusiness.setProfile(user);
+								SchoolBusiness.saveLogin(getApplicationContext());
 								Log.d(TAG, "Registration successful");
 
 								finishSignUp();

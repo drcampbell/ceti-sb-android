@@ -51,6 +51,7 @@ public class Constants {
     public final static String FAILURE = "1";
     public final static String NULL = "";
     public final static String COUNT = "count";
+    public final static String NOTAVAILABLE = "N/A";
 
     /* Events */
     public final static String EVENT_ID = "event_id";
@@ -71,6 +72,7 @@ public class Constants {
     /* Schools */
     public final static String SCHOOL_NAME = "school_name";
     public final static String SCHOOL_ID = "school_id";
+    public final static String DEFAULT_SCHOOL = "1";
     /* Badges */
     public final static String AWARD = "award";
     public final static String AWARD_BADGE = "award_badge";

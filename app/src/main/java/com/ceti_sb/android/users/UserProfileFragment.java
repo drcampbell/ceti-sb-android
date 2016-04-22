@@ -116,7 +116,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 	public String get_id(int res){
 		switch (res){
 			case R.id.tv_location:
-				return "school_id";
+				return Constants.SCHOOL_ID;
 			default:
 				return Constants.NULL;
 		}
@@ -126,11 +126,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 			JSONObject response = new JSONObject(str_response);
 			String str;
 			String link = Constants.NULL;
-			JSONObject user = response.getJSONObject("user");
+			JSONObject user = response.getJSONObject(Constants.USER);
 			String user_id = user.getString(Constants.ID);
 			String name = user.getString(Constants.NAME);
 			int[] resource = {R.id.tv_location, R.id.tv_grades,R.id.tv_job,R.id.tv_business,R.id.tv_role,R.id.tv_bio};
-			String[] names = {"school_name", "grades", "job_title", "business", Constants.ROLE, "biography"};
+			String[] names = {Constants.SCHOOL_NAME, "grades", "job_title", Constants.BUSINESS, Constants.ROLE, "biography"};
 			TextView tv;
 			if (user.getString(Constants.ROLE).equals("Teacher")) {
 				((LinearLayout) view.findViewById(R.id.layout_user_business)).setVisibility(View.GONE);
@@ -139,18 +139,26 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 			}
 			for (int i = 0; i < resource.length; i++) {
 				tv = (TextView) view.findViewById(resource[i]);
-
+				str = names[i];
+				str = SchoolBusiness.toDisplayCase(user.getString(str));
+				/* Handle links for schools */
 				link = get_id(resource[i]);
 				if (!link.equals(Constants.NULL)) {
 					link = user.getString(link);
-					tv.setOnClickListener(UserProfileFragment.this);
-					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+					/* If the link isn't for the default school */
+					if (!link.equals(Constants.DEFAULT_SCHOOL)) {
+						tv.setOnClickListener(UserProfileFragment.this);
+						tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+					} else {
+						str = Constants.NOTAVAILABLE;
+					}
 				} else {
 					link = "0";
 				}
-				str = names[i];
-				str = SchoolBusiness.toDisplayCase(user.getString(str));
 				tv.setTag(link);
+				if (str.equals("Null")){
+					str = Constants.NOTAVAILABLE;
+				}
 				tv.setText(str);
 			}
 		} catch (JSONException e) {

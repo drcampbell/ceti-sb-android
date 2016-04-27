@@ -36,6 +36,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 	private int event_id;
 	private String badge_url;
 	private AwardBadgeListener mListener;
+	private Boolean isAwarded;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -68,6 +69,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 			speaker_name = getArguments().getString("speaker_name");
 			event_id = Integer.parseInt(getArguments().getString(Constants.EVENT_ID));
 			badge_url = getArguments().getString("badge_url");
+			isAwarded = Boolean.parseBoolean(getArguments().getString("isAwarded"));
 		}
 	}
 
@@ -87,8 +89,14 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 		badge.setImageUrl(badge_str, imageLoader);
 		badge.getLayoutParams().height = 512;
 		badge.getLayoutParams().width = 512;
-		view.findViewById(R.id.award_badge_button).setOnClickListener(BadgeAwardFragment.this);
-		view.findViewById(R.id.reject_award_button).setOnClickListener(BadgeAwardFragment.this);
+		if (isAwarded){
+			((TextView) view.findViewById(R.id.award_badge)).setText("You Have Awarded A Badge To");
+			view.findViewById(R.id.award_badge_button).setVisibility(View.INVISIBLE);
+			view.findViewById(R.id.reject_award_button).setVisibility(View.INVISIBLE);
+		} else {
+			view.findViewById(R.id.award_badge_button).setOnClickListener(BadgeAwardFragment.this);
+			view.findViewById(R.id.reject_award_button).setOnClickListener(BadgeAwardFragment.this);
+		}
 		return view;
 	}
 

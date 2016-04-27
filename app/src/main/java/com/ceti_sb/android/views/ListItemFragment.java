@@ -358,9 +358,10 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 			view.setBackgroundColor(getResources().getColor(R.color.tw__solid_white));
 			if (mModel.equals(getString(R.string.notifications))){
 				if (mData.get(position).get(Constants.N_TYPE).equals("4")){
-					//TODO mListener.onAwardBadgeSelected();
+					mListener.onGetAwardBadge(mData.get(position).get(Constants.ID));
+				} else {
+					mListener.onListItemSelected(mData.get(position).get(Constants.ID), getString(R.string.events));//idParams.get(position), getString(R.string.events));
 				}
-				mListener.onListItemSelected(mData.get(position).get(Constants.ID), getString(R.string.events));//idParams.get(position), getString(R.string.events));
 				mListener.onNotificationViewed(mData.get(position).get(Constants.AUX_ID));//auxIdParams.get(position));
 			} else {
 				mListener.onListItemSelected(mData.get(position).get(Constants.ID), mModel);//idParams.get(position), mModel);
@@ -390,7 +391,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
 	public interface OnListItemInteractionListener {
-		// TODO: Update argument type and name
+		public void onGetAwardBadge(String event_id);
 		public void onListItemSelected(String id, String model);
 		public void onNotificationViewed(String id);
 		public void markAllNotificationsRead();

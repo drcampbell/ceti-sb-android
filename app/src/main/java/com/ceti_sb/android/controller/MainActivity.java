@@ -610,6 +610,10 @@ public class MainActivity extends FragmentActivity
 		}
 	}
 
+	public void onGetAwardBadge(String event_id){
+		sendVolley(Request.Method.GET, "award_badge?event_id="+event_id, Constants.USERS, null, true);
+	}
+
 	/* Listener for BadgeAwardFragment.java */
 	public void awardBadge(Boolean award, int event_id){
 		JSONObject obj = new JSONObject();
@@ -1067,6 +1071,16 @@ public class MainActivity extends FragmentActivity
 		if (id.contains(Constants.BADGES)){
 			handleBadgeResponse(response);
 			return;
+		} else if (id.contains("award_badge?event_id")) {
+			try {
+				Bundle args = jsonToBundle(response);
+				BadgeAwardFragment badgeAwardFragment = BadgeAwardFragment.newInstance(args);
+				swapFragment(badgeAwardFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
+
+			} catch (JSONException e){
+				handleJSONException(e);
+			}
+			return;
 		}
 		switch (id) {
 			case Constants.PROFILE:
@@ -1176,6 +1190,17 @@ public class MainActivity extends FragmentActivity
 		Toast.makeText(getApplicationContext(),
 				"Error: " + e.getMessage(),
 				Toast.LENGTH_LONG).show();
+	}
+
+	public static Bundle jsonToBundle(JSONObject jsonObject) throws JSONException {
+		Bundle bundle = new Bundle();
+		Iterator iter = jsonObject.keys();
+		while(iter.hasNext()){
+			String key = (String)iter.next();
+			String value = jsonObject.getString(key);
+			bundle.putString(key,value);
+		}
+		return bundle;
 	}
 
 	public void updateCount(){

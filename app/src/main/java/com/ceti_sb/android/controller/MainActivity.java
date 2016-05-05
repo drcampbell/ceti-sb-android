@@ -820,6 +820,7 @@ public class MainActivity extends FragmentActivity
 	                       final Boolean backtrack){
 		String delim;
 		final boolean search;
+		/* Check to see if the URL ID includes a search */
 		if (id.contains("search")){
 			delim = "?";
 			search = true;

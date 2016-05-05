@@ -118,89 +118,11 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		String[] key = modelSwitch(model);
 		Log.d(TAG, "newInstance called: "+id);
 		List<Map<String, String>> tData = processJSON(response, model);
-//		ArrayList<String> ids = new ArrayList<>();
-//		ArrayList<String> titles = new ArrayList<>();
-//		ArrayList<String> starts = new ArrayList<>();
-//		ArrayList<String> auxIds = new ArrayList<>();
-		//{id:'x', title: 'y', data: 'z', auxId:'x1'}
-		//Array readStates;// = new Array<Boolean>();
-		//boolean[] readStates;
-//        try {
-//			JSONObject obj;
-//			JSONArray obj_arr = response.getJSONArray(model);
-////	        readStates = new boolean[obj_arr.length()];
-////	        Arrays.fill(readStates, true);
-//			for (int i = 0; i < obj_arr.length(); i++){
-//				obj = (JSONObject) obj_arr.get(i);
-//				Map<String, String> map = new HashMap<>();
-//				switch (model){
-//					case Constants.EVENTS:
-//						/* Convert arrays to hash map */
-//						map.put(Constants.ID, obj.getString(key[0]));
-//						map.put(Constants.TITLE, obj.getString(key[1]));
-//						map.put(Constants.DATA, obj.getString(key[2]));
-//						map.put(Constants.AUX_ID, "0");
-//						map.put(Constants.READ, "true");
-//
-////						ids.add   (obj.getString(key[0]));
-////						titles.add(obj.getString(key[1]));
-////						starts.add(obj.getString(key[2]));
-////						readStates[i] = true;
-//						//starts.add(SchoolBusiness.parseTime(obj.getString(key[2])));
-//						break;
-//					case Constants.NOTIFICATIONS:
-//						int n_type = Integer.parseInt(obj.getString("n_type"));
-//						/* Map replacement */
-//						map.put(Constants.ID, obj.getString("event_id"));
-//						map.put("title", obj.getString("act_user_name"));
-//						if (n_type != 3 && n_type != 4) {
-//							map.put("data", notification(obj.getString("event_title"), n_type));
-//						} else {
-//							map.put("data", notification(Constants.NULL, n_type));
-//						}
-//						map.put(Constants.AUX_ID, obj.getString(Constants.ID));
-//						map.put("read", obj.getString("read"));
-////						ids.add(obj.getString("event_id"));
-////						titles.add(obj.getString("act_user_name"));
-////						readStates[i] = obj.getBoolean("read");
-////						if (n_type != 3 && n_type != 4) {
-////							starts.add(notification(obj.getString("event_title"), n_type));
-////						} else {
-////							starts.add(notification(Constants.NULL, n_type));
-////						}
-////						auxIds.add(obj.getString(Constants.ID));
-//						break;
-//					default:
-//						map.put(Constants.ID, obj.getString(key[0]));
-//						map.put("title", obj.getString(key[1]));
-//						map.put("data", obj.getString(key[2]));
-//						map.put(Constants.AUX_ID, "0");
-//						map.put("read", "true");
-////						ids.add   (obj.getString(key[0]));
-////						titles.add(obj.getString(key[1]));
-////						starts.add(obj.getString(key[2]));
-////						readStates[i] = true;
-//						break;
-//				}
-//				tData.add(map);
-//			}
-//		} catch (JSONException e){
-//			e.printStackTrace();
-////			Toast.makeText(getActivity().getApplicationContext(),
-////					"Error: " + e.getMessage(),
-////					Toast.LENGTH_LONG).show();
-//	        return null;
-//		}
 		ListItemFragment fragment = new ListItemFragment();
 		Bundle args = new Bundle();
 		/* Switching to Serializable */
 		args.putSerializable(ARG_DATA, (Serializable) tData);
 		args.putString(ARG_ID, id);
-//		args.putStringArrayList(ARG_IDS_PARAM, ids);
-//		args.putStringArrayList(ARG_TITLES_PARAM, titles);
-//		args.putStringArrayList(ARG_AUX_PARAM, starts);
-//		args.putStringArrayList(ARG_AUX_ID_PARAMS, auxIds);
-//		args.putBooleanArray(ARG_READ_PARAMS, readStates);
 		Log.d("ListItem", model);
 		if (model.equals(Constants.NOTIFICATIONS)){
 			args.putString(ARG_MODEL_PARAM, Constants.NOTIFICATIONS);
@@ -466,27 +388,6 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		}
 		return tData;
 	}
-
-//	public String getQuery(String id){
-//		String mDelim;
-//		if (id.contains("search")){
-//			mDelim = "?";
-//		} else {
-//			mDelim = "/";
-//		}
-//		switch (mModel){
-//			case Constants.EVENTS:
-//				return events;
-//			case Constants.SCHOOLS:
-//				return schools;
-//			case Constants.USERS:
-//				return users;
-//			case Constants.CLAIMS:
-//				return Constants.GET_CLAIMS;
-//			default:
-//				return events;
-//		}
-//	}
 
 	public boolean checkId(){
 		return (mId.isEmpty()

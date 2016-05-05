@@ -3,6 +3,15 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context=".users.UserBadgesFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="You haven't earned any Badges yet!"
+        android:gravity="center_horizontal"
+        android:id="@+id/user_badges_tv"/>
+
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

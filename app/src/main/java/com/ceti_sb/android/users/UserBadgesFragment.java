@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -114,6 +115,9 @@ public class UserBadgesFragment extends Fragment implements View.OnClickListener
 			GridLayout display = (GridLayout) view.findViewById(R.id.badge_display);
 			ImageLoader imageLoader = NetworkVolley.getInstance(getActivity()
 					.getApplicationContext()).getImageLoader();
+			if (badges.length() == 0){
+				((TextView) view.findViewById(R.id.user_badges_tv)).setText("\nYou haven't earned any Badges yet!");
+			}
 			for (int i = 0; i < badges.length(); i++){
 				BadgeImageView badgeView = new BadgeImageView(getActivity());
 				JSONObject badge = badges.getJSONObject(i);

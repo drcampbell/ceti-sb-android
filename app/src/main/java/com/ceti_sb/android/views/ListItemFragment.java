@@ -403,9 +403,9 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 				return "has updated event: " + event_title;
 			case 3:
 				return "has sent you a message via email";
-			case 4:
-				return "has awarded you a badge!";
 			case 5:
+				return "has awarded you a badge!";
+			case 4:
 				return "Award them a badge!";
 			case 6:
 				return "has canceled their event";

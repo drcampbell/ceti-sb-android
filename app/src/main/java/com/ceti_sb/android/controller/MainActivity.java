@@ -886,7 +886,11 @@ public class MainActivity extends FragmentActivity
 						handleEventResponse(method, model, id, response, backtrack);
 						break;
 					case Constants.SCHOOLS:
-						handleSchoolResponse(method, id, response, backtrack);
+                        if(!id.equals("1")) {
+                            handleSchoolResponse(method, id, response, backtrack);
+                        }else{
+                            onFindMySchool();
+                        }
 						break;
 					case Constants.USERS:
 						handleUserResponse(method, id, response, backtrack);
@@ -1029,11 +1033,14 @@ public class MainActivity extends FragmentActivity
 						Toast.makeText(this, "You have rejected " + response.getString(Constants.USER_NAME)
 										+ "'s claim to event " + response.getString(Constants.EVENT_TITLE),
 										Toast.LENGTH_LONG).show();
-						refreshApp();
 					} else if (id.contains("cancel")){
-						refreshApp();
+
+                        Toast.makeText(this, "Claim cancelled!", Toast.LENGTH_LONG).show();
+                        findViewById(R.id.claim_button).setVisibility(View.GONE);
+                        findViewById(R.id.delete_button).setVisibility(View.GONE);
 					}
 					break;
+
 
 			}
 		}catch(JSONException e) {

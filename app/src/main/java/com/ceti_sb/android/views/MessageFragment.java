@@ -10,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.ceti_sb.android.R;
+import com.ceti_sb.android.application.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +36,7 @@ public class MessageFragment extends Fragment implements View.OnClickListener {
 	// TODO: Rename and change types of parameters
 	private String recipient_id;
 	private String name;
-
+    Toast toast;
 	private OnMessageListener mListener;
 
 	/**
@@ -53,9 +56,11 @@ public class MessageFragment extends Fragment implements View.OnClickListener {
 		return fragment;
 	}
 
+
 	public MessageFragment() {
 		// Required empty public constructor
 	}
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -103,8 +108,21 @@ public class MessageFragment extends Fragment implements View.OnClickListener {
 	public void onClick(View view){
 		switch (view.getId()){
 			case R.id.send_message_button:
-				view.findViewById(R.id.send_message_button).setClickable(false);
-				mListener.onSendMessage(recipient_id, getMessage(view));
+
+                String vaildtext = ((EditText) getActivity().findViewById(R.id.message_content)).getText().toString().trim();
+
+                if(!vaildtext.equals(Constants.NULL)){
+
+                    view.findViewById(R.id.send_message_button).setClickable(false);
+                    mListener.onSendMessage(recipient_id, getMessage(view));
+                }
+                else {
+                    Toast.makeText(getActivity().getApplicationContext(),
+                            "Please enter a valid text message",
+                            Toast.LENGTH_LONG).show();
+
+
+                }
 				break;
 		}
 	}
@@ -130,15 +148,21 @@ public class MessageFragment extends Fragment implements View.OnClickListener {
 	}
 
 	public JSONObject getMessage(View view){
-		String text = ((EditText) getActivity().findViewById(R.id.message_content)).getText().toString();
-		JSONObject message;
+		String text = ((EditText) getActivity().findViewById(R.id.message_content)).getText().toString().trim();
+
+        JSONObject message;
 		try {
 			message = new JSONObject();
-			message.put("user_message", text);
+            message.put("user_message", text);
+
+
 		} catch (JSONException e) {
 			message = null;
 		}
-		return message;
+        return message;
+
+
 	}
+
 
 }

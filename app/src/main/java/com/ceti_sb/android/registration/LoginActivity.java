@@ -37,6 +37,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     private CheckBox saveLoginCheckBox;
 
 	private static final String TAG = "Login Activity";
+    RequestQueue queue = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,13 +58,14 @@ public class LoginActivity extends Activity implements OnClickListener {
         btnLogin.setOnClickListener(this);
         View btnRegister = (Button) findViewById(R.id.register_button);
         btnRegister.setOnClickListener(this);
+        queue = NetworkVolley.getInstance(this.getApplicationContext())
+                .getRequestQueue();
     }
 
     private void checkLogin() {
 	    JSONObject obj;
 		String url = SchoolBusiness.getTarget() + "users/sign_in";
-	    RequestQueue queue = NetworkVolley.getInstance(this.getApplicationContext())
-			                                .getRequestQueue();
+
 //		Log.d("isPASSWORD", "Password is present? " + isPassword);
 //	    if (!isPassword){
 //		    if (token.equals(Constants.NULL)){
@@ -175,4 +177,47 @@ public class LoginActivity extends Activity implements OnClickListener {
 		/* Logs 'app deactive' App Event */
 		AppEventsLogger.deactivateApp(this);
 	}
+    public void forgotPassword(View view){
+        String url = SchoolBusiness.getTarget() + "users/password";
+        HashMap<String, HashMap<String, String>> outer = new HashMap<String, HashMap<String, String>>();
+        HashMap<String, String> inner = new HashMap<String, String>();
+
+        try {
+            String jsonString = "";
+            JSONObject message = new JSONObject();
+            JSONObject user = new JSONObject();
+            final String email = this.userEmailText.getText().toString();
+
+            user.put("email", email);
+            message.put("user", user);
+            message.put("commit", "Reset Password");
+
+
+            JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, url, message,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.d(TAG + " Volley", response.toString());
+                            Toast.makeText(getApplicationContext(), "Please check your email. Instructions have been emailed ", Toast.LENGTH_LONG).show();
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    findViewById(R.id.sign_in_button).setClickable(true);
+                    Log.d(TAG + " Volley", error.toString());
+                    Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json";
+                }
+            };
+            queue.add(jsonRequest);
+        }
+        catch(Exception e){
+            //Log the exception
+            Log.d(TAG + "Volley", "" +e.getStackTrace() );
+        }
+    }
 }

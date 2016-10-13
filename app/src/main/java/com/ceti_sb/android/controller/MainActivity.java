@@ -8,6 +8,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -20,8 +21,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -70,6 +74,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xml.sax.InputSource;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -77,6 +82,13 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import android.location.*;
+import android.location.LocationListener;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import bolts.AppLinks;
 
@@ -102,7 +114,8 @@ public class MainActivity extends FragmentActivity
 		MessageFragment.OnMessageListener,
 		BadgeAwardFragment.AwardBadgeListener,
 		BadgeViewFragment.OnBadgeReceiveListener,
-		SchoolBusiness.OnNotificationListener
+		SchoolBusiness.OnNotificationListener,
+        LocationListener
 
 {
 
@@ -137,7 +150,16 @@ public class MainActivity extends FragmentActivity
 	private UserBadgesFragment userBadgesFragment;
 	public TwitterClient twitter;
 
-	@Override
+    protected LocationManager locationManager;
+    protected LocationListener locationListener;
+    protected Context context;
+    String lat;
+    String provider;
+    protected String latitude,longitude;
+    protected boolean gps_enabled,network_enabled;
+
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		FacebookSdk.sdkInitialize(getApplicationContext());
@@ -282,35 +304,36 @@ public class MainActivity extends FragmentActivity
 		SearchManager searchManager =
 				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
-		searchView = (SearchView) menu.findItem(R.id.event_search).getActionView();
-		searchView.setSearchableInfo(
-				searchManager.getSearchableInfo(getComponentName()));
-		searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if (!hasFocus) {
-					if (searchView != null) {
-						if (!searchView.isIconified()) {
-							getSupportFragmentManager().beginTransaction()
-									.hide(searchOptionsFragment)
-									.show(blankSearch)
-									.commit();
-							searchView.setIconified(true);
-						}
-					}
-				}
-			}
-		});
-		searchView.setOnSearchClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Log.d(TAG, "SearchView is iconified: " + searchView.isIconified());
-				getSupportFragmentManager().beginTransaction()
-						.show(searchOptionsFragment)
-						.hide(blankSearch)
-						.commit();
-			}
-		});
+//		searchView = (SearchView) menu.findItem(R.id.event_search).getActionView();
+//		searchView.setSearchableInfo(
+//				searchManager.getSearchableInfo(getComponentName()));
+//		searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+//			@Override
+//			public void onFocusChange(View view, boolean hasFocus) {
+//				if (!hasFocus) {
+//					if (searchView != null) {
+//						if (!searchView.isIconified()) {
+//							getSupportFragmentManager().beginTransaction()
+//									.hide(searchOptionsFragment)
+//									.show(blankSearch)
+//									.commit();
+//							searchView.setIconified(true);
+//						}
+//					}
+//				}
+//			}
+//		});
+        menu.findItem(R.id.event_search).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                Log.d(TAG, "SearchView is iconified: " );
+                getSupportFragmentManager().beginTransaction()
+                        .show(searchOptionsFragment)
+                        .hide(blankSearch)
+                        .commit();
+                return false;
+            }
+        });
 		return true;
 	}
 
@@ -421,30 +444,46 @@ public class MainActivity extends FragmentActivity
 
 	public void onCheckboxClicked(View view) {
 		boolean checked = ((CheckBox) view).isChecked();
+        LinearLayout zip = ((LinearLayout) findViewById(R.id.zipLayout));
+        LinearLayout radius = ((LinearLayout) findViewById(R.id.radiusLayout));
+		switch (view.getId()) {
+            case R.id.events_checkBox:
+                if (checked) {
+                    searchModel = Constants.EVENTS;
+                    ((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
+                    ((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
+                    zip.setVisibility(View.VISIBLE);
+                    radius.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.schools_checkBox:
+                if (checked) {
+                    searchModel = Constants.SCHOOLS;
+                    ((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
+                    ((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
+                    zip.setVisibility(View.VISIBLE);
+                    radius.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.user_checkBox:
+                if (checked) {
+                    searchModel = Constants.USERS;
+                    ((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
+                    ((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
 
-		switch (view.getId()){
-			case R.id.events_checkBox:
-				if (checked){
-					searchModel = Constants.EVENTS;
-					((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
-					((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
-				}
-				break;
-			case R.id.schools_checkBox:
-				if (checked) {
-					searchModel = Constants.SCHOOLS;
-					((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
-					((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
-				}
-				break;
-			case R.id.user_checkBox:
-				if (checked) {
-					searchModel = Constants.USERS;
-					((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
-					((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
-				}
-				break;
-		}
+                    zip.setVisibility(View.GONE);
+                    radius.setVisibility(View.GONE);
+
+                }
+                break;
+            case R.id.myLocation:
+                if (checked) {
+                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+
+                }
+                break;
+        }
 	}
 
 	public void onRadioButtonClicked(View view) {
@@ -683,7 +722,7 @@ public class MainActivity extends FragmentActivity
 
 	/* Listener for ProfileEditFragment.java */
 	public void onFindMySchool(){
-		searchView.setIconified(false);
+		//searchView.setIconified(false);
 		searchModel = Constants.SCHOOLS;
 		((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(true);
 		((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
@@ -1213,4 +1252,167 @@ public class MainActivity extends FragmentActivity
 			});
 		}
 	}
+
+    public void onLocationSearchInteraction(String query){
+        sendVolley(Request.Method.GET, query, searchModel, null, true);
+    }
+    public void onSearchClick(View view){
+        String query = null;
+        EditText cmpSearchTxt = (EditText) findViewById(R.id.searchText);
+        String searchText = cmpSearchTxt.getText().toString();
+        String zip = ((EditText) findViewById(R.id.txtZip)).getText().toString();
+        String radius = ((EditText) findViewById(R.id.txtRadius)).getText().toString();
+        if(searchModel.equals(Constants.USERS)) {
+            if (searchText.isEmpty()) {
+                Toast.makeText(getApplicationContext(),
+                        "Please fill the search box with the search query",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        else{
+            if (searchText.isEmpty() && (zip.isEmpty() && radius.isEmpty())) {
+                Toast.makeText(getApplicationContext(),
+                        "Please fill the search form with either the search query or zip & radius",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+            else if((zip.isEmpty() && !radius.isEmpty()) || (!zip.isEmpty() && radius.isEmpty())){
+                Toast.makeText(getApplicationContext(),
+                        "Please fill the search form with both zipcode & radius",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
+        getSupportFragmentManager().beginTransaction()
+                .hide(searchOptionsFragment)
+                .show(blankSearch)
+                .commit();
+        if(searchModel.equals(Constants.SCHOOLS)){
+
+            if((searchText) != null && !searchText.isEmpty()){
+                //Search with zip and radius
+                if((zip) != null && !zip.isEmpty()
+                        && (radius) != null & !radius.isEmpty() ){
+
+                    query = "schools/near_me?zip=" + zip + "&radius=" + radius +
+                            "&commit=Near+Me&search=" + searchText;
+
+                }
+                else{
+                    // Only search
+                    //gBtnRadioValue = "events"
+                    query = "schools?search=" + searchText;
+                }
+            }
+            else {
+                if ((zip) != null && !zip.isEmpty()
+                        && (radius) != null & !radius.isEmpty()) {
+
+                    query = "schools?zip=" + zip + "&radius=" + radius +
+                            "&search=" + searchText +
+                            "&location=true";
+
+                }
+            }
+        }
+        else if(searchModel.equals(Constants.USERS)){
+
+
+            if((searchText) != null && !searchText.isEmpty()){
+                //Search with zip and radius
+
+                if((zip) != null && !zip.isEmpty()
+                        && (radius) != null & !radius.isEmpty() ){
+
+                    query = "events?zip=" + zip + "&radius=" + radius +
+                            "&location=true&commit=Near+Me&search=" + searchText;
+
+
+                }else{
+                    // Only search
+                    query =  "events?search=" + searchText;
+
+                }
+
+            }
+            else{
+                query =  "events?zip=" + zip + "&radius=" + radius + "&location=true";
+
+            }
+
+        }
+        else{
+            if((searchText) != null && !searchText.isEmpty()) {
+                query = "users?search=" + searchText;
+            }
+        }
+        Log.d(TAG, "Sending search request: query=" + query);
+
+        onLocationSearchInteraction(query);
+
+    }
+    public void onCancelSearchClick(View view){
+        getSupportFragmentManager().beginTransaction()
+                .hide(searchOptionsFragment)
+                .hide(blankSearch)
+                .commit();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        final Double lat = location.getLatitude();
+        final Double longitude = location.getLongitude();
+        Log.d(TAG, "Latitude:" +  lat+ ", Longitude:" + longitude);
+        final MainActivity mainAct = this;
+        new Thread(new Runnable() {
+            public void run()  {
+                XPath xpath = XPathFactory.newInstance().newXPath();
+                String expression = "//GeocodeResponse/result/address_component[type=\"postal_code\"]/long_name/text()";
+                InputSource inputSource = new InputSource("https://maps.googleapis.com/maps/api/geocode/xml?latlng="+lat+","+longitude+"&sensor=true");
+
+
+                try {
+                    final String zipcode  = (String) xpath.evaluate(expression, inputSource, XPathConstants.STRING);
+
+
+                    Log.d(TAG, "Zipcode:" +  zipcode);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //execute code on main thread
+
+
+                            TextView txtLat = (TextView) findViewById(R.id.txtZip);
+                            txtLat.setText(zipcode);
+                            locationManager.removeUpdates(mainAct);
+                            locationManager = null;
+
+                        }
+                    });
+                } catch (XPathExpressionException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.d("Latitude","disable");
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.d("Latitude","enable");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d("Latitude","status");
+    }
 }
+

@@ -32,6 +32,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
 
     <application
         android:allowBackup="true"
@@ -147,6 +149,7 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="99f95a3e1451b2989d1668f338bf8317728436d6" />
+
     </application>
 
 </manifest>

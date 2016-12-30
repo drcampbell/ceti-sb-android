@@ -26,10 +26,10 @@ public class SchoolBusiness extends Application{
 	public static final Boolean DEBUG = true;
 	public static Boolean remember = false;
     public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
-    public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
+  public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
 
-//    public static final String DEV_URL = "http://192.168.1.3:3000";
-//	public static final String DEV_TARGET =  "http://192.168.1.3:3000/api/";
+    //public static final String DEV_URL = "http://192.168.1.29:3000";
+	//public static final String DEV_TARGET =  "http://192.168.1.29:3000/api/";
     public static final String PRO_URL = "https://www.school2biz.com";
     public static final String PRO_TARGET =  "https://www.school2biz.com/api/";
 	public static String URL;
@@ -239,20 +239,23 @@ public class SchoolBusiness extends Application{
 	}
 
 	public static String phoneNumber(String s) {
-		StringBuilder sb = new StringBuilder();
+		//StringBuffer sb=new StringBuffer();
+		StringBuilder sb = new StringBuilder(s);
+      /*  int l = s.length();
 		char[] c = s.toCharArray();
 		if (s.length() == 10) {
-			sb.append('(');
-			for (int i = 0; i < s.length(); i++){
+			sb.append("(");
+			for (int i = 0; i <= l; i++){
 				sb.append(c);
 				if (i == 2){
-					sb.append(')');
+					sb.append(")");
 				}
 				if (i == 5){
-					sb.append('-');
+					sb.append("-");
 				}
 			}
-		}
+		}*/
+        //sb.append(s);
 		return sb.toString();
 	}
 

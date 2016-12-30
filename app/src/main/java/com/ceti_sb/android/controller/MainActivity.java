@@ -871,7 +871,11 @@ public class MainActivity extends FragmentActivity
 			}
 			search = false;
 		}
-		String url = SchoolBusiness.getTarget() + model + delim + id;
+        String url = SchoolBusiness.getTarget() + model + delim + id;
+
+        if(search){
+            url = SchoolBusiness.getTarget() +  id;
+        }
 		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
 				.getRequestQueue();
 		/* Create the Request */
@@ -1317,7 +1321,7 @@ public class MainActivity extends FragmentActivity
                 }
             }
         }
-        else if(searchModel.equals(Constants.USERS)){
+        else if(searchModel.equals(Constants.EVENTS)){
 
 
             if((searchText) != null && !searchText.isEmpty()){
@@ -1338,7 +1342,7 @@ public class MainActivity extends FragmentActivity
 
             }
             else{
-                query =  "events?zip=" + zip + "&radius=" + radius + "&location=true";
+                query =  "events?zip=" + zip + "&radius=" + radius + "&location=true&search=";
 
             }
 

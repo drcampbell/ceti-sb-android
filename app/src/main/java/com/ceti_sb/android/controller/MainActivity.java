@@ -1001,7 +1001,8 @@ public class MainActivity extends FragmentActivity
 					break;
 				/* Cancel an event */
 				case Request.Method.DELETE:
-					refreshApp();
+					//refreshApp();
+                    redirectToHome();
 					break;
 				/* Update an event */
 				case Request.Method.PATCH:
@@ -1087,9 +1088,11 @@ public class MainActivity extends FragmentActivity
 						Toast.makeText(this, "You have rejected " + response.getString(Constants.USER_NAME)
 										+ "'s claim to event " + response.getString(Constants.EVENT_TITLE),
 										Toast.LENGTH_LONG).show();
-						refreshApp();
+						//refreshApp();
+                        redirectToHome();
 					} else if (id.contains("cancel")){
-						refreshApp();
+						//refreshApp();
+                        redirectToHome();
 					}
 					break;
 
@@ -1223,7 +1226,11 @@ public class MainActivity extends FragmentActivity
 		startActivity(intent);
 		finish();
 	}
+    public void redirectToHome(){
+        HomeFragment homeFragment = new HomeFragment();
+        swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, true);
 
+    }
 	public void updateNotifications(String count){
 		SchoolBusiness.setNotificationCount(getApplicationContext(), count);
 		notifications.setTitle(SchoolBusiness.getNotificationCount(getApplicationContext()));

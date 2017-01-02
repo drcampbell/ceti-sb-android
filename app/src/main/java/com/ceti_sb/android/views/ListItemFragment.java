@@ -76,12 +76,12 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	private List<Map<String, String>> mData;
 	private String mModel;
 	private String mId;
-	private String mDelim;
+	private String mDelim = "";
 	private int mPage;
 	private boolean mLock;
 
 	private static String[] events = {Constants.ID, Constants.EVENT_TITLE, Constants.EVENT_START};
-	private static String[] schools = {Constants.ID, Constants.SCHOOL_NAME, "loc_city"};
+	private static String[] schools = {Constants.ID, Constants.SCHOOL_NAME, "city_state"};
 	private static String[] users = {Constants.ID, Constants.NAME, "association"};
 	private static String[] claims = {"claim_id", Constants.USER_NAME, Constants.BUSINESS};
 
@@ -156,7 +156,8 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 			mId = getArguments().getString(ARG_ID);
 			mPage = 2;
 			mLock = false;
-			if (mId.contains(Constants.SEARCH) || mId.contains(Constants.SCHOOL_ID) || mId.contains(Constants.USER_ID)){
+			//if (mId.contains(Constants.SEARCH) || mId.contains(Constants.SCHOOL_ID) || mId.contains(Constants.USER_ID)){
+			if ( mId.contains(Constants.SCHOOL_ID) || mId.contains(Constants.USER_ID)){
 				mDelim = "?";
 			} else if (mId.isEmpty()) {
 				mDelim = Constants.NULL;

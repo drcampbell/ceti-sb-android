@@ -857,11 +857,11 @@ public class MainActivity extends FragmentActivity
 	                       final String model,
 	                       JSONObject obj,
 	                       final Boolean backtrack){
-		String delim;
+		String delim = "";
 		final boolean search;
 		/* Check to see if the URL ID includes a search */
 		if (id.contains("search")){
-			delim = "?";
+			//delim = "?";
 			search = true;
 		} else {
 			if (id.isEmpty()){//   equals(Constants.NULL)){
@@ -873,9 +873,9 @@ public class MainActivity extends FragmentActivity
 		}
         String url = SchoolBusiness.getTarget() + model + delim + id;
 
-        if(search){
-            url = SchoolBusiness.getTarget() +  id;
-        }
+//        if(search){
+//            url = SchoolBusiness.getTarget() +  id;
+//        }
 		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
 				.getRequestQueue();
 		/* Create the Request */
@@ -1307,21 +1307,21 @@ public class MainActivity extends FragmentActivity
                 if((zip) != null && !zip.isEmpty()
                         && (radius) != null & !radius.isEmpty() ){
 
-                    query = "schools/near_me?zip=" + zip + "&radius=" + radius +
+                    query = "/near_me?zip=" + zip + "&radius=" + radius +
                             "&commit=Near+Me&search=" + searchText;
 
                 }
                 else{
                     // Only search
                     //gBtnRadioValue = "events"
-                    query = "schools?search=" + searchText;
+                    query = "?search=" + searchText;
                 }
             }
             else {
                 if ((zip) != null && !zip.isEmpty()
                         && (radius) != null & !radius.isEmpty()) {
 
-                    query = "schools?zip=" + zip + "&radius=" + radius +
+                    query = "/near_me?zip=" + zip + "&radius=" + radius +
                             "&search=" + searchText +
                             "&location=true";
 
@@ -1337,26 +1337,26 @@ public class MainActivity extends FragmentActivity
                 if((zip) != null && !zip.isEmpty()
                         && (radius) != null & !radius.isEmpty() ){
 
-                    query = "events?zip=" + zip + "&radius=" + radius +
+                    query = "?zip=" + zip + "&radius=" + radius +
                             "&location=true&commit=Near+Me&search=" + searchText;
 
 
                 }else{
                     // Only search
-                    query =  "events?search=" + searchText;
+                    query =  "?search=" + searchText;
 
                 }
 
             }
             else{
-                query =  "events?zip=" + zip + "&radius=" + radius + "&location=true&search=";
+                query =  "?zip=" + zip + "&radius=" + radius + "&location=true&search=";
 
             }
 
         }
         else{
             if((searchText) != null && !searchText.isEmpty()) {
-                query = "users?search=" + searchText;
+                query = "?search=" + searchText;
             }
         }
         Log.d(TAG, "Sending search request: query=" + query);

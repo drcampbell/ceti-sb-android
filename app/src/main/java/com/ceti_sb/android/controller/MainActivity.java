@@ -653,7 +653,12 @@ public class MainActivity extends FragmentActivity
 		sendVolley(Request.Method.GET, "award_badge?event_id="+event_id, Constants.USERS, null, true);
 	}
 
-	/* Listener for BadgeAwardFragment.java */
+    @Override
+    public void onShowAwardBadge(String user_id, String event_id) {
+        sendVolley(Request.Method.GET, user_id+"/event_badge/"+event_id, Constants.USERS, null, true);
+    }
+
+    /* Listener for BadgeAwardFragment.java */
 	public void awardBadge(Boolean award, int event_id){
 		JSONObject obj = new JSONObject();
 		try {
@@ -1129,6 +1134,10 @@ public class MainActivity extends FragmentActivity
 			}
 			return;
 		}
+        else if(id.contains("event_badge")){
+            handleBadgeResponse(response);
+            return;
+        }
 		switch (id) {
 			case Constants.PROFILE:
 				Log.d(TAG, "Updating User Profile");

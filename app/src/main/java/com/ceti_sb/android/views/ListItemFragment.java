@@ -282,7 +282,11 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 			if (mModel.equals(getString(R.string.notifications))){
 				if (mData.get(position).get(Constants.N_TYPE).equals("4")){
 					mListener.onGetAwardBadge(mData.get(position).get(Constants.ID));
-				} else {
+				}
+                else if(mData.get(position).get(Constants.N_TYPE).equals("5")){
+                    mListener.onShowAwardBadge(mData.get(position).get(Constants.USER_ID),mData.get(position).get(Constants.ID));
+                }
+                else {
 					mListener.onListItemSelected(mData.get(position).get(Constants.ID), getString(R.string.events));//idParams.get(position), getString(R.string.events));
 				}
 				mListener.onNotificationViewed(mData.get(position).get(Constants.AUX_ID));//auxIdParams.get(position));
@@ -315,6 +319,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 	 */
 	public interface OnListItemInteractionListener {
 		public void onGetAwardBadge(String event_id);
+        public void onShowAwardBadge(String user_id, String event_id);
 		public void onListItemSelected(String id, String model);
 		public void onNotificationViewed(String id);
 		public void markAllNotificationsRead();
@@ -360,9 +365,10 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 					case Constants.NOTIFICATIONS:
 						int n_type = Integer.parseInt(obj.getString(Constants.N_TYPE));
 						/* Map replacement */
+                        map.put(Constants.USER_ID, obj.getString(Constants.USER_ID));
 						map.put(Constants.ID, obj.getString(Constants.EVENT_ID));
 						map.put(Constants.TITLE, obj.getString("act_user_name"));
-						if (n_type != 3 && n_type != 4) {
+						if (n_type != 3 && n_type != 4 && n_type != 5 ) {
 							map.put(Constants.DATA, notification(obj.getString(Constants.EVENT_TITLE), n_type));
 						} else {
 							map.put(Constants.DATA, notification(Constants.NULL, n_type));
@@ -372,7 +378,9 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 						map.put(Constants.N_TYPE, Integer.toString(n_type));
 						break;
 					default:
-						map.put(Constants.ID, obj.getString(key[0]));
+                        map.put(Constants.USER_ID, obj.getString(Constants.USER_ID));
+
+                        map.put(Constants.ID, obj.getString(key[0]));
 						map.put(Constants.TITLE, obj.getString(key[1]));
 						map.put(Constants.DATA, obj.getString(key[2]));
 						map.put(Constants.AUX_ID, Constants.SUCCESS);

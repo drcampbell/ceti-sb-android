@@ -118,6 +118,9 @@ public class UserBadgesFragment extends Fragment implements View.OnClickListener
 			if (badges.length() == 0){
 				((TextView) view.findViewById(R.id.user_badges_tv)).setText("\nYou haven't earned any Badges yet!");
 			}
+            else{
+                ((TextView) view.findViewById(R.id.user_badges_tv)).setText("");
+            }
 			for (int i = 0; i < badges.length(); i++){
 				BadgeImageView badgeView = new BadgeImageView(getActivity());
 				JSONObject badge = badges.getJSONObject(i);

@@ -378,7 +378,6 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 						map.put(Constants.N_TYPE, Integer.toString(n_type));
 						break;
 					default:
-                        map.put(Constants.USER_ID, obj.getString(Constants.USER_ID));
 
                         map.put(Constants.ID, obj.getString(key[0]));
 						map.put(Constants.TITLE, obj.getString(key[1]));

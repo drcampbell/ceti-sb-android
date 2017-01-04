@@ -356,10 +356,18 @@ public class MainActivity extends FragmentActivity
 				Log.d(TAG, "User selected get settings");
 				sendVolley(Request.Method.GET, Constants.SETTINGS, Constants.USERS, null, true);
 				return true;
-			case R.id.menu_profile:
-				Log.d(TAG, "User selected get profile");
-				sendVolley(Request.Method.GET, Constants.PROFILE, Constants.USERS, null, true);
-				return true;
+            case R.id.menu_profile:
+                Log.d(TAG, "User selected get profile");
+                sendVolley(Request.Method.GET, Constants.PROFILE, Constants.USERS, null, true);
+                return true;
+            case R.id.menu_myaccount:
+                Log.d(TAG, "User selected My Account");
+                try {
+                    sendVolley(Request.Method.GET, SchoolBusiness.profile.get(Constants.ID).toString(), Constants.USERS, null, true);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return true;
 			case R.id.menu_logout:
 				Log.d(TAG, "User selected Logout");
 				sendVolley(Request.Method.DELETE, Constants.SIGN_OUT, Constants.USERS, null, false);
@@ -1283,7 +1291,7 @@ public class MainActivity extends FragmentActivity
         String zip = ((EditText) findViewById(R.id.txtZip)).getText().toString();
         String radius = ((EditText) findViewById(R.id.txtRadius)).getText().toString();
         if(searchModel.equals(Constants.USERS)) {
-            if (searchText.isEmpty()) {
+            if (searchText == null || searchText.trim().isEmpty()) {
                 Toast.makeText(getApplicationContext(),
                         "Please fill the search box with the search query",
                         Toast.LENGTH_LONG).show();
@@ -1291,13 +1299,13 @@ public class MainActivity extends FragmentActivity
             }
         }
         else{
-            if (searchText.isEmpty() && (zip.isEmpty() && radius.isEmpty())) {
+            if (searchText.trim().isEmpty() && (zip.trim().isEmpty() && radius.trim().isEmpty())) {
                 Toast.makeText(getApplicationContext(),
                         "Please fill the search form with either the search query or zip & radius",
                         Toast.LENGTH_LONG).show();
                 return;
             }
-            else if((zip.isEmpty() && !radius.isEmpty()) || (!zip.isEmpty() && radius.isEmpty())){
+            else if((zip.trim().isEmpty() && !radius.trim().isEmpty()) || (!zip.isEmpty() && radius.trim().isEmpty())){
                 Toast.makeText(getApplicationContext(),
                         "Please fill the search form with both zipcode & radius",
                         Toast.LENGTH_LONG).show();
@@ -1311,10 +1319,10 @@ public class MainActivity extends FragmentActivity
                 .commit();
         if(searchModel.equals(Constants.SCHOOLS)){
 
-            if((searchText) != null && !searchText.isEmpty()){
+            if((searchText) != null && !searchText.trim().isEmpty()){
                 //Search with zip and radius
-                if((zip) != null && !zip.isEmpty()
-                        && (radius) != null & !radius.isEmpty() ){
+                if((zip) != null && !zip.trim().isEmpty()
+                        && (radius) != null & !radius.trim().isEmpty() ){
 
                     query = "/near_me?zip=" + zip + "&radius=" + radius +
                             "&commit=Near+Me&search=" + searchText;
@@ -1340,11 +1348,11 @@ public class MainActivity extends FragmentActivity
         else if(searchModel.equals(Constants.EVENTS)){
 
 
-            if((searchText) != null && !searchText.isEmpty()){
+            if((searchText) != null && !searchText.trim().isEmpty()){
                 //Search with zip and radius
 
-                if((zip) != null && !zip.isEmpty()
-                        && (radius) != null & !radius.isEmpty() ){
+                if((zip) != null && !zip.trim().isEmpty()
+                        && (radius) != null & !radius.trim().isEmpty() ){
 
                     query = "?zip=" + zip + "&radius=" + radius +
                             "&location=true&commit=Near+Me&search=" + searchText;
@@ -1364,7 +1372,7 @@ public class MainActivity extends FragmentActivity
 
         }
         else{
-            if((searchText) != null && !searchText.isEmpty()) {
+            if((searchText) != null && !searchText.trim().isEmpty()) {
                 query = "?search=" + searchText;
             }
         }

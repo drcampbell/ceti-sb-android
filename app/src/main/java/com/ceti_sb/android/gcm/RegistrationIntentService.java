@@ -136,7 +136,8 @@ public class RegistrationIntentService extends IntentService {
 		JSONObject registration = new JSONObject();
 		try {
 			registration.put("token", token);
-			registration.put("device_name", Build.MODEL);
+            registration.put("device_name", Build.MODEL);
+            registration.put("device_type", "android");
 		} catch (JSONException e){
 			Toast.makeText(getApplicationContext(), "Couldn't create json", Toast.LENGTH_LONG).show();
 		}

@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -224,7 +225,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 
 			event = response.toString();
 			Log.d("WHATISEVENT", event);
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm aa zzz");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm aa zzz", Locale.US);
 
 			/* Is the event occurring in the future? */
 			try {

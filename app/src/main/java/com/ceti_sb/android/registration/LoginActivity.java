@@ -205,7 +205,10 @@ public class LoginActivity extends Activity implements OnClickListener {
                 public void onErrorResponse(VolleyError error) {
                     findViewById(R.id.sign_in_button).setClickable(true);
                     Log.d(TAG + " Volley", error.toString());
-                    Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+                    //Suppressing the error message for now -
+                    Toast.makeText(getApplicationContext(), "Please check your email. Instructions have been emailed ", Toast.LENGTH_LONG).show();
+
+                    //Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
                 }
             }) {
                 @Override

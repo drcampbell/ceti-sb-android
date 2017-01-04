@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * Created by david on 6/11/15.
@@ -26,10 +27,10 @@ public class SchoolBusiness extends Application{
 	public static final Boolean DEBUG = true;
 	public static Boolean remember = false;
     public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
-  public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
+    public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
 
-    //public static final String DEV_URL = "http://192.168.1.29:3000";
-	//public static final String DEV_TARGET =  "http://192.168.1.29:3000/api/";
+//    public static final String DEV_URL = "http://192.168.1.29:3000";
+//	public static final String DEV_TARGET =  "http://192.168.1.29:3000/api/";
     public static final String PRO_URL = "https://www.school2biz.com";
     public static final String PRO_TARGET =  "https://www.school2biz.com/api/";
 	public static String URL;
@@ -44,7 +45,7 @@ public class SchoolBusiness extends Application{
 	
 	private static final String TAG = "school_business";
 	private static String id;
-	private static JSONObject profile;
+	public static JSONObject profile;
 	private static JSONObject notifications;
 	private static String n_notifications = "0";
 	private static SharedPreferences loginPreferences;
@@ -209,7 +210,8 @@ public class SchoolBusiness extends Application{
 	public static String parseTime(String datetime) {
 		//String ndt = datetime.split(".")[0]+'Z';
 		Date date = null;
-		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
 		try {
 			date = format.parse(datetime);
 		} catch (ParseException e) {

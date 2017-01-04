@@ -3,6 +3,7 @@
     <string name="menu_home">Home</string>
     <string name="menu_search">Search</string>
     <string name="menu_profile">Profile</string>
+    <string name="menu_myaccount">My Account</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_login">Login</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.ceti_sb.android.controller;
 
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -157,6 +158,7 @@ public class MainActivity extends FragmentActivity
     String provider;
     protected String latitude,longitude;
     protected boolean gps_enabled,network_enabled;
+    protected ProgressDialog progress;
 
 
     @Override
@@ -347,6 +349,7 @@ public class MainActivity extends FragmentActivity
 				sendVolley(Request.Method.GET, Constants.NULL, Constants.NOTIFICATIONS, null, true);
 				return true;
 			case R.id.menu_home:
+                onCancelSearchClick(null);
 				if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() != HomeFragment.class) {
 					HomeFragment homeFragment = new HomeFragment();
 					swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, true);
@@ -865,6 +868,28 @@ public class MainActivity extends FragmentActivity
 		});
 	}
 
+    public void onCancelSearchifExists(){
+        //Close search form if open
+        onCancelSearchClick(null);
+    }
+
+    public void showLoader(){
+        if(progress == null) {
+            progress = ProgressDialog.show(this, "Loading", "Please wait...");
+        }
+    }
+    public void closeLoader(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                if(progress != null) {
+                    progress.dismiss();
+                }
+                progress = null;
+            }
+        });
+    }
 	public void sendVolley(final int method,
 	                       final String id,
 	                       final String model,
@@ -872,6 +897,11 @@ public class MainActivity extends FragmentActivity
 	                       final Boolean backtrack){
 		String delim = "";
 		final boolean search;
+
+        //Close search form if open
+        onCancelSearchClick(null);
+
+        showLoader();
 		/* Check to see if the URL ID includes a search */
 		if (id.contains("search")){
 			//delim = "?";
@@ -896,6 +926,7 @@ public class MainActivity extends FragmentActivity
 		{
 			@Override
 			public void onResponse(JSONObject response){
+                closeLoader();
 				if(SchoolBusiness.DEBUG){Log.d("JSON", "Response: " + response.toString());}
 				if (search){
 					ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model, id);
@@ -961,6 +992,7 @@ public class MainActivity extends FragmentActivity
 			@Override
 			public void onErrorResponse(VolleyError error){
 				NetworkResponse response = error.networkResponse;
+                closeLoader();
 				if (response != null && response.data != null){
 					switch(response.statusCode){
 						case 401:
@@ -1313,10 +1345,14 @@ public class MainActivity extends FragmentActivity
             }
         }
 
+        if((searchText) != null && !searchText.trim().isEmpty()){
+            searchText = searchText.replace(" ", "+");
+        }
         getSupportFragmentManager().beginTransaction()
                 .hide(searchOptionsFragment)
                 .show(blankSearch)
                 .commit();
+
         if(searchModel.equals(Constants.SCHOOLS)){
 
             if((searchText) != null && !searchText.trim().isEmpty()){

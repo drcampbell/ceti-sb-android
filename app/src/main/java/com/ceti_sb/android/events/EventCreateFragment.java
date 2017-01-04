@@ -32,6 +32,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -52,8 +54,10 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	private String mEvent;
 	private String mId;
 	private OnEventCreatorListener mListener;
+    private TimeZone timeZone = TimeZone.getTimeZone("EST");
 
-	Spinner mSpinner;
+
+    Spinner mSpinner;
 	ArrayAdapter<String> idAdapter;
 
 	/**
@@ -70,6 +74,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		args.putBoolean(ARG_PARAM1, edit);
 		args.putString(ARG_PARAM2, event);
 		fragment.setArguments(args);
+
 		return fragment;
 	}
 
@@ -94,6 +99,9 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_event_create, container, false);
 		formatView(view);
+        if (mListener != null) {
+            mListener.onCancelSearchifExists();
+        }
 		return view;
 	}
 
@@ -148,6 +156,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	public interface OnEventCreatorListener {
 		// TODO: Update argument type and name
 		public void onPostEvent(JSONObject event, Boolean edit);
+        public void onCancelSearchifExists();
 	}
 
 	public JSONObject packageEvent(){
@@ -224,7 +233,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		int[] time_max = {2115, 12, 31, 12, 59};
 		EditText et;
 		Date date;
-		Calendar cal = new GregorianCalendar();
+		Calendar cal = new GregorianCalendar(timeZone);
 		date = cal.getTime();
 		Log.d("test", date.toString());
 		//TimeZone timeZone = cal.getTimeZone();
@@ -281,7 +290,8 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		EditText et;
 
 		Date date;
-		Calendar cal = Calendar.getInstance();
+
+        Calendar cal = Calendar.getInstance(timeZone);
 
 		/* Timezone spinna */
 		//populate spinner with all timezones

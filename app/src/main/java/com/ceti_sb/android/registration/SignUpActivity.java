@@ -1,6 +1,7 @@
 package com.ceti_sb.android.registration;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,6 +33,8 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 	Toast toast;
 	String role;
 	final String TAG = "SignUp";
+    protected ProgressDialog progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,10 +177,12 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 		RequestQueue queue = NetworkVolley.getInstance(this.getApplicationContext())
 				.getRequestQueue();
 		Log.d(TAG, "Register?");
+        showLoader();
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST,url,obj,
 				new Response.Listener<JSONObject>() {
 					@Override
 					public void onResponse(JSONObject response){
+                        closeLoader();
 						try {
 							if (response.getString("state").equals("1")){
 								findViewById(R.id.register_button).setClickable(true);
@@ -203,6 +208,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 			@Override
 			public void onErrorResponse(VolleyError error){
 				Log.d(TAG + " Volley", error.toString());
+                closeLoader();
 			}
 		}){
 			@Override
@@ -221,4 +227,22 @@ public class SignUpActivity extends Activity implements View.OnClickListener
 			finish();
 		}
 	}
+
+    public void showLoader(){
+        if(progress == null) {
+            progress = ProgressDialog.show(this, "Loading", "Please wait...");
+        }
+    }
+    public void closeLoader(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                if(progress != null) {
+                    progress.dismiss();
+                }
+                progress = null;
+            }
+        });
+    }
 }

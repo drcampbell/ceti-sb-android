@@ -239,7 +239,12 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		}
 		/* Make Clear Notifications Button Visible and Active */
 		if (mModel.equals(getString(R.string.notifications))){
-			view.findViewById(R.id.clear_notifications_button).setVisibility(View.VISIBLE);
+            if(mListView.getAdapter().getCount() > 0) {
+                view.findViewById(R.id.clear_notifications_button).setVisibility(View.VISIBLE);
+            }
+            else{
+                view.findViewById(R.id.clear_notifications_button).setVisibility(View.INVISIBLE);
+            }
 			view.findViewById(R.id.clear_notifications_button).setOnClickListener(this);
 		}
 		return view;

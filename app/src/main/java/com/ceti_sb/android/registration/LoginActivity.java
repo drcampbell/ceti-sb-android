@@ -1,6 +1,7 @@
 package com.ceti_sb.android.registration;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -38,6 +39,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	private static final String TAG = "Login Activity";
     RequestQueue queue = null;
+    private ProgressDialog progress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,11 +78,12 @@ public class LoginActivity extends Activity implements OnClickListener {
 //	    } else {
 		    obj = newLogin();
 //	    }
-
+        showLoader();
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST,url,obj,
 			new Response.Listener<JSONObject>() {
 				@Override
 				public void onResponse(JSONObject response){
+                    closeLoader();
 					SchoolBusiness.setProfile(response);
 					if (saveLoginCheckBox.isChecked()){
 						SchoolBusiness.setRemember(true);
@@ -91,6 +94,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 			}, new Response.ErrorListener() {
 				@Override
 				public void onErrorResponse(VolleyError error){
+                    closeLoader();
 					findViewById(R.id.sign_in_button).setClickable(true);
 					Log.d(TAG + " Volley", error.toString());
 					Toast.makeText(getApplicationContext(), "Unable to Authorize, please re-enter email and password", Toast.LENGTH_LONG).show();
@@ -187,12 +191,15 @@ public class LoginActivity extends Activity implements OnClickListener {
             JSONObject message = new JSONObject();
             JSONObject user = new JSONObject();
             final String email = this.userEmailText.getText().toString();
-
+            if(email.trim().isEmpty()){
+                Toast.makeText(getApplicationContext(), "Please enter a valid email id ", Toast.LENGTH_LONG).show();
+                return;
+            }
             user.put("email", email);
             message.put("user", user);
             message.put("commit", "Reset Password");
 
-
+            showLoader();
             JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, url, message,
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -222,5 +229,23 @@ public class LoginActivity extends Activity implements OnClickListener {
             //Log the exception
             Log.d(TAG + "Volley", "" +e.getStackTrace() );
         }
+    }
+
+    public void showLoader(){
+        if(progress == null) {
+            progress = ProgressDialog.show(this, "Loading", "Please wait...");
+        }
+    }
+    public void closeLoader(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                if(progress != null) {
+                    progress.dismiss();
+                }
+                progress = null;
+            }
+        });
     }
 }

@@ -126,7 +126,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 			((Button) view.findViewById(R.id.edit_account_button)).setOnClickListener(ProfileFragment.this);
 			for (int i = 0; i < resource.length; i++){
 					 text = SchoolBusiness.toDisplayCase(profile.getString(id[i]));
-                if(text == null || (text != null && text.equals("Null"))){
+                if(text == null || (text != null &&
+                        (text.equals("Null")
+                            || text.equals("null")
+                            || text.equals("NULL")))){
                     text = "";
                 }
 				((TextView) view.findViewById(resource[i])).setText(text);

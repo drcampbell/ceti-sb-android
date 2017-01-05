@@ -116,7 +116,7 @@ public class UserBadgesFragment extends Fragment implements View.OnClickListener
 			ImageLoader imageLoader = NetworkVolley.getInstance(getActivity()
 					.getApplicationContext()).getImageLoader();
 			if (badges.length() == 0){
-				((TextView) view.findViewById(R.id.user_badges_tv)).setText("\nYou haven't earned any Badges yet!");
+				((TextView) view.findViewById(R.id.user_badges_tv)).setText("\nNo badges earned yet!");
 			}
             else{
                 ((TextView) view.findViewById(R.id.user_badges_tv)).setText("");

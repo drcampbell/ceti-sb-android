@@ -234,9 +234,17 @@ public class LoginActivity extends Activity implements OnClickListener {
     }
 
     public void showLoader(){
-        if(progress == null) {
-            progress = ProgressDialog.show(this, "Loading", "Please wait...");
-        }
+        final LoginActivity activity = this;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                if (progress == null) {
+                    progress = ProgressDialog.show(activity, "Loading", "Please wait...");
+                }
+            }
+        });
+
     }
     public void closeLoader(){
         runOnUiThread(new Runnable() {

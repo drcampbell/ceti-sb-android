@@ -182,7 +182,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 				if (!Boolean.parseBoolean(mData.get(position).get(Constants.READ))){//readParams[position]){
 					view.setBackgroundColor(getResources().getColor(R.color.UnreadColor));
 				} else {
-					view.setBackgroundColor(getResources().getColor(R.color.tw__solid_white));
+					view.setBackgroundColor(getResources().getColor(R.color.SolidWhite));
 				}
 				text1.setText(mData.get(position).get(Constants.TITLE));//titleParams.get(position));
 				text2.setText(mData.get(position).get(Constants.DATA));//auxParams.get(position));
@@ -283,7 +283,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
-			view.setBackgroundColor(getResources().getColor(R.color.tw__solid_white));
+			view.setBackgroundColor(getResources().getColor(R.color.SolidWhite));
 			if (mModel.equals(getString(R.string.notifications))){
 				if (mData.get(position).get(Constants.N_TYPE).equals("4")){
 					mListener.onGetAwardBadge(mData.get(position).get(Constants.ID));

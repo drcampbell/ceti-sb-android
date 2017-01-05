@@ -26,7 +26,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.facebook.appevents.AppEventsLogger;
+//import com.facebook.appevents.AppEventsLogger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -171,7 +171,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		super.onResume();
 
 		/* Logs 'install' and 'app activate' App Events. */
-		AppEventsLogger.activateApp(this);
+		//AppEventsLogger.activateApp(this);
 	}
 
 	@Override
@@ -179,7 +179,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		super.onPause();
 
 		/* Logs 'app deactive' App Event */
-		AppEventsLogger.deactivateApp(this);
+		//AppEventsLogger.deactivateApp(this);
 	}
     public void forgotPassword(View view){
         String url = SchoolBusiness.getTarget() + "users/password";
@@ -204,12 +204,14 @@ public class LoginActivity extends Activity implements OnClickListener {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            closeLoader();
                             Log.d(TAG + " Volley", response.toString());
                             Toast.makeText(getApplicationContext(), "Please check your email. Instructions have been emailed ", Toast.LENGTH_LONG).show();
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    closeLoader();
                     findViewById(R.id.sign_in_button).setClickable(true);
                     Log.d(TAG + " Volley", error.toString());
                     //Suppressing the error message for now -

@@ -56,7 +56,7 @@ import com.ceti_sb.android.events.EventCreateFragment;
 import com.ceti_sb.android.events.EventViewFragment;
 import com.ceti_sb.android.gcm.RegistrationIntentService;
 import com.ceti_sb.android.schools.SchoolViewFragment;
-import com.ceti_sb.android.social.TwitterClient;
+//import com.ceti_sb.android.social.TwitterClient;
 import com.ceti_sb.android.users.UserBadgesFragment;
 import com.ceti_sb.android.users.UserProfileFragment;
 import com.ceti_sb.android.users.UserViewFragment;
@@ -66,8 +66,8 @@ import com.ceti_sb.android.views.MessageFragment;
 import com.ceti_sb.android.views.SearchOptionsFragment;
 import com.ceti_sb.android.views.TabFragment;
 import com.ceti_sb.android.volley.NetworkVolley;
-import com.facebook.FacebookSdk;
-import com.facebook.share.model.ShareLinkContent;
+//import com.facebook.FacebookSdk;
+//import com.facebook.share.model.ShareLinkContent;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -91,7 +91,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import bolts.AppLinks;
 
 public class MainActivity extends FragmentActivity
 		implements ListItemFragment.OnListItemInteractionListener,
@@ -149,7 +148,7 @@ public class MainActivity extends FragmentActivity
 	private String restore_id;
 	private UserProfileFragment userProfileFragment;
 	private UserBadgesFragment userBadgesFragment;
-	public TwitterClient twitter;
+	//public TwitterClient twitter;
 
     protected LocationManager locationManager;
     protected LocationListener locationListener;
@@ -164,18 +163,18 @@ public class MainActivity extends FragmentActivity
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		FacebookSdk.sdkInitialize(getApplicationContext());
+		//FacebookSdk.sdkInitialize(getApplicationContext());
 		setContentView(R.layout.activity_main);
 		mainView = getWindow().getDecorView().getRootView();
 		Intent intent = getIntent();
 		handleIntent(intent);
 		SchoolBusiness.loadLogin(this);
-		twitter = new TwitterClient();
-		twitter.initialize(this);
-		Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
-		if (targetUrl != null) {
-			Log.i("Activity", "App Link Target URL: "+targetUrl.toString());
-		}
+//		twitter = new TwitterClient();
+//		twitter.initialize(this);
+//		Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
+//		if (targetUrl != null) {
+//			Log.i("Activity", "App Link Target URL: "+targetUrl.toString());
+//		}
 		/* Get GCM Token */
 		mRegistrationBroadcastReceiver = new BroadcastReceiver(){
 			@Override
@@ -688,26 +687,26 @@ public class MainActivity extends FragmentActivity
 
 	/* Social Media Integration Functions */
 	/* Listener for BadgeViewFragment.java */
-	public void onShareBadgeFacebook(Uri badgeUrl){
-		ShareLinkContent content = new ShareLinkContent.Builder()
-				.setContentUrl(Uri.parse(SchoolBusiness.getUrl()))
-				.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
-						" "+getString(R.string.awarded_badge))
-				.setContentDescription("Badge awarded for speaking at")
-				.setImageUrl(badgeUrl)
-				.build();
-	}
+//	public void onShareBadgeFacebook(Uri badgeUrl){
+//		ShareLinkContent content = new ShareLinkContent.Builder()
+//				.setContentUrl(Uri.parse(SchoolBusiness.getUrl()))
+//				.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
+//						" "+getString(R.string.awarded_badge))
+//				.setContentDescription("Badge awarded for speaking at")
+//				.setImageUrl(badgeUrl)
+//				.build();
+//	}
 
 	/* Listener for BadgeViewFragment.java */
-	public void onTweetBadge(Uri badgeUrl, String url) {
-		try {
-			twitter.composeTweet(this, SchoolBusiness.getUserAttr(Constants.NAME) + " "+getString(R.string.awarded_badge),
-					new URL(url),
-					badgeUrl
-					);
-		} catch (MalformedURLException e){
-		}
-	}
+//	public void onTweetBadge(Uri badgeUrl, String url) {
+//		try {
+//			twitter.composeTweet(this, SchoolBusiness.getUserAttr(Constants.NAME) + " "+getString(R.string.awarded_badge),
+//					new URL(url),
+//					badgeUrl
+//					);
+//		} catch (MalformedURLException e){
+//		}
+//	}
 
 	/* Listener for HomeFragment.java */
 	public void onCreateTab(int tab){

@@ -341,4 +341,13 @@ public class SchoolBusiness extends Application{
 	public static boolean isActivityVisible(){
 		return activityVisible;
 	}
+    public static String checkAndReplaceNullWithEmtpy(String text){
+        if(text == null || (text != null &&
+                (text.equals("Null")
+                        || text.equals("null")
+                        || text.equals("NULL")))){
+            text = "";
+        }
+        return text;
+    }
 }

@@ -328,16 +328,19 @@ public class MainActivity extends FragmentActivity
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 Log.d(TAG, "SearchView is iconified: " );
-                getSupportFragmentManager().beginTransaction()
-                        .show(searchOptionsFragment)
-                        .hide(blankSearch)
-                        .commit();
+                showSearchForm();
                 return false;
             }
         });
 		return true;
 	}
 
+    private void showSearchForm(){
+        getSupportFragmentManager().beginTransaction()
+                .show(searchOptionsFragment)
+                .hide(blankSearch)
+                .commit();
+    }
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -742,6 +745,7 @@ public class MainActivity extends FragmentActivity
 		((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(true);
 		((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
 		((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
+        showSearchForm();
 	}
 
 	/* Listener for ProfileFragment.java */

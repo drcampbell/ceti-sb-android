@@ -24,7 +24,7 @@ import java.util.Locale;
  */
 public class SchoolBusiness extends Application{
 
-	public static final Boolean DEBUG = true;
+	public static final Boolean DEBUG = false;
 	public static Boolean remember = false;
     public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
     public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";

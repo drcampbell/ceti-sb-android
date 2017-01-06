@@ -24,10 +24,12 @@ import java.util.Locale;
  */
 public class SchoolBusiness extends Application{
 
-	public static final Boolean DEBUG = false;
+	public static final Boolean DEBUG = true;
 	public static Boolean remember = false;
-    public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
-    public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
+//    public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
+//    public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
+    public static final String DEV_URL = "https://www.school2biz.com";
+    public static final String DEV_TARGET =  "https://www.school2biz.com/api/";
 
 //    public static final String DEV_URL = "http://192.168.1.29:3000";
 //	public static final String DEV_TARGET =  "http://192.168.1.29:3000/api/";

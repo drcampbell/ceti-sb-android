@@ -184,8 +184,8 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 				} else {
 					view.setBackgroundColor(getResources().getColor(R.color.SolidWhite));
 				}
-				text1.setText(mData.get(position).get(Constants.TITLE));//titleParams.get(position));
-				text2.setText(mData.get(position).get(Constants.DATA));//auxParams.get(position));
+				text1.setText(SchoolBusiness.checkAndReplaceNullWithEmtpy(mData.get(position).get(Constants.TITLE)));//titleParams.get(position));
+				text2.setText(SchoolBusiness.checkAndReplaceNullWithEmtpy(mData.get(position).get(Constants.DATA)));//auxParams.get(position));
 
 				return view;
 			}

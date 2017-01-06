@@ -181,7 +181,7 @@ public class ClaimViewFragment extends Fragment implements View.OnClickListener{
 				str = name[i];
 				str = SchoolBusiness.toDisplayCase(response.getString(str));
 				tv.setTag(link);
-				tv.setText(str);
+				tv.setText(SchoolBusiness.checkAndReplaceNullWithEmtpy(str));
 			}
 		} catch (JSONException e){
 			e.printStackTrace();

@@ -882,8 +882,13 @@ public class MainActivity extends FragmentActivity
             @Override
             public void run()
             {
-                if (progress == null) {
-                    progress = ProgressDialog.show(activity, "Loading", "Please wait...");
+                try {
+                    if (progress == null) {
+                        progress = ProgressDialog.show(activity, "Loading", "Please wait...");
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
                 }
             }
         });
@@ -894,8 +899,13 @@ public class MainActivity extends FragmentActivity
             @Override
             public void run()
             {
-                if(progress != null) {
-                    progress.dismiss();
+                try {
+                    if(progress != null) {
+                        progress.dismiss();
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
                 }
                 progress = null;
             }
@@ -1429,10 +1439,21 @@ public class MainActivity extends FragmentActivity
 
     }
     public void onCancelSearchClick(View view){
-        getSupportFragmentManager().beginTransaction()
-                .hide(searchOptionsFragment)
-                .hide(blankSearch)
-                .commit();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                try {
+                    getSupportFragmentManager().beginTransaction()
+                            .hide(searchOptionsFragment)
+                            .hide(blankSearch)
+                            .commit();
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override

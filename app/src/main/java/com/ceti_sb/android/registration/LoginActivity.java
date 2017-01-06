@@ -239,8 +239,13 @@ public class LoginActivity extends Activity implements OnClickListener {
             @Override
             public void run()
             {
-                if (progress == null) {
-                    progress = ProgressDialog.show(activity, "Loading", "Please wait...");
+                try{
+                    if (progress == null) {
+                        progress = ProgressDialog.show(activity, "Loading", "Please wait...");
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
                 }
             }
         });
@@ -251,9 +256,15 @@ public class LoginActivity extends Activity implements OnClickListener {
             @Override
             public void run()
             {
-                if(progress != null) {
-                    progress.dismiss();
+             try{
+                    if(progress != null) {
+                        progress.dismiss();
+                    }
                 }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+
                 progress = null;
             }
         });

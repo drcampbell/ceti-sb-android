@@ -234,22 +234,30 @@ public class SignUpActivity extends Activity implements View.OnClickListener
             @Override
             public void run()
             {
-                if (progress == null) {
-                    progress = ProgressDialog.show(activity, "Loading", "Please wait...");
+                try{
+                    if (progress == null) {
+                        progress = ProgressDialog.show(activity, "Loading", "Please wait...");
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
                 }
             }
         });
-        if(progress == null) {
-            progress = ProgressDialog.show(this, "Loading", "Please wait...");
-        }
+
     }
     public void closeLoader(){
         runOnUiThread(new Runnable() {
             @Override
             public void run()
             {
-                if(progress != null) {
-                    progress.dismiss();
+                try {
+                    if (progress != null) {
+                        progress.dismiss();
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
                 }
                 progress = null;
             }

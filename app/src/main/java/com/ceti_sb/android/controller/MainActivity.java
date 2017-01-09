@@ -162,7 +162,9 @@ public class MainActivity extends FragmentActivity
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        Log.d(TAG, "MainActivity: OnCreate called");
+
+        super.onCreate(savedInstanceState);
 		//FacebookSdk.sdkInitialize(getApplicationContext());
 		setContentView(R.layout.activity_main);
 		mainView = getWindow().getDecorView().getRootView();
@@ -255,35 +257,49 @@ public class MainActivity extends FragmentActivity
 	@Override
 	protected void onResume(){
 		//SchoolBusiness.activityVisible = true;
-		SchoolBusiness.setUpMain(getApplicationContext(), this);
-		if (SchoolBusiness.getProfile() != null){
-
-			LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-				new IntentFilter(Constants.REGISTRATION_COMPLETE));
-			if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
-				onCreateTab(mTab);
-			}
-		} else {
-			Intent intent = new Intent(this, LoginActivity.class);
-			startActivity(intent);
-		}
-		if (blankContainer == null || blankContent == null){
-			blankContainer = new BlankFragment(); blankContent = new BlankFragment();
-		}
+        Log.d(TAG,"onResume");
+        try {
+            SchoolBusiness.setUpMain(getApplicationContext(), this);
+            if (SchoolBusiness.getProfile() != null) {
+                Log.d(TAG,"Profile Found");
+                LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                        new IntentFilter(Constants.REGISTRATION_COMPLETE));
+                Object theclass = getSupportFragmentManager().findFragmentByTag(FRAG_MAIN);
+                if (theclass != null && theclass.getClass() == HomeFragment.class) {
+                    onCreateTab(mTab);
+                }
+            } else {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            }
+            if (blankContainer == null || blankContent == null) {
+                blankContainer = new BlankFragment();
+                blankContent = new BlankFragment();
+            }
+        }catch(Exception e){
+            Log.d(TAG, "Suppressing OnResume crash");
+            e.printStackTrace();
+        }
 		super.onResume();
 		//getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter("notification_filter"));
 	}
 
 	@Override
 	protected void onPause(){
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-		//SchoolBusiness.activityVisible = false;
-		if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
-			clearTabs();
-		}
-		if(SchoolBusiness.getProfile() != null) {
-			SchoolBusiness.saveLogin(getApplicationContext());
-		}
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+            //SchoolBusiness.activityVisible = false;
+            Object theclass = getSupportFragmentManager().findFragmentByTag(FRAG_MAIN);
+            if (theclass != null && theclass.getClass() == HomeFragment.class) {
+                clearTabs();
+            }
+            if (SchoolBusiness.getProfile() != null) {
+                SchoolBusiness.saveLogin(getApplicationContext());
+            }
+        }catch(Exception e){
+            Log.d(TAG, "Suppressing OnPause crash");
+            e.printStackTrace();
+        }
 		super.onPause();
 		//getApplicationContext().unregisterReceiver(mMessageReceiver);
 	}
@@ -827,49 +843,71 @@ public class MainActivity extends FragmentActivity
 				break;
 		}
 	}
+    boolean executingPendingTransaction = false;
 
 	public void swapFragment(final Fragment fragment, final int container, final String tag, final Boolean backstack) {
 		MainActivity.this.mainView.post(new Runnable() {
 			public void run() {
-				getSupportFragmentManager().executePendingTransactions();
-				/* */
-				if (tag.equals(FRAG_MAIN)) {
-					CAN_GET_TABS = false;
-				}
-				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-				Fragment old = getSupportFragmentManager().findFragmentByTag(tag);
-				if (old != null) {
-					transaction.remove(old);
-				}
-				transaction.add(container, fragment, tag);
-				if (backstack) {
-					transaction.addToBackStack(tag);
-				}
-				transaction.commit();
+                try {
+                    if(executingPendingTransaction != true) {
+                        executingPendingTransaction = true;
+                        getSupportFragmentManager().executePendingTransactions();
+                        executingPendingTransaction = false;
+                    }
+                    else{
+                        Log.d(TAG,"There are pending transaction already!");
+                        return;
+                    }
+                    executingPendingTransaction = false;
 
-				if (tag.equals(FRAG_MAIN)) {
-					Log.d(TAG, "Removing tabs");
-					Fragment f = getSupportFragmentManager().findFragmentById(R.id.tab_container);
-					//Log.d(TAG, f.getClass().toString());
-					if ((f != null) && (!f.getClass().equals(BlankFragment.class))) {
-						Log.d(TAG, f.getClass().toString());
-						tabContainer = blankContainer;
-						getSupportFragmentManager().beginTransaction()
-								.replace(R.id.tab_container, blankContainer, TAB_CONTAINER)
-								.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-								.commit();
-					}
-					f = getSupportFragmentManager().findFragmentById(R.id.tab_content);
-					if (!f.getClass().equals(BlankFragment.class)) {
-						getSupportFragmentManager().beginTransaction()
-								.replace(R.id.tab_content, blankContent, TAB_CONTENT)
-								.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-								.commit();
-					}
-				}
+                    if (tag.equals(FRAG_MAIN)) {
+                        CAN_GET_TABS = false;
+                    }
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+                    Fragment old = getSupportFragmentManager().findFragmentByTag(tag);
+                    if (old != null) {
+                        transaction.remove(old);
+                    }
+                    transaction.add(container, fragment, tag);
+                    if (backstack) {
+                        transaction.addToBackStack(tag);
+                    }
+                    transaction.commit();
+
+                    if (tag.equals(FRAG_MAIN)) {
+                        Log.d(TAG, "Removing tabs");
+                        Fragment f = getSupportFragmentManager().findFragmentById(R.id.tab_container);
+                        //Log.d(TAG, f.getClass().toString());
+                        if ((f != null) && (!f.getClass().equals(BlankFragment.class))) {
+                            Log.d(TAG, f.getClass().toString());
+                            tabContainer = blankContainer;
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.tab_container, blankContainer, TAB_CONTAINER)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                                    .commit();
+                        }
+                        f = getSupportFragmentManager().findFragmentById(R.id.tab_content);
+                        if (!f.getClass().equals(BlankFragment.class)) {
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.tab_content, blankContent, TAB_CONTENT)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                                    .commit();
+                        }
+                    }
+                }catch(Exception e){
+                    Log.d(TAG,"Suppressing crash!");
+                    e.printStackTrace();
+                }
 			}
 		});
 	}
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
+        Log.d(TAG, "onSaveInstanceState called - doing nothing here - this is a crash fix.");
+    }
 
     public void onCancelSearchifExists(){
         //Close search form if open

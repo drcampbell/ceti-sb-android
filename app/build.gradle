@@ -10,10 +10,10 @@ repositories {
 android {
     signingConfigs {
         config {
-            keyAlias 'CetiAndroidKey'
-            keyPassword 'password'
-            storeFile file('/Users/david/keystores/ceti_android.jks')
-            storePassword 'password'
+            keyAlias 'Key'
+            keyPassword 's3O31f0862z7rF487899'
+            storeFile file('/Users/admin/Downloads/keystores 2')
+            storePassword 's3O31f0862z7rF487899'
         }
     }
     compileSdkVersion 22
@@ -22,8 +22,8 @@ android {
         applicationId 'com.ceti_sb.android'
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
     }
     buildTypes {
         release {

@@ -40,6 +40,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 
+import com.ceti_sb.android.account.AboutFragment;
 import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.registration.LoginActivity;
 import com.ceti_sb.android.R;
@@ -389,6 +390,15 @@ public class MainActivity extends FragmentActivity
                     e.printStackTrace();
                 }
                 return true;
+			case R.id.menu_about:
+				Log.d(TAG, "User selected About");
+				if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() != AboutFragment.class) {
+					AboutFragment aboutFragment = new AboutFragment();
+					swapFragment(aboutFragment, R.id.fragment_container, FRAG_MAIN, true);
+				}
+				//sendVolley(Request.Method.DELETE, Constants.SIGN_OUT, Constants.USERS, null, false);
+
+				return true;
 			case R.id.menu_logout:
 				Log.d(TAG, "User selected Logout");
 				sendVolley(Request.Method.DELETE, Constants.SIGN_OUT, Constants.USERS, null, false);

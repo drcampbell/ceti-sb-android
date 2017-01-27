@@ -29,8 +29,12 @@
         android:title="@string/menu_myaccount"
         android:orderInCategory="100"
         app:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/menu_logout"
-          android:title="@string/menu_logout"
+    <item android:id="@+id/menu_about"
+          android:title="@string/menu_about"
           android:orderInCategory="100"
           app:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_logout"
+        android:title="@string/menu_logout"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom|withText" />
 </menu>

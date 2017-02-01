@@ -52,21 +52,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.about_page, container, false);
-        // setContentView(R.layout.about_page);
-//        LinearLayout display = (LinearLayout) view.findViewById(R.id.layout_fragment_about);
-//
-//        TextView myCustomLink = new TextView(getContext());
-//
-//        Pattern pattern = Pattern.compile("[a-zA-Z]+&");
-//
-//        myCustomLink.setText("press one of these words to search it on google: Android Linkify dzone");
-//        Linkify.addLinks(myCustomLink,pattern, "http://ontoborn.com",myMatchFilter, null);
-//        display.addView(myCustomLink);
-//        TextView textView =(TextView)view.findViewById(R.id.aboutlink);
-//        textView.setClickable(true);
-//        textView.setMovementMethod(LinkMovementMethod.getInstance());
-//        String text = "<a href='http://www.google.com'> Google </a>";
-//        textView.setText(Html.fromHtml(text));
+
 
 
 
@@ -76,14 +62,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         ImageView btnimageclick = (ImageView) view.findViewById(R.id.ontoborn);
         btnimageclick.setOnClickListener(this);
 
-//        TextView btnceti = (TextView) view.findViewById(R.id.aboutcetilink);
-//        btnceti.setOnClickListener(this);
-//
-//        TextView btngrant = (TextView) view.findViewById(R.id.aboutgrantlink);
-//        btngrant.setOnClickListener(this);
-//
-//        TextView btnPrivacy = (TextView) view.findViewById(R.id.aboutPrivacylink);
-//        btnPrivacy.setOnClickListener(this);
+
         return view;
 
 

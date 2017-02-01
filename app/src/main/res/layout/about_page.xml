@@ -60,87 +60,13 @@
 
         />
 
-
-    <!--<TextView-->
-        <!--android:id="@+id/abouttexttwo"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:autoLink="all"-->
-
-        <!--android:clickable="true"-->
-        <!--android:linksClickable="true"-->
-        <!--android:text=" "-->
-        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-
-        <!--/>-->
-    <!--<TextView-->
-        <!--android:id="@+id/aboutcetilink"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:autoLink="all"-->
-        <!--android:clickable="true"-->
-        <!--android:linksClickable="true"-->
-        <!--android:text=" ,"-->
-        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-        <!--android:layout_toRightOf="@+id/abouttexttwo"-->
-
-        <!--android:textColor="?android:attr/colorAccent" />-->
-
-
-    <!--<TextView-->
-        <!--android:id="@+id/abouttextthree"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:autoLink="all"-->
-
-        <!--android:clickable="true"-->
-        <!--android:linksClickable="true"-->
-        <!--android:text="of The Ohio State University in partnership  with Delphos City Schools, and is funded by the"-->
-        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-
-        <!--/>-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/aboutgrantlink"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:autoLink="all"-->
-
-        <!--android:clickable="true"-->
-        <!--android:linksClickable="true"-->
-        <!--android:text="Straight A Grant."-->
-        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-        <!--android:layout_toRightOf="@+id/abouttextthree"-->
-        <!--android:textColor="?android:attr/colorAccent" />-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/abouttextfour"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:autoLink="all"-->
-
-        <!--android:clickable="true"-->
-        <!--android:linksClickable="true"-->
-        <!--android:text="Development Contributors: Jithendra Kumar Rangaraj, Babu, Kamalesh, Balakumar Murthy, Agustin Oritz Special thanks to Dr. Rajiv Ramnath Support"-->
-        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-
-        <!--/>-->
-<!--</RelativeLayout>-->
     <TextView
         android:id="@+id/abouttextfive"
-        android:layout_width="218dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
+        android:text="Support email: support@school2biz.com"
         android:autoLink="all"
-        android:gravity="left"
-        android:clickable="true"
-        android:linksClickable="true"
-        android:text="email:contactus@ontoborn.com"
         android:textAppearance="?android:attr/textAppearanceSmall"
 
         />
@@ -158,11 +84,6 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
 
         android:textColor="?android:attr/colorAccent" />
-
-
-
-
-
 
 
 </LinearLayout>

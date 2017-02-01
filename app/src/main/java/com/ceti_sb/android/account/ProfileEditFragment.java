@@ -135,12 +135,12 @@ public class ProfileEditFragment extends Fragment implements View.OnClickListene
 		((Button) view.findViewById(R.id.save_profile_button)).setOnClickListener(ProfileEditFragment.this);
 		JSONObject profile = SchoolBusiness.getProfile();
 		try {
-			((TextView) view.findViewById(R.id.tv_name)).setText(profile.getString(Constants.NAME));
-			((TextView) view.findViewById(R.id.tv_location)).setText(profile.getString("school_name"));
-			((EditText) view.findViewById(R.id.et_grades)).setText(profile.getString("grades"));
-			((EditText) view.findViewById(R.id.et_bio)).setText(profile.getString("biography"));
-			((EditText) view.findViewById(R.id.et_business)).setText(profile.getString("business"));
-			((EditText) view.findViewById(R.id.et_job)).setText(profile.getString("job_title"));
+			((TextView) view.findViewById(R.id.tv_name)).setText(SchoolBusiness.checkAndReplaceNullWithEmtpy(profile.getString(Constants.NAME)));
+			((TextView) view.findViewById(R.id.tv_location)).setText(SchoolBusiness.checkAndReplaceNullWithEmtpy(profile.getString("school_name")));
+			((EditText) view.findViewById(R.id.et_grades)).setText(SchoolBusiness.checkAndReplaceNullWithEmtpy(profile.getString("grades")));
+			((EditText) view.findViewById(R.id.et_bio)).setText(SchoolBusiness.checkAndReplaceNullWithEmtpy(profile.getString("biography")));
+			((EditText) view.findViewById(R.id.et_business)).setText(SchoolBusiness.checkAndReplaceNullWithEmtpy(profile.getString("business")));
+			((EditText) view.findViewById(R.id.et_job)).setText(SchoolBusiness.checkAndReplaceNullWithEmtpy(profile.getString("job_title")));
 
 		} catch (JSONException e){
 			e.printStackTrace();

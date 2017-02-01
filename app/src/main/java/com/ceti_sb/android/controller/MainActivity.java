@@ -1,6 +1,7 @@
 package com.ceti_sb.android.controller;
 
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -20,11 +22,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -34,6 +40,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 
+import com.ceti_sb.android.account.AboutFragment;
 import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.registration.LoginActivity;
 import com.ceti_sb.android.R;
@@ -50,7 +57,7 @@ import com.ceti_sb.android.events.EventCreateFragment;
 import com.ceti_sb.android.events.EventViewFragment;
 import com.ceti_sb.android.gcm.RegistrationIntentService;
 import com.ceti_sb.android.schools.SchoolViewFragment;
-import com.ceti_sb.android.social.TwitterClient;
+//import com.ceti_sb.android.social.TwitterClient;
 import com.ceti_sb.android.users.UserBadgesFragment;
 import com.ceti_sb.android.users.UserProfileFragment;
 import com.ceti_sb.android.users.UserViewFragment;
@@ -60,14 +67,16 @@ import com.ceti_sb.android.views.MessageFragment;
 import com.ceti_sb.android.views.SearchOptionsFragment;
 import com.ceti_sb.android.views.TabFragment;
 import com.ceti_sb.android.volley.NetworkVolley;
-import com.facebook.FacebookSdk;
-import com.facebook.share.model.ShareLinkContent;
+//import com.facebook.FacebookSdk;
+//import com.facebook.share.model.ShareLinkContent;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xml.sax.InputSource;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -75,8 +84,14 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import android.location.*;
+import android.location.LocationListener;
 
-import bolts.AppLinks;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 
 public class MainActivity extends FragmentActivity
 		implements ListItemFragment.OnListItemInteractionListener,
@@ -100,7 +115,8 @@ public class MainActivity extends FragmentActivity
 		MessageFragment.OnMessageListener,
 		BadgeAwardFragment.AwardBadgeListener,
 		BadgeViewFragment.OnBadgeReceiveListener,
-		SchoolBusiness.OnNotificationListener
+		SchoolBusiness.OnNotificationListener,
+        LocationListener
 
 {
 
@@ -133,23 +149,35 @@ public class MainActivity extends FragmentActivity
 	private String restore_id;
 	private UserProfileFragment userProfileFragment;
 	private UserBadgesFragment userBadgesFragment;
-	public TwitterClient twitter;
+	//public TwitterClient twitter;
 
-	@Override
+    protected LocationManager locationManager;
+    protected LocationListener locationListener;
+    protected Context context;
+    String lat;
+    String provider;
+    protected String latitude,longitude;
+    protected boolean gps_enabled,network_enabled;
+    protected ProgressDialog progress;
+
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		FacebookSdk.sdkInitialize(getApplicationContext());
+        Log.d(TAG, "MainActivity: OnCreate called");
+
+        super.onCreate(savedInstanceState);
+		//FacebookSdk.sdkInitialize(getApplicationContext());
 		setContentView(R.layout.activity_main);
 		mainView = getWindow().getDecorView().getRootView();
 		Intent intent = getIntent();
 		handleIntent(intent);
 		SchoolBusiness.loadLogin(this);
-		twitter = new TwitterClient();
-		twitter.initialize(this);
-		Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
-		if (targetUrl != null) {
-			Log.i("Activity", "App Link Target URL: "+targetUrl.toString());
-		}
+//		twitter = new TwitterClient();
+//		twitter.initialize(this);
+//		Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
+//		if (targetUrl != null) {
+//			Log.i("Activity", "App Link Target URL: "+targetUrl.toString());
+//		}
 		/* Get GCM Token */
 		mRegistrationBroadcastReceiver = new BroadcastReceiver(){
 			@Override
@@ -212,10 +240,11 @@ public class MainActivity extends FragmentActivity
 	 * the Google Play Store or enable it in the device's system settings.
 	 */
 	private boolean checkPlayServices() {
-		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+		int resultCode = googleAPI.isGooglePlayServicesAvailable(this);
 		if (resultCode != ConnectionResult.SUCCESS) {
-			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+			if (googleAPI.isUserResolvableError(resultCode)) {
+				googleAPI.getErrorDialog(this, resultCode,
 						PLAY_SERVICES_RESOLUTION_REQUEST).show();
 			} else {
 				Log.i(TAG, "This device is not supported.");
@@ -229,35 +258,49 @@ public class MainActivity extends FragmentActivity
 	@Override
 	protected void onResume(){
 		//SchoolBusiness.activityVisible = true;
-		SchoolBusiness.setUpMain(getApplicationContext(), this);
-		if (SchoolBusiness.loadLogin(getApplicationContext())){
-
-			LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-				new IntentFilter(Constants.REGISTRATION_COMPLETE));
-			if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
-				onCreateTab(mTab);
-			}
-		} else {
-			Intent intent = new Intent(this, LoginActivity.class);
-			startActivity(intent);
-		}
-		if (blankContainer == null || blankContent == null){
-			blankContainer = new BlankFragment(); blankContent = new BlankFragment();
-		}
+        Log.d(TAG,"onResume");
+        try {
+            SchoolBusiness.setUpMain(getApplicationContext(), this);
+            if (SchoolBusiness.getProfile() != null) {
+                Log.d(TAG,"Profile Found");
+                LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                        new IntentFilter(Constants.REGISTRATION_COMPLETE));
+                Object theclass = getSupportFragmentManager().findFragmentByTag(FRAG_MAIN);
+                if (theclass != null && theclass.getClass() == HomeFragment.class) {
+                    onCreateTab(mTab);
+                }
+            } else {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            }
+            if (blankContainer == null || blankContent == null) {
+                blankContainer = new BlankFragment();
+                blankContent = new BlankFragment();
+            }
+        }catch(Exception e){
+            Log.d(TAG, "Suppressing OnResume crash");
+            e.printStackTrace();
+        }
 		super.onResume();
 		//getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter("notification_filter"));
 	}
 
 	@Override
 	protected void onPause(){
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-		//SchoolBusiness.activityVisible = false;
-		if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() == HomeFragment.class) {
-			clearTabs();
-		}
-		if(SchoolBusiness.getProfile() != null) {
-			SchoolBusiness.saveLogin(getApplicationContext());
-		}
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+            //SchoolBusiness.activityVisible = false;
+            Object theclass = getSupportFragmentManager().findFragmentByTag(FRAG_MAIN);
+            if (theclass != null && theclass.getClass() == HomeFragment.class) {
+                clearTabs();
+            }
+            if (SchoolBusiness.getProfile() != null) {
+                SchoolBusiness.saveLogin(getApplicationContext());
+            }
+        }catch(Exception e){
+            Log.d(TAG, "Suppressing OnPause crash");
+            e.printStackTrace();
+        }
 		super.onPause();
 		//getApplicationContext().unregisterReceiver(mMessageReceiver);
 	}
@@ -279,49 +322,53 @@ public class MainActivity extends FragmentActivity
 		SearchManager searchManager =
 				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
-		searchView = (SearchView) menu.findItem(R.id.event_search).getActionView();
-		searchView.setSearchableInfo(
-				searchManager.getSearchableInfo(getComponentName()));
-		searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean hasFocus) {
-				if (!hasFocus) {
-					if (searchView != null) {
-						if (!searchView.isIconified()) {
-							getSupportFragmentManager().beginTransaction()
-									.hide(searchOptionsFragment)
-									.show(blankSearch)
-									.commit();
-							searchView.setIconified(true);
-						}
-					}
-				}
-			}
-		});
-		searchView.setOnSearchClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Log.d(TAG, "SearchView is iconified: " + searchView.isIconified());
-				getSupportFragmentManager().beginTransaction()
-						.show(searchOptionsFragment)
-						.hide(blankSearch)
-						.commit();
-			}
-		});
+//		searchView = (SearchView) menu.findItem(R.id.event_search).getActionView();
+//		searchView.setSearchableInfo(
+//				searchManager.getSearchableInfo(getComponentName()));
+//		searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+//			@Override
+//			public void onFocusChange(View view, boolean hasFocus) {
+//				if (!hasFocus) {
+//					if (searchView != null) {
+//						if (!searchView.isIconified()) {
+//							getSupportFragmentManager().beginTransaction()
+//									.hide(searchOptionsFragment)
+//									.show(blankSearch)
+//									.commit();
+//							searchView.setIconified(true);
+//						}
+//					}
+//				}
+//			}
+//		});
+        menu.findItem(R.id.event_search).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                Log.d(TAG, "SearchView is iconified: " );
+                showSearchForm();
+                return false;
+            }
+        });
 		return true;
 	}
 
+    private void showSearchForm(){
+        getSupportFragmentManager().beginTransaction()
+                .show(searchOptionsFragment)
+                .hide(blankSearch)
+                .commit();
+    }
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
 		switch (item.getItemId()){
 			case R.id.notifications:
 				sendVolley(Request.Method.GET, Constants.NULL, Constants.NOTIFICATIONS, null, true);
 				return true;
 			case R.id.menu_home:
+                onCancelSearchClick(null);
 				if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() != HomeFragment.class) {
 					HomeFragment homeFragment = new HomeFragment();
 					swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, true);
@@ -331,9 +378,26 @@ public class MainActivity extends FragmentActivity
 				Log.d(TAG, "User selected get settings");
 				sendVolley(Request.Method.GET, Constants.SETTINGS, Constants.USERS, null, true);
 				return true;
-			case R.id.menu_profile:
-				Log.d(TAG, "User selected get profile");
-				sendVolley(Request.Method.GET, Constants.PROFILE, Constants.USERS, null, true);
+            case R.id.menu_profile:
+                Log.d(TAG, "User selected get profile");
+                sendVolley(Request.Method.GET, Constants.PROFILE, Constants.USERS, null, true);
+                return true;
+            case R.id.menu_myaccount:
+                Log.d(TAG, "User selected My Account");
+                try {
+                    sendVolley(Request.Method.GET, SchoolBusiness.profile.get(Constants.ID).toString(), Constants.USERS, null, true);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return true;
+			case R.id.menu_about:
+				Log.d(TAG, "User selected About");
+				if (getSupportFragmentManager().findFragmentByTag(FRAG_MAIN).getClass() != AboutFragment.class) {
+					AboutFragment aboutFragment = new AboutFragment();
+					swapFragment(aboutFragment, R.id.fragment_container, FRAG_MAIN, true);
+				}
+				//sendVolley(Request.Method.DELETE, Constants.SIGN_OUT, Constants.USERS, null, false);
+
 				return true;
 			case R.id.menu_logout:
 				Log.d(TAG, "User selected Logout");
@@ -368,7 +432,7 @@ public class MainActivity extends FragmentActivity
 			Log.d(TAG, "Intent but no action");
 			return;
 		}
-		Log.d(TAG, intent.getAction().toString());
+		Log.d(TAG, intent.getAction());
 		switch (intent.getAction()) {
 			case Intent.ACTION_SEARCH:
 				String query = intent.getStringExtra(SearchManager.QUERY);
@@ -382,7 +446,7 @@ public class MainActivity extends FragmentActivity
 			case SchoolBusiness.ACTION_NOTIFICATION:
 				Bundle extras = intent.getExtras();
 				if (extras != null) {
-					String notification_type = extras.getString(Constants.N_TYPE);
+					String notification_type = extras.getString(Constants.N_TYPE, "");
 					Log.d("Notification Type", Constants.NULL + notification_type);
 					switch (notification_type) {
 						case Constants.AWARD_BADGE:
@@ -406,11 +470,11 @@ public class MainActivity extends FragmentActivity
 				android.net.Uri uri = intent.getData();
 				if (uri != null) {
 					String path = uri.toString();
-					path.replace(SchoolBusiness.getTarget(), Constants.NULL);
+					path = path.replace(SchoolBusiness.getTarget(), Constants.NULL);
 					if (path.split("/").length >= 2) {
-						String amodel = path.split("/", 1)[0];
+						String action_model = path.split("/", 1)[0];
 						String aid = path.split("/", 1)[1];
-						sendVolley(Request.Method.GET, aid, amodel, null, true);
+						sendVolley(Request.Method.GET, aid, action_model, null, true);
 					}
 				}
 				break;
@@ -419,35 +483,49 @@ public class MainActivity extends FragmentActivity
 
 	public void onCheckboxClicked(View view) {
 		boolean checked = ((CheckBox) view).isChecked();
+        LinearLayout zip = ((LinearLayout) findViewById(R.id.zipLayout));
+        LinearLayout radius = ((LinearLayout) findViewById(R.id.radiusLayout));
+		switch (view.getId()) {
+            case R.id.events_checkBox:
+                if (checked) {
+                    searchModel = Constants.EVENTS;
+                    ((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
+                    ((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
+                    zip.setVisibility(View.VISIBLE);
+                    radius.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.schools_checkBox:
+                if (checked) {
+                    searchModel = Constants.SCHOOLS;
+                    ((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
+                    ((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
+                    zip.setVisibility(View.VISIBLE);
+                    radius.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.user_checkBox:
+                if (checked) {
+                    searchModel = Constants.USERS;
+                    ((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
+                    ((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
 
-		switch (view.getId()){
-			case R.id.events_checkBox:
-				if (checked){
-					searchModel = Constants.EVENTS;
-					((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
-					((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
-				}
-				break;
-			case R.id.schools_checkBox:
-				if (checked) {
-					searchModel = Constants.SCHOOLS;
-					((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
-					((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
-				}
-				break;
-			case R.id.user_checkBox:
-				if (checked) {
-					searchModel = Constants.USERS;
-					((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(false);
-					((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
-				}
-				break;
-		}
+                    zip.setVisibility(View.GONE);
+                    radius.setVisibility(View.GONE);
+
+                }
+                break;
+            case R.id.myLocation:
+                if (checked) {
+                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+
+                }
+                break;
+        }
 	}
 
 	public void onRadioButtonClicked(View view) {
-		boolean checked = ((RadioButton) view).isChecked();
-
 		switch (view.getId()) {
 			case R.id.register_teacher:
 				SchoolBusiness.setRole(Constants.TEACHER);
@@ -587,7 +665,7 @@ public class MainActivity extends FragmentActivity
 			NetworkImageView badge = (NetworkImageView) view.findViewById(R.id.school_badge);
 			badge.setImageUrl(SchoolBusiness.AWS_S3 + response.getString("badge_url"), imageLoader);
 		} catch (JSONException e){
-			;
+			handleJSONException(e);
 		}
 		ListItemFragment event_list = ListItemFragment.newInstance(response, Constants.EVENTS, "school_id="+id);
 		swapFragment(event_list, R.id.tab_content, TAB_CONTENT, false);
@@ -610,7 +688,16 @@ public class MainActivity extends FragmentActivity
 		}
 	}
 
-	/* Listener for BadgeAwardFragment.java */
+	public void onGetAwardBadge(String event_id){
+		sendVolley(Request.Method.GET, "award_badge?event_id="+event_id, Constants.USERS, null, true);
+	}
+
+    @Override
+    public void onShowAwardBadge(String user_id, String event_id) {
+        sendVolley(Request.Method.GET, user_id+"/event_badge/"+event_id, Constants.USERS, null, true);
+    }
+
+    /* Listener for BadgeAwardFragment.java */
 	public void awardBadge(Boolean award, int event_id){
 		JSONObject obj = new JSONObject();
 		try {
@@ -629,27 +716,26 @@ public class MainActivity extends FragmentActivity
 
 	/* Social Media Integration Functions */
 	/* Listener for BadgeViewFragment.java */
-	public void onShareBadgeFacebook(Uri badgeUrl){
-		ShareLinkContent content = new ShareLinkContent.Builder()
-				.setContentUrl(Uri.parse(SchoolBusiness.getUrl()))
-				.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
-						" "+getString(R.string.awarded_badge))
-				.setContentDescription("Badge awarded for speaking at")
-				.setImageUrl(badgeUrl)
-				.build();
-	}
+//	public void onShareBadgeFacebook(Uri badgeUrl){
+//		ShareLinkContent content = new ShareLinkContent.Builder()
+//				.setContentUrl(Uri.parse(SchoolBusiness.getUrl()))
+//				.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
+//						" "+getString(R.string.awarded_badge))
+//				.setContentDescription("Badge awarded for speaking at")
+//				.setImageUrl(badgeUrl)
+//				.build();
+//	}
 
 	/* Listener for BadgeViewFragment.java */
-	public void onTweetBadge(Uri badgeUrl, String url) {
-		try {
-			twitter.composeTweet(this, SchoolBusiness.getUserAttr(Constants.NAME) + " "+getString(R.string.awarded_badge),
-					new URL(url),
-					badgeUrl
-					);
-		} catch (MalformedURLException e){
-			;
-		}
-	}
+//	public void onTweetBadge(Uri badgeUrl, String url) {
+//		try {
+//			twitter.composeTweet(this, SchoolBusiness.getUserAttr(Constants.NAME) + " "+getString(R.string.awarded_badge),
+//					new URL(url),
+//					badgeUrl
+//					);
+//		} catch (MalformedURLException e){
+//		}
+//	}
 
 	/* Listener for HomeFragment.java */
 	public void onCreateTab(int tab){
@@ -680,11 +766,12 @@ public class MainActivity extends FragmentActivity
 
 	/* Listener for ProfileEditFragment.java */
 	public void onFindMySchool(){
-		searchView.setIconified(false);
+		//searchView.setIconified(false);
 		searchModel = Constants.SCHOOLS;
 		((CheckBox) findViewById(R.id.schools_checkBox)).setChecked(true);
 		((CheckBox) findViewById(R.id.events_checkBox)).setChecked(false);
 		((CheckBox) findViewById(R.id.user_checkBox)).setChecked(false);
+        showSearchForm();
 	}
 
 	/* Listener for ProfileFragment.java */
@@ -766,59 +853,127 @@ public class MainActivity extends FragmentActivity
 				break;
 		}
 	}
+    boolean executingPendingTransaction = false;
 
 	public void swapFragment(final Fragment fragment, final int container, final String tag, final Boolean backstack) {
 		MainActivity.this.mainView.post(new Runnable() {
 			public void run() {
-				getSupportFragmentManager().executePendingTransactions();
-				/* */
-				if (tag.equals(FRAG_MAIN)) {
-					CAN_GET_TABS = false;
-				}
-				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-				Fragment old = getSupportFragmentManager().findFragmentByTag(tag);
-				if (old != null) {
-					transaction.remove(old);
-				}
-				transaction.add(container, fragment, tag);
-				if (backstack) {
-					transaction.addToBackStack(tag);
-				}
-				transaction.commit();
+                try {
+                    if(executingPendingTransaction != true) {
+                        executingPendingTransaction = true;
+                        getSupportFragmentManager().executePendingTransactions();
+                        executingPendingTransaction = false;
+                    }
+                    else{
+                        Log.d(TAG,"There are pending transaction already!");
+                        return;
+                    }
+                    executingPendingTransaction = false;
 
-				if (tag.equals(FRAG_MAIN)) {
-					Log.d(TAG, "Removing tabs");
-					Fragment f = getSupportFragmentManager().findFragmentById(R.id.tab_container);
-					//Log.d(TAG, f.getClass().toString());
-					if ((f != null) && (!f.getClass().equals(BlankFragment.class))) {
-						Log.d(TAG, f.getClass().toString());
-						tabContainer = blankContainer;
-						getSupportFragmentManager().beginTransaction()
-								.replace(R.id.tab_container, blankContainer, TAB_CONTAINER)
-								.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-								.commit();
-					}
-					f = getSupportFragmentManager().findFragmentById(R.id.tab_content);
-					if (!f.getClass().equals(BlankFragment.class)) {
-						getSupportFragmentManager().beginTransaction()
-								.replace(R.id.tab_content, blankContent, TAB_CONTENT)
-								.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-								.commit();
-					}
-				}
+                    if (tag.equals(FRAG_MAIN)) {
+                        CAN_GET_TABS = false;
+                    }
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+                    Fragment old = getSupportFragmentManager().findFragmentByTag(tag);
+                    if (old != null) {
+                        transaction.remove(old);
+                    }
+                    transaction.add(container, fragment, tag);
+                    if (backstack) {
+                        transaction.addToBackStack(tag);
+                    }
+                    transaction.commit();
+
+                    if (tag.equals(FRAG_MAIN)) {
+                        Log.d(TAG, "Removing tabs");
+                        Fragment f = getSupportFragmentManager().findFragmentById(R.id.tab_container);
+                        //Log.d(TAG, f.getClass().toString());
+                        if ((f != null) && (!f.getClass().equals(BlankFragment.class))) {
+                            Log.d(TAG, f.getClass().toString());
+                            tabContainer = blankContainer;
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.tab_container, blankContainer, TAB_CONTAINER)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                                    .commit();
+                        }
+                        f = getSupportFragmentManager().findFragmentById(R.id.tab_content);
+                        if (!f.getClass().equals(BlankFragment.class)) {
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.tab_content, blankContent, TAB_CONTENT)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                                    .commit();
+                        }
+                    }
+                }catch(Exception e){
+                    Log.d(TAG,"Suppressing crash!");
+                    e.printStackTrace();
+                }
 			}
 		});
 	}
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
+        Log.d(TAG, "onSaveInstanceState called - doing nothing here - this is a crash fix.");
+    }
+
+    public void onCancelSearchifExists(){
+        //Close search form if open
+        onCancelSearchClick(null);
+    }
+
+    public void showLoader(){
+        final MainActivity activity = this;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                try {
+                    if (progress == null) {
+                        progress = ProgressDialog.show(activity, "Loading", "Please wait...");
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+    public void closeLoader(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                try {
+                    if(progress != null) {
+                        progress.dismiss();
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+                progress = null;
+            }
+        });
+    }
 	public void sendVolley(final int method,
 	                       final String id,
 	                       final String model,
 	                       JSONObject obj,
 	                       final Boolean backtrack){
-		String delim;
+		String delim = "";
 		final boolean search;
+
+        //Close search form if open
+        onCancelSearchClick(null);
+
+        showLoader();
+		/* Check to see if the URL ID includes a search */
 		if (id.contains("search")){
-			delim = "?";
+			//delim = "?";
 			search = true;
 		} else {
 			if (id.isEmpty()){//   equals(Constants.NULL)){
@@ -828,7 +983,11 @@ public class MainActivity extends FragmentActivity
 			}
 			search = false;
 		}
-		String url = SchoolBusiness.getTarget() + model + delim + id;
+        String url = SchoolBusiness.getTarget() + model + delim + id;
+
+//        if(search){
+//            url = SchoolBusiness.getTarget() +  id;
+//        }
 		RequestQueue queue = NetworkVolley.getInstance(getApplicationContext())
 				.getRequestQueue();
 		/* Create the Request */
@@ -836,12 +995,14 @@ public class MainActivity extends FragmentActivity
 		{
 			@Override
 			public void onResponse(JSONObject response){
+                closeLoader();
 				if(SchoolBusiness.DEBUG){Log.d("JSON", "Response: " + response.toString());}
 				if (search){
 					ListItemFragment listItemFragment = ListItemFragment.newInstance(response, model, id);
 					swapFragment(listItemFragment, R.id.fragment_container, FRAG_MAIN, true);
 					return;
 				}
+				verify(response);
 				switch (model) {
 					case Constants.ACCOUNT:
 						try {
@@ -899,9 +1060,20 @@ public class MainActivity extends FragmentActivity
 		}, new Response.ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error){
-				VolleyLog.d(TAG, "Error: " + error.getMessage());
-				Toast.makeText(getApplicationContext(),
-						error.getMessage(), Toast.LENGTH_LONG).show();
+				NetworkResponse response = error.networkResponse;
+                closeLoader();
+				if (response != null && response.data != null){
+					switch(response.statusCode){
+						case 401:
+							SchoolBusiness.clearLogin(getApplicationContext());
+							refreshApp();
+					}
+				}
+//				SchoolBusiness.clearLogin(getApplicationContext());
+//				refreshApp();
+//				VolleyLog.d(TAG, "Error: " + error.getMessage());
+//				Toast.makeText(getApplicationContext(),
+//						error.getMessage(), Toast.LENGTH_LONG).show();
 			}
 		}){
 			@Override
@@ -910,7 +1082,7 @@ public class MainActivity extends FragmentActivity
 			}
 
 			@Override public Map<String, String> getHeaders() throws AuthFailureError {
-				Map<String, String> params = new HashMap<String, String>();
+				Map<String, String> params = new HashMap<>();
 				params.put("Content-Type", "application/json");
 				params.put("Accept", "application/json");
 				params.put("X-User-Email", SchoolBusiness.getEmail());
@@ -943,7 +1115,8 @@ public class MainActivity extends FragmentActivity
 					break;
 				/* Cancel an event */
 				case Request.Method.DELETE:
-					refreshApp();
+					//refreshApp();
+                    redirectToHome();
 					break;
 				/* Update an event */
 				case Request.Method.PATCH:
@@ -1029,9 +1202,11 @@ public class MainActivity extends FragmentActivity
 						Toast.makeText(this, "You have rejected " + response.getString(Constants.USER_NAME)
 										+ "'s claim to event " + response.getString(Constants.EVENT_TITLE),
 										Toast.LENGTH_LONG).show();
-						refreshApp();
+						//refreshApp();
+                        redirectToHome();
 					} else if (id.contains("cancel")){
-						refreshApp();
+						//refreshApp();
+                        redirectToHome();
 					}
 					break;
 
@@ -1057,7 +1232,21 @@ public class MainActivity extends FragmentActivity
 		if (id.contains(Constants.BADGES)){
 			handleBadgeResponse(response);
 			return;
+		} else if (id.contains("award_badge?event_id")) {
+			try {
+				Bundle args = jsonToBundle(response);
+				BadgeAwardFragment badgeAwardFragment = BadgeAwardFragment.newInstance(args);
+				swapFragment(badgeAwardFragment, R.id.fragment_container, FRAG_MAIN, backtrack);
+
+			} catch (JSONException e){
+				handleJSONException(e);
+			}
+			return;
 		}
+        else if(id.contains("event_badge")){
+            handleBadgeResponse(response);
+            return;
+        }
 		switch (id) {
 			case Constants.PROFILE:
 				Log.d(TAG, "Updating User Profile");
@@ -1131,6 +1320,17 @@ public class MainActivity extends FragmentActivity
 		}
 	}
 
+	public void verify(JSONObject response){
+		try {
+			if (response.has("error") && response.getString("error").contains("sign in or sign up")){
+				SchoolBusiness.clearLogin(this);
+				refreshApp();
+			}
+		} catch (JSONException e){
+			handleJSONException(e);
+		}
+	}
+
 	public void SharingToSocialMedia(String application) {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("plain/text");
@@ -1144,7 +1344,11 @@ public class MainActivity extends FragmentActivity
 		startActivity(intent);
 		finish();
 	}
+    public void redirectToHome(){
+        HomeFragment homeFragment = new HomeFragment();
+        swapFragment(homeFragment, R.id.fragment_container, FRAG_MAIN, true);
 
+    }
 	public void updateNotifications(String count){
 		SchoolBusiness.setNotificationCount(getApplicationContext(), count);
 		notifications.setTitle(SchoolBusiness.getNotificationCount(getApplicationContext()));
@@ -1157,6 +1361,17 @@ public class MainActivity extends FragmentActivity
 				Toast.LENGTH_LONG).show();
 	}
 
+	public static Bundle jsonToBundle(JSONObject jsonObject) throws JSONException {
+		Bundle bundle = new Bundle();
+		Iterator iter = jsonObject.keys();
+		while(iter.hasNext()){
+			String key = (String)iter.next();
+			String value = jsonObject.getString(key);
+			bundle.putString(key,value);
+		}
+		return bundle;
+	}
+
 	public void updateCount(){
 		if (notifications != null) {
 			MainActivity.this.mainView.post(new Runnable() {
@@ -1166,4 +1381,182 @@ public class MainActivity extends FragmentActivity
 			});
 		}
 	}
+
+    public void onLocationSearchInteraction(String query){
+        sendVolley(Request.Method.GET, query, searchModel, null, true);
+    }
+    public void onSearchClick(View view){
+        String query = null;
+        EditText cmpSearchTxt = (EditText) findViewById(R.id.searchText);
+        String searchText = cmpSearchTxt.getText().toString();
+        String zip = ((EditText) findViewById(R.id.txtZip)).getText().toString();
+        String radius = ((EditText) findViewById(R.id.txtRadius)).getText().toString();
+        if(searchModel.equals(Constants.USERS)) {
+            if (searchText == null || searchText.trim().isEmpty()) {
+                Toast.makeText(getApplicationContext(),
+                        "Please fill the search box with the search query",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        else{
+            if (searchText.trim().isEmpty() && (zip.trim().isEmpty() && radius.trim().isEmpty())) {
+                Toast.makeText(getApplicationContext(),
+                        "Please fill the search form with either the search query or zip & radius",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+            else if((zip.trim().isEmpty() && !radius.trim().isEmpty()) || (!zip.isEmpty() && radius.trim().isEmpty())){
+                Toast.makeText(getApplicationContext(),
+                        "Please fill the search form with both zipcode & radius",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
+        if((searchText) != null && !searchText.trim().isEmpty()){
+            searchText = searchText.replace(" ", "+");
+        }
+        getSupportFragmentManager().beginTransaction()
+                .hide(searchOptionsFragment)
+                .show(blankSearch)
+                .commit();
+
+        if(searchModel.equals(Constants.SCHOOLS)){
+
+            if((searchText) != null && !searchText.trim().isEmpty()){
+                //Search with zip and radius
+                if((zip) != null && !zip.trim().isEmpty()
+                        && (radius) != null & !radius.trim().isEmpty() ){
+
+                    query = "/near_me?zip=" + zip + "&radius=" + radius +
+                            "&commit=Near+Me&search=" + searchText;
+
+                }
+                else{
+                    // Only search
+                    //gBtnRadioValue = "events"
+                    query = "?search=" + searchText;
+                }
+            }
+            else {
+                if ((zip) != null && !zip.isEmpty()
+                        && (radius) != null & !radius.isEmpty()) {
+
+                    query = "/near_me?zip=" + zip + "&radius=" + radius +
+                            "&search=" + searchText +
+                            "&location=true";
+
+                }
+            }
+        }
+        else if(searchModel.equals(Constants.EVENTS)){
+
+
+            if((searchText) != null && !searchText.trim().isEmpty()){
+                //Search with zip and radius
+
+                if((zip) != null && !zip.trim().isEmpty()
+                        && (radius) != null & !radius.trim().isEmpty() ){
+
+                    query = "?zip=" + zip + "&radius=" + radius +
+                            "&location=true&commit=Near+Me&search=" + searchText;
+
+
+                }else{
+                    // Only search
+                    query =  "?search=" + searchText;
+
+                }
+
+            }
+            else{
+                query =  "?zip=" + zip + "&radius=" + radius + "&location=true&search=";
+
+            }
+
+        }
+        else{
+            if((searchText) != null && !searchText.trim().isEmpty()) {
+                query = "?search=" + searchText;
+            }
+        }
+        Log.d(TAG, "Sending search request: query=" + query);
+
+        onLocationSearchInteraction(query);
+
+    }
+    public void onCancelSearchClick(View view){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                try {
+                    getSupportFragmentManager().beginTransaction()
+                            .hide(searchOptionsFragment)
+                            .hide(blankSearch)
+                            .commit();
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        final Double lat = location.getLatitude();
+        final Double longitude = location.getLongitude();
+        Log.d(TAG, "Latitude:" +  lat+ ", Longitude:" + longitude);
+        final MainActivity mainAct = this;
+        new Thread(new Runnable() {
+            public void run()  {
+                XPath xpath = XPathFactory.newInstance().newXPath();
+                String expression = "//GeocodeResponse/result/address_component[type=\"postal_code\"]/long_name/text()";
+                InputSource inputSource = new InputSource("https://maps.googleapis.com/maps/api/geocode/xml?latlng="+lat+","+longitude+"&sensor=true");
+
+
+                try {
+                    final String zipcode  = (String) xpath.evaluate(expression, inputSource, XPathConstants.STRING);
+
+
+                    Log.d(TAG, "Zipcode:" +  zipcode);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //execute code on main thread
+
+
+                            TextView txtLat = (TextView) findViewById(R.id.txtZip);
+                            txtLat.setText(zipcode);
+                            locationManager.removeUpdates(mainAct);
+                            locationManager = null;
+
+                        }
+                    });
+                } catch (XPathExpressionException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.d("Latitude","disable");
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.d("Latitude","enable");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d("Latitude","status");
+    }
 }
+

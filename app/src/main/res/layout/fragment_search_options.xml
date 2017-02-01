@@ -56,6 +56,108 @@
 
     </LinearLayout>
     <LinearLayout
-        style="@style/LL_Divider"></LinearLayout>
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top">
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="With: "/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/searchText"
+            android:layout_weight="1"
+            android:imeOptions="actionDone"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:id="@+id/zipLayout">
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="Zipcode: "/>
+
+        <EditText
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtZip"
+            android:layout_weight="1"
+            android:numeric="integer"
+            android:inputType="number"
+            android:imeOptions="actionDone"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use my location&apos;s zipcode"
+            android:id="@+id/myLocation"
+            android:checked="false"
+            android:onClick="onCheckboxClicked"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:id="@+id/radiusLayout">
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="Radius: "/>
+
+
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtRadius"
+            android:layout_weight="1"
+            android:numeric="integer"
+            android:inputType="number"
+            android:imeOptions="actionDone"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top">
+        <Button
+            android:layout_gravity="center_horizontal|top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:id="@+id/button"
+            android:onClick="onSearchClick"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/cancelSearch"
+            android:layout_gravity="center_horizontal|top"
+            android:onClick="onCancelSearchClick"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/LL_Divider"
+        android:layout_height="0dp">
+
+
+    </LinearLayout>
 </LinearLayout>
 </FrameLayout>

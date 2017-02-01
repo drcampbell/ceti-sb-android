@@ -46,21 +46,27 @@
                 android:layout_height="fill_parent"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal">
-                <com.facebook.share.widget.ShareButton
-                    android:id="@+id/fb_share_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center|bottom"
-                    android:orientation="vertical"
-                    android:baselineAligned="false"
-                    />
+                <!--<com.facebook.share.widget.ShareButton-->
+                    <!--android:id="@+id/fb_share_button"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_gravity="center|bottom"-->
+                    <!--android:orientation="vertical"-->
+                    <!--android:baselineAligned="false"-->
+                    <!--/>-->
+                <!--<Button-->
+                    <!--android:id="@+id/tweet_button"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="Tweet"-->
+                    <!--android:layout_gravity="center"/>-->
+                    <!--android:onClick=""-->
                 <Button
-                    android:id="@+id/tweet_button"
+                    android:id="@+id/shareall_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tweet"
+                    android:text="Share"
                     android:layout_gravity="center"/>
-                    <!--android:onClick=""-->
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

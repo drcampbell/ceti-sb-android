@@ -31,6 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,15 +47,17 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "edit";
 	private static final String ARG_PARAM2 = "param2";
-	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm aa z");
+	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm aa z", Locale.US);
 	Toast toast;
 	// TODO: Rename and change types of parameters
 	private Boolean mEdit;
 	private String mEvent;
 	private String mId;
 	private OnEventCreatorListener mListener;
+    private TimeZone timeZone = TimeZone.getTimeZone("EST");
 
-	Spinner mSpinner;
+
+    Spinner mSpinner;
 	ArrayAdapter<String> idAdapter;
 
 	/**
@@ -70,6 +74,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		args.putBoolean(ARG_PARAM1, edit);
 		args.putString(ARG_PARAM2, event);
 		fragment.setArguments(args);
+
 		return fragment;
 	}
 
@@ -84,6 +89,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			mEdit = getArguments().getBoolean(ARG_PARAM1);
 			mEvent = getArguments().getString(ARG_PARAM2);
 		}
+		/* Just making a blank toast for the Toaster */
 		toast = Toast.makeText(getActivity().getApplicationContext(), Constants.NULL, Toast.LENGTH_SHORT);
 	}
 
@@ -93,6 +99,9 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_event_create, container, false);
 		formatView(view);
+        if (mListener != null) {
+            mListener.onCancelSearchifExists();
+        }
 		return view;
 	}
 
@@ -147,6 +156,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	public interface OnEventCreatorListener {
 		// TODO: Update argument type and name
 		public void onPostEvent(JSONObject event, Boolean edit);
+        public void onCancelSearchifExists();
 	}
 
 	public JSONObject packageEvent(){
@@ -165,7 +175,18 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 			String event_start = createDate(getView().getRootView(), start, R.id.start_pm);
 			String event_end = createDate(getView().getRootView(), end, R.id.end_pm);
 
+			for (int i = 0; i < resource.length; i++) {
+				data = (EditText) getActivity().findViewById(resource[i]);
+				if (resource[i] == R.id.ET_title){
+					event.put(headers[i], data.getText().toString().replace('\n',' ').trim());
+				} else {
+					event.put(headers[i], data.getText().toString().trim());
+				}
+			}
+
+			/* Event Validation */
 			if (event_start.isEmpty() || event_end.isEmpty()){
+				toaster("Error: Event must have a start and end date");
 				return null;
 			}
 			if (!compareDates(dateFormat.format(new Date()), event_start)){
@@ -176,16 +197,6 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				toaster("Error: Can't Post\nEvent Finishes Before It Begins!");
 				return null;
 			}
-			for (int i = 0; i < resource.length; i++) {
-				data = (EditText) getActivity().findViewById(resource[i]);
-				if (resource[i] == R.id.ET_title){
-					event.put(headers[i], data.getText().toString().replace('\n',' ').trim());
-				} else {
-					event.put(headers[i], data.getText().toString().trim());
-				}
-			}
-			Log.d("EVENT", event.getString(Constants.TITLE));
-			Log.d("EVENT", event.getString(Constants.TITLE).trim());
 			if (event.getString(Constants.TITLE).trim().length() == 0){
 				toaster("Error: Title must consist of alphanumeric characters");
 				return null;
@@ -194,8 +205,9 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				toaster("Error: Title must be less than 255 characters");
 				return null;
 			}
+
+			/* Event is valid, finish up */
 			event.put("time_zone", mSpinner.getSelectedItem());
-			Log.d("FJADSFJAK", event.getString("time_zone"));
 			event.put("event_start", event_start);
 			event.put("event_end", event_end);
 			event.put("loc_id", SchoolBusiness.getUserAttr("school_id"));
@@ -221,7 +233,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		int[] time_max = {2115, 12, 31, 12, 59};
 		EditText et;
 		Date date;
-		Calendar cal = new GregorianCalendar();
+		Calendar cal = new GregorianCalendar(timeZone);
 		date = cal.getTime();
 		Log.d("test", date.toString());
 		//TimeZone timeZone = cal.getTimeZone();
@@ -267,6 +279,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		}
 		return date;
 	}
+
 	public void formatView(View view) {
 		int[] start_res = {R.id.start_minutes, R.id.start_hour, R.id.start_day, R.id.start_month, R.id.start_year};
 		int[] end_res = {R.id.end_minutes, R.id.end_hour, R.id.end_day, R.id.end_month, R.id.end_year};
@@ -277,7 +290,8 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 		EditText et;
 
 		Date date;
-		Calendar cal = Calendar.getInstance();
+
+        Calendar cal = Calendar.getInstance(timeZone);
 
 		/* Timezone spinna */
 		//populate spinner with all timezones

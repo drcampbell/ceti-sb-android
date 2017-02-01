@@ -1,8 +1,11 @@
 package com.ceti_sb.android.badges;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +19,16 @@ import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.volley.NetworkVolley;
 import com.ceti_sb.android.R;
 import com.ceti_sb.android.application.SchoolBusiness;
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.ShareButton;
+//import com.facebook.share.model.ShareLinkContent;
+//import com.facebook.share.widget.ShareButton;
+import android.graphics.drawable.*;
+import android.graphics.Bitmap;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 
 
 /**
@@ -50,7 +61,8 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 	private String url;
 	private Boolean notification;
 	private OnBadgeReceiveListener mListener;
-
+    private BadgeImageView badge;
+    private ImageLoader imageLoader = null;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -97,9 +109,10 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_badge_view, container, false);
 		LinearLayout display = (LinearLayout) view.findViewById(R.id.badge_display);
-		ImageLoader imageLoader = NetworkVolley.getInstance(getActivity()
+        imageLoader = NetworkVolley.getInstance(getActivity()
 				.getApplicationContext()).getImageLoader();
-		BadgeImageView badge = new BadgeImageView(getActivity().getApplicationContext());
+
+        badge = new BadgeImageView(getActivity().getApplicationContext());
 		display.addView(badge);
 		String badge_str = SchoolBusiness.AWS_S3 + mBadge;
 		badge.setImageUrl(badge_str, imageLoader);
@@ -120,24 +133,27 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 
 		if (user_id == Integer.parseInt(SchoolBusiness.getUserAttr(Constants.ID))) {
 			badge_uri = Uri.parse(badge_str);
-			url = SchoolBusiness.getUrl() + "users/" + SchoolBusiness.getUserAttr(Constants.ID) + "/badges/" + badge_id;
-			final ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
-					.setContentUrl(Uri.parse(url))
-					.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
-							" was awarded a badge!")
-					.setContentDescription("Badge awarded for speaking at the event" + event_name
-							+ ", at " + school_name)
-					.setImageUrl(badge_uri)
-					.build();
+			url = SchoolBusiness.getUrl() + "/users/" + SchoolBusiness.getUserAttr(Constants.ID) + "/badges/" + badge_id;
+//			final ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+//					.setContentUrl(Uri.parse(url))
+//					.setContentTitle(SchoolBusiness.getUserAttr(Constants.NAME) +
+//							" was awarded a badge!")
+//					.setContentDescription("Badge awarded for speaking at the event" + event_name
+//							+ ", at " + school_name)
+//					.setImageUrl(badge_uri)
+//					.build();
 
-			final ShareButton shareButton = (ShareButton) view.findViewById(R.id.fb_share_button);
-			shareButton.setClickable(true);
-			shareButton.setShareContent(shareLinkContent);
-			Button tweet = (Button) view.findViewById(R.id.tweet_button);
-			tweet.setOnClickListener(this);
+//			final ShareButton shareButton = (ShareButton) view.findViewById(R.id.fb_share_button);
+//			shareButton.setClickable(true);
+//			shareButton.setShareContent(shareLinkContent);
+//            Button tweet = (Button) view.findViewById(R.id.tweet_button);
+//            tweet.setOnClickListener(this);
+            Button share = (Button) view.findViewById(R.id.shareall_button);
+            share.setOnClickListener(this);
 		} else {
-			view.findViewById(R.id.tweet_button).setVisibility(View.GONE);
-			view.findViewById(R.id.fb_share_button).setVisibility(View.GONE);
+//			view.findViewById(R.id.tweet_button).setVisibility(View.GONE);
+//            view.findViewById(R.id.fb_share_button).setVisibility(View.GONE);
+            view.findViewById(R.id.shareall_button).setVisibility(View.GONE);
 		}
 		return view;
 	}
@@ -166,14 +182,65 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 		mListener = null;
 	}
 
+    private File savebitmap(Bitmap bmp) {
+        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+        OutputStream outStream = null;
+        File file = new File(extStorageDirectory, "sharefile.png");
+        if (file.exists()) {
+            file.delete();
+            file = new File(extStorageDirectory, "sharefile.png");
+        }
+
+        try {
+            outStream = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+            outStream.flush();
+            outStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return file;
+    }
+    private void shareIt() {
+
+        try {
+
+            Bitmap bmp = ((BitmapDrawable) badge.getDrawable()).getBitmap();
+            if (bmp != null) {
+
+                File mFile = savebitmap(bmp);
+                Uri u = null;
+                u = Uri.fromFile(mFile);
+
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("image/*");
+
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Sharing Badge!");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+                        "Badge awarded for speaking at the event "+ event_name
+							+ ", at " + school_name);
+                sharingIntent.putExtra(android.content.Intent.EXTRA_STREAM, u);
+
+                startActivity(Intent.createChooser(sharingIntent, "Share via"));
+            }
+
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+    }
+
 	@Override
 	public void onClick(View view){
 		switch(view.getId()){
-			case R.id.fb_share_button:
-				break;
-			case R.id.tweet_button:
-				mListener.onTweetBadge(badge_uri, url);
-				break;
+//			case R.id.fb_share_button:
+//				break;
+//			case R.id.tweet_button:
+//				mListener.onTweetBadge(badge_uri, url);
+//				break;
+            case R.id.shareall_button:
+                shareIt();
+                break;
 		}
 	}
 	/**
@@ -188,8 +255,8 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 	 */
 	public interface OnBadgeReceiveListener {
 		// TODO: Update argument type and name
-		public void onShareBadgeFacebook(Uri uri);
-		public void onTweetBadge(Uri uri, String url);
+//		public void onShareBadgeFacebook(Uri uri);
+//		public void onTweetBadge(Uri uri, String url);
 	}
 
 }

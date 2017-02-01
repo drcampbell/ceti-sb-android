@@ -101,7 +101,7 @@ public class RegistrationIntentService extends IntentService {
 			// [END get_token]
 			Log.i(TAG, "GCM Registration Token: " + token);
 
-			// TODO: Implement this method to send any registration to your app's servers.
+
 			sendRegistrationToServer(token);
 
 			// Subscribe to topic channels
@@ -136,7 +136,8 @@ public class RegistrationIntentService extends IntentService {
 		JSONObject registration = new JSONObject();
 		try {
 			registration.put("token", token);
-			registration.put("device_name", Build.MODEL);
+            registration.put("device_name", Build.MODEL);
+            registration.put("device_type", "android");
 		} catch (JSONException e){
 			Toast.makeText(getApplicationContext(), "Couldn't create json", Toast.LENGTH_LONG).show();
 		}

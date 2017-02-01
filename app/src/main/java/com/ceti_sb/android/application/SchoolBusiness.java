@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * Created by david on 6/11/15.
@@ -24,8 +25,14 @@ import java.util.Iterator;
 public class SchoolBusiness extends Application{
 
 	public static final Boolean DEBUG = true;
-	public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
-	public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
+	public static Boolean remember = false;
+//    public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
+//    public static final String DEV_TARGET =  "http://ceti-test-env.elasticbeanstalk.com/api/";
+    public static final String DEV_URL = "https://www.school2biz.com";
+    public static final String DEV_TARGET =  "https://www.school2biz.com/api/";
+
+//    public static final String DEV_URL = "http://192.168.1.29:3000";
+//	public static final String DEV_TARGET =  "http://192.168.1.29:3000/api/";
     public static final String PRO_URL = "https://www.school2biz.com";
     public static final String PRO_TARGET =  "https://www.school2biz.com/api/";
 	public static String URL;
@@ -40,7 +47,7 @@ public class SchoolBusiness extends Application{
 	
 	private static final String TAG = "school_business";
 	private static String id;
-	private static JSONObject profile;
+	public static JSONObject profile;
 	private static JSONObject notifications;
 	private static String n_notifications = "0";
 	private static SharedPreferences loginPreferences;
@@ -75,6 +82,14 @@ public class SchoolBusiness extends Application{
 		} else {
 			return PRO_URL;
 		}
+	}
+
+	public static void setRemember(Boolean yes){
+		remember = yes;
+	}
+
+	public static Boolean getRemember(){
+		return remember;
 	}
 
 	public static String getTarget(){
@@ -197,7 +212,8 @@ public class SchoolBusiness extends Application{
 	public static String parseTime(String datetime) {
 		//String ndt = datetime.split(".")[0]+'Z';
 		Date date = null;
-		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
 		try {
 			date = format.parse(datetime);
 		} catch (ParseException e) {
@@ -227,29 +243,32 @@ public class SchoolBusiness extends Application{
 	}
 
 	public static String phoneNumber(String s) {
-		StringBuilder sb = new StringBuilder();
+		//StringBuffer sb=new StringBuffer();
+		StringBuilder sb = new StringBuilder(s);
+      /*  int l = s.length();
 		char[] c = s.toCharArray();
 		if (s.length() == 10) {
-			sb.append('(');
-			for (int i = 0; i < s.length(); i++){
+			sb.append("(");
+			for (int i = 0; i <= l; i++){
 				sb.append(c);
 				if (i == 2){
-					sb.append(')');
+					sb.append(")");
 				}
 				if (i == 5){
-					sb.append('-');
+					sb.append("-");
 				}
 			}
-		}
+		}*/
+        //sb.append(s);
 		return sb.toString();
 	}
 
 	public static void saveLogin(Context context){
 		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		loginPrefsEditor = loginPreferences.edit();
-		loginPrefsEditor.putBoolean(Constants.SaveLoginString, true);
 		loginPrefsEditor.putString(Constants.PROFILE, profile.toString());
 		loginPrefsEditor.putString(Constants.NOTIFICATIONS, getNotificationCount(context));
+		loginPrefsEditor.putBoolean(Constants.REMEMBER_ME, remember);
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile Saved");
 	}
@@ -259,13 +278,17 @@ public class SchoolBusiness extends Application{
 		loginPreferences = context.getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
 		str_profile = loginPreferences.getString(Constants.PROFILE, Constants.NULL);
 		setNotificationCount(context, loginPreferences.getString(Constants.NOTIFICATIONS, "0"));
+		setRemember(loginPreferences.getBoolean(Constants.REMEMBER_ME, false));
 		if (str_profile.equals(Constants.NULL)){
 			return false;
 		} else {
 			try {
-				profile = new JSONObject(str_profile);
-				Log.d(TAG, "Profile Loaded");
-				return true;
+				setProfile(new JSONObject(str_profile));
+				if (getRemember()) {
+					Log.d(TAG, "Profile Loaded");
+
+					return true;
+				} else { return false;}
 			} catch (JSONException e) {
 				Log.d(TAG, e.getMessage());
 				return false;
@@ -278,6 +301,8 @@ public class SchoolBusiness extends Application{
 		loginPrefsEditor = loginPreferences.edit();
 		profile = null;
 		loginPrefsEditor.putString(Constants.PROFILE, Constants.NULL);
+		loginPrefsEditor.putBoolean(Constants.REMEMBER_ME, false);
+		loginPrefsEditor.putString(Constants.NOTIFICATIONS, "0");
 		loginPrefsEditor.clear();
 		loginPrefsEditor.commit();
 		Log.d(TAG, "Profile cleared");
@@ -318,4 +343,13 @@ public class SchoolBusiness extends Application{
 	public static boolean isActivityVisible(){
 		return activityVisible;
 	}
+    public static String checkAndReplaceNullWithEmtpy(String text){
+        if(text == null || (text != null &&
+                (text.equals("Null")
+                        || text.equals("null")
+                        || text.equals("NULL")))){
+            text = "";
+        }
+        return text;
+    }
 }

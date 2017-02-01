@@ -51,6 +51,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 		if (getArguments() != null) {
 			mProfile = getArguments().getString(PROFILE_PARAM);
 		}
+
 	}
 
 	@Override
@@ -124,7 +125,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 			((Button) view.findViewById(R.id.edit_profile_button)).setOnClickListener(ProfileFragment.this);
 			((Button) view.findViewById(R.id.edit_account_button)).setOnClickListener(ProfileFragment.this);
 			for (int i = 0; i < resource.length; i++){
-					 text = SchoolBusiness.toDisplayCase(profile.getString(id[i]));
+				text = SchoolBusiness.toDisplayCase(profile.getString(id[i]));
+                text = SchoolBusiness.checkAndReplaceNullWithEmtpy(text);
 				((TextView) view.findViewById(resource[i])).setText(text);
 				if (id[i].equals("school_name")){
 					view.findViewById(resource[i]).setClickable(true);

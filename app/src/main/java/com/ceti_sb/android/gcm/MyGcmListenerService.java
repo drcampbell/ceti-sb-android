@@ -26,41 +26,45 @@ public class MyGcmListenerService extends GcmListenerService {
 
 	@Override
 	public void onMessageReceived(String from, Bundle data){
-		Log.d(TAG, "Data"+data.toString());
-		String message = data.getString("message");
-		String event_id = data.getString("event_id");
-		String n_type = data.getString("n_type");
-		String notif_count = data.getString("count");
-		Log.d(TAG, "From: " + from);
-		Log.d(TAG, "Message: " + message);
-		Log.d(TAG, "Notification: " + n_type);
-		Log.d(TAG, "Event: " + event_id);
+        try {
+            Log.d(TAG, "Data" + data.toString());
+            String message = data.getString("message");
+            String event_id = data.getString("event_id");
+            String n_type = data.getString("n_type");
+            String notif_count = data.getString("count");
+            Log.d(TAG, "From: " + from);
+            Log.d(TAG, "Message: " + message);
+            Log.d(TAG, "Notification: " + n_type);
+            Log.d(TAG, "Event: " + event_id);
 
-		if (from.startsWith("/topics/")) {
-			// message received from some topic.
-		} else {
-			// normal downstream message.
-		}
+            if (from.startsWith("/topics/")) {
+                // message received from some topic.
+            } else {
+                // normal downstream message.
+            }
 
-		/**
-		 * Production applications would usually process the message here.
-		 * Eg: - Syncing with server.
-		 *     - Store message in local database.
-		 *     - Update UI.
-		 */
-		SharedPreferences sp = getApplicationContext().getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
-		SharedPreferences.Editor spEdit = sp.edit();
-		spEdit.putString(Constants.NOTIFICATIONS, notif_count);
-		spEdit.apply();
-		/**
-		 * In some cases it may be useful to show a notification indicating to the user
-		 * that a message was received.
-		 */
-		SchoolBusiness.setNotificationCount(getApplicationContext(), notif_count);
-		if (SchoolBusiness.isActivityVisible()){
+            /**
+             * Production applications would usually process the message here.
+             * Eg: - Syncing with server.
+             *     - Store message in local database.
+             *     - Update UI.
+             */
+            SharedPreferences sp = getApplicationContext().getSharedPreferences(Constants.LoginPreferencesString, Context.MODE_PRIVATE);
+            SharedPreferences.Editor spEdit = sp.edit();
+            spEdit.putString(Constants.NOTIFICATIONS, notif_count);
+            spEdit.apply();
+            /**
+             * In some cases it may be useful to show a notification indicating to the user
+             * that a message was received.
+             */
+            SchoolBusiness.setNotificationCount(getApplicationContext(), notif_count);
+            if (SchoolBusiness.isActivityVisible()) {
 
-		}
-		sendNotification(message, data);
+            }
+            sendNotification(message, data);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 	}
 
 	/**
@@ -69,33 +73,37 @@ public class MyGcmListenerService extends GcmListenerService {
 	 * @param message GCM message received.
 	 */
 	private void sendNotification(String message, Bundle data) {
-		PendingIntent pendingIntent;
-		if (SchoolBusiness.getProfile() != null) {
-			Intent intent = new Intent(this, MainActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-			intent.setAction(SchoolBusiness.ACTION_NOTIFICATION);
-			intent.putExtras(data);
-			pendingIntent = PendingIntent.getActivity(this, rcode++ /* Request code */, intent,
-					PendingIntent.FLAG_ONE_SHOT);
-		} else {
-			Intent intent = new Intent(this, LoginActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-			pendingIntent = PendingIntent.getActivity(this, rcode++, intent, PendingIntent.FLAG_ONE_SHOT);
-		}
+        try {
+            PendingIntent pendingIntent;
+            if (SchoolBusiness.getProfile() != null) {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setAction(SchoolBusiness.ACTION_NOTIFICATION);
+                intent.putExtras(data);
+                pendingIntent = PendingIntent.getActivity(this, rcode++ /* Request code */, intent,
+                        PendingIntent.FLAG_ONE_SHOT);
+            } else {
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                pendingIntent = PendingIntent.getActivity(this, rcode++, intent, PendingIntent.FLAG_ONE_SHOT);
+            }
 
-		Log.d("message", message);
-		Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-				.setSmallIcon(R.drawable.ic_launcher)
-				.setContentTitle("School Business")
-				.setContentText(message)
-				.setAutoCancel(true)
-				.setSound(defaultSoundUri)
-				.setContentIntent(pendingIntent);
+            Log.d("message", message);
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setContentTitle("School Business")
+                    .setContentText(message)
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent);
 
-		NotificationManager notificationManager =
-				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 	}
 }

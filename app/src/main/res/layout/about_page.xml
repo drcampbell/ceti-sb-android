@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".account.AboutFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView0121"
+        android:layout_gravity="center_horizontal">
+
+<LinearLayout
+    android:id="@+id/layout_fragment_about"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <ImageView
+        android:id="@+id/ontoborn"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ontoborn"
+
+        />
+<!--<RelativeLayout-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="left"-->
+<!--&gt;-->
+    <!--<TextView-->
+        <!--android:id="@+id/abouttext"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:autoLink="all"-->
+
+        <!--android:clickable="true"-->
+        <!--android:linksClickable="true"-->
+        <!--android:text=""-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+        <!--/>-->
+
+    <TextView
+        android:id="@+id/aboutontolink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:autoLink="all"
+
+        android:clickable="true"
+        android:linksClickable="true"
+        android:text="@string/straboutlink"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+
+        />
+
+    <TextView
+        android:id="@+id/abouttextfive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:text="Support email: support@school2biz.com"
+        android:autoLink="all"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+
+        />
+
+    <TextView
+        android:id="@+id/aboutPrivacylink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:autoLink="all"
+
+        android:clickable="true"
+        android:linksClickable="true"
+        android:text="Our Privacy information."
+        android:textAppearance="?android:attr/textAppearanceSmall"
+
+        android:textColor="?android:attr/colorAccent" />
+
+
+</LinearLayout>
+    </ScrollView>
+</FrameLayout>

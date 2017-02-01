@@ -6,9 +6,9 @@
           android:title="@string/search_title"
           android:icon="@drawable/ic_search_black_48dp"
           android:showAsAction="always"
-          android:iconifiedByDefault="true"
-          android:actionViewClass="android.widget.SearchView"
-          />
+          android:iconifiedByDefault="true"/>
+          <!--android:actionViewClass="android.widget.SearchView"-->
+
     <item android:id="@+id/notifications"
           android:title="0"
           android:showAsAction="collapseActionView|ifRoom"
@@ -22,11 +22,19 @@
           android:orderInCategory="100"
           app:showAsAction="never"/>
     <item android:id="@+id/menu_profile"
-          android:title="@string/menu_profile"
+        android:title="@string/menu_profile"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_myaccount"
+        android:title="@string/menu_myaccount"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_about"
+          android:title="@string/menu_about"
           android:orderInCategory="100"
           app:showAsAction="ifRoom|withText" />
     <item android:id="@+id/menu_logout"
-          android:title="@string/menu_logout"
-          android:orderInCategory="100"
-          app:showAsAction="ifRoom|withText" />
+        android:title="@string/menu_logout"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom|withText" />
 </menu>

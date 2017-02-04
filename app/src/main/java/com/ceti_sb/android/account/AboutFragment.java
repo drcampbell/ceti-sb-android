@@ -62,6 +62,8 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         ImageView btnimageclick = (ImageView) view.findViewById(R.id.ontoborn);
         btnimageclick.setOnClickListener(this);
 
+        TextView btnPrivacyclick = (TextView) view.findViewById(R.id.aboutPrivacylink);
+        btnPrivacyclick.setOnClickListener(this);
 
         return view;
 
@@ -94,10 +96,10 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
                 Intent imgOntoBorn = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ontoborn.com"));
                 startActivity(imgOntoBorn);
                 break;
-//            case R.id.aboutcetilink:
-//                Intent cetiLink = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ceti.cse.ohio-state.edu/"));
-//                startActivity(cetiLink);
-//                break;
+            case R.id.aboutPrivacylink:
+                Intent privacyLink = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ceti-test-env.elasticbeanstalk.com/privacy_policy"));
+                startActivity(privacyLink);
+                break;
 //            case R.id.aboutgrantlink:
 //                Intent grantLink = new Intent(Intent.ACTION_VIEW, Uri.parse("http://education.ohio.gov/Topics/Straight-A-Fund/"));
 //                startActivity(grantLink);

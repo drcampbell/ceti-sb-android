@@ -460,10 +460,15 @@ public class MainActivity extends FragmentActivity
 						case "message":
 							break;
 						default:
-							sendVolley(Request.Method.GET, extras.getString(Constants.EVENT_ID),
-									Constants.EVENTS, null, true);
+							sendVolley(Request.Method.GET, Constants.NULL, Constants.NOTIFICATIONS, null, true);
+							//sendVolley(Request.Method.GET, extras.getString(Constants.EVENT_ID),
+									//Constants.EVENTS, null, true);
 							break;
 					}
+				}
+				else{
+					sendVolley(Request.Method.GET, Constants.NULL, Constants.NOTIFICATIONS, null, true);
+
 				}
 				break;
 			case Intent.ACTION_VIEW:

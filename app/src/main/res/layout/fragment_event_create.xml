@@ -42,7 +42,7 @@
                 android:id="@+id/ET_content"
                 android:layout_weight="0.22"/>
 
-            <TextView
+            <!--<TextView
                 style="@style/TV_Style_Title"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Tags"
@@ -50,7 +50,7 @@
 
             <EditText
                 style="@style/ET_Style"
-                android:id="@+id/et_tags"/>
+                android:id="@+id/et_tags"/>-->
 
             <Spinner
                 android:id="@+id/TimeZoneEntry"

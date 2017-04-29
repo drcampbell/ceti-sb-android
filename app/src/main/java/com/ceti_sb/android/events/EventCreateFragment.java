@@ -54,7 +54,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	private String mEvent;
 	private String mId;
 	private OnEventCreatorListener mListener;
-    private TimeZone timeZone = TimeZone.getTimeZone("EST");
+    private TimeZone timeZone = TimeZone.getTimeZone("America/New_York");
 
 
     Spinner mSpinner;

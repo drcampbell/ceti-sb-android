@@ -5,33 +5,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import java.util.regex.Pattern;
-import android.text.util.Linkify;
-import android.text.util.Linkify.MatchFilter;
 import android.widget.TextView;
 
 import com.ceti_sb.android.R;
-import com.ceti_sb.android.application.SchoolBusiness;
-
-import org.json.JSONObject;
-import com.ceti_sb.android.application.Constants;
-import com.ceti_sb.android.R;
-import com.ceti_sb.android.application.SchoolBusiness;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import android.text.method.LinkMovementMethod;
-import android.text.Html;
+import com.ceti_sb.android.BuildConfig;
 
 
 /**
@@ -64,6 +45,14 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
 
         TextView btnPrivacyclick = (TextView) view.findViewById(R.id.aboutPrivacylink);
         btnPrivacyclick.setOnClickListener(this);
+
+        TextView versionNumber = (TextView) view.findViewById(R.id.versionNumber);
+
+
+        String versionName = BuildConfig.VERSION_NAME;
+
+        String versionNumberStr = "Version number : " + versionName;
+        versionNumber.setText(versionNumberStr);
 
         return view;
 

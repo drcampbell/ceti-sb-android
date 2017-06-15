@@ -85,6 +85,15 @@
 
         android:textColor="?android:attr/colorAccent" />
 
+    <TextView
+        android:id="@+id/versionNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+
+    />
+
 
 </LinearLayout>
     </ScrollView>

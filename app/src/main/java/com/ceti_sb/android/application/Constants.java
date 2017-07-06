@@ -76,4 +76,6 @@ public class Constants {
     /* Badges */
     public final static String AWARD = "award";
     public final static String AWARD_BADGE = "award_badge";
+
+    public final static String SLASH = "/";
 }

@@ -35,6 +35,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 	private String speaker_name;
 	private int event_id;
 	private String badge_url;
+	private int badge_id;
 	private AwardBadgeListener mListener;
 	private Boolean isAwarded;
 
@@ -69,6 +70,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 			speaker_name = getArguments().getString("speaker_name");
 			event_id = Integer.parseInt(getArguments().getString(Constants.EVENT_ID));
 			badge_url = getArguments().getString("badge_url");
+			badge_id = Integer.parseInt(getArguments().getString("badge_id"));
 			isAwarded = Boolean.parseBoolean(getArguments().getString("isAwarded"));
 		}
 	}
@@ -85,7 +87,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 				.getApplicationContext()).getImageLoader();
 		BadgeImageView badge = new BadgeImageView(getActivity().getApplicationContext());
 		display.addView(badge);
-		String badge_str = SchoolBusiness.AWS_S3 + badge_url;
+		String badge_str = SchoolBusiness.AWS_S3 + badge_id + Constants.SLASH + badge_url;
 		badge.setImageUrl(badge_str, imageLoader);
 		badge.getLayoutParams().height = 512;
 		badge.getLayoutParams().width = 512;

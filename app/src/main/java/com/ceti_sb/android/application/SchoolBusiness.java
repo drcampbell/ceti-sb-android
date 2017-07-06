@@ -22,8 +22,9 @@ import java.util.Locale;
 /**
  * Created by david on 6/11/15.
  */
-public class SchoolBusiness extends Application{
 
+public class SchoolBusiness extends Application{
+	public static final String MODE = "test" ;//"production";
 	public static final Boolean DEBUG = true;
 	public static Boolean remember = false;
     public static final String DEV_URL = "http://ceti-test-env.elasticbeanstalk.com";
@@ -31,13 +32,13 @@ public class SchoolBusiness extends Application{
     //public static final String DEV_URL = "https://www.school2biz.com";
     //public static final String DEV_TARGET =  "https://www.school2biz.com/api/";
 
-//    public static final String DEV_URL = "http://192.168.1.29:3000";
-//	public static final String DEV_TARGET =  "http://192.168.1.29:3000/api/";
+//    public static final String DEV_URL = "http://192.168.1.10:3000";
+//	public static final String DEV_TARGET =  "http://192.168.1.10:3000/api/";
     public static final String PRO_URL = "https://www.school2biz.com";
     public static final String PRO_TARGET =  "https://www.school2biz.com/api/";
 	public static String URL;
 	public static String TARGET;
-	public static final String AWS_S3 = "https://s3-us-west-1.amazonaws.com/ceti-sb/badges/";
+	public static final String AWS_S3 = "https://s3-us-west-1.amazonaws.com/ceti-sb/badges/" + MODE + "/";
 	public static final String NONE = "None";
 	public static final String TEACHER = "Teacher";
 	public static final String SPEAKER = "Speaker";

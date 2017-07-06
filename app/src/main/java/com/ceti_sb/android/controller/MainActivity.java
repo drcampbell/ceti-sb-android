@@ -668,7 +668,8 @@ public class MainActivity extends FragmentActivity
 		try {
 			imageLoader = NetworkVolley.getInstance(getApplicationContext()).getImageLoader();
 			NetworkImageView badge = (NetworkImageView) view.findViewById(R.id.school_badge);
-			badge.setImageUrl(SchoolBusiness.AWS_S3 + response.getString("badge_url"), imageLoader);
+			badge.setImageUrl(SchoolBusiness.AWS_S3 + response.getString("badge_id") +
+					Constants.SLASH + response.getString("badge_url"), imageLoader);
 		} catch (JSONException e){
 			handleJSONException(e);
 		}
@@ -989,7 +990,7 @@ public class MainActivity extends FragmentActivity
 			search = false;
 		}
         String url = SchoolBusiness.getTarget() + model + delim + id;
-
+		Log.d("URL", "Outgoing URL: " + url);
 //        if(search){
 //            url = SchoolBusiness.getTarget() +  id;
 //        }

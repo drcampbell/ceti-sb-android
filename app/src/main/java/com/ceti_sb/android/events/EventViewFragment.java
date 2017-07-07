@@ -17,13 +17,16 @@ import android.widget.Toast;
 import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.R;
 import com.ceti_sb.android.application.SchoolBusiness;
+import com.ceti_sb.android.views.ListItemFragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,6 +54,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 	public final int CANCEL_EVENT = 0; public final int CANCEL_CLAIM = 1; public final int CANCEL_SPEAKER = 2;
 	private int mode;
 
+	JSONObject speakerNameArrayList = new JSONObject();
 	/*
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -88,7 +92,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 		//mLayout = (RelativeLayout) view.findViewById(R.id.layout_fragment_event);
 		String id;
 		String event_owner;
-		Boolean displayClaims = false;
+		Boolean displayClaims = true;
 		if (getArguments() != null) {
 			try {
 				JSONObject obj = new JSONObject(getArguments().getString(JSON_RESPONSE));
@@ -102,6 +106,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				// TODO Handle E
 				id = "nil";
 				event_owner = "0";
+
 			}
 			//mParam1 = getArguments().getString(JSON_RESPONSE);
 			//mParam2 = getArguments().getString(ARG_PARAM2);
@@ -150,7 +155,9 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_name).getTag(), "users");
 				break;
 			case R.id.tv_speaker:
-				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_speaker).getTag(), "users");
+				//ListItemFragment listItemFragment = ListItemFragment.newInstance(speakerNameArrayList, "users", "?search=");
+				mListener.onEventViewInteractionUserList(speakerNameArrayList, "users");
+				//mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_speaker).getTag(), "users");
 				break;
 			case R.id.edit_button:
 				mListener.onCreateEvent(true, event);
@@ -194,6 +201,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 		public void onDeleteEvent(String id);
 		public void getClaims(String id);
 		public void onCancelClaim(String claim_id);
+		public void onEventViewInteractionUserList(JSONObject id, String direction);
 	}
 
 	public String get_id(int res) {
@@ -287,6 +295,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 					link = response.getString(link);
 					tv.setOnClickListener(EventViewFragment.this);
 					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+
 				} else {
 					link = "0";
 				}
@@ -295,7 +304,39 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				if (str.contains("event")) {
 					str = response.getString(str);
 				} else {//if (str.equals("school_name")) {
-					str = SchoolBusiness.toDisplayCase(response.getString(str));
+					if(str .equals("speaker")){
+						if(!response.getString(str).equals("TBA")) {
+							JSONArray speakerNameArr = new JSONArray(response.getString(str));
+
+							str = " ";
+							int count = 0;
+							if(speakerNameArr.length() > 2) {
+								count = 2;
+							}else{
+								count = speakerNameArr.length();
+							}
+							JSONObject speakerName = new JSONObject();
+							for(i = 0;i < speakerNameArr.length(); i++){
+								 speakerName = speakerNameArr.getJSONObject(i);
+								if(i < count) {
+									str += SchoolBusiness.toDisplayCase(speakerName.getString("name")) + ", ";
+								}
+							}
+
+							speakerNameArrayList.accumulate("users", speakerNameArr);
+							if(speakerNameArr.length() > 2) {
+								str += SchoolBusiness.toDisplayCase(" more");
+							}
+							else if (str != null && str.length() > 0 && str.charAt(str.length() - 2) == ',') {
+								str =  str.substring(0, str.length() - 2);
+							}
+						}else{
+							str = SchoolBusiness.toDisplayCase(response.getString(str));
+						}
+
+					}else {
+						str = SchoolBusiness.toDisplayCase(response.getString(str));
+					}
 				}
 				tv.setTag(link);
 				tv.setText(str);

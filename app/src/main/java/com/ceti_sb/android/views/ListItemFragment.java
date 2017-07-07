@@ -386,7 +386,11 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 
                         map.put(Constants.ID, obj.getString(key[0]));
 						map.put(Constants.TITLE, obj.getString(key[1]));
-						map.put(Constants.DATA, obj.getString(key[2]));
+						if(obj.has(key[2])) {
+							map.put(Constants.DATA, obj.getString(key[2]));
+						}else{
+							map.put(Constants.DATA, "");
+						}
 						map.put(Constants.AUX_ID, Constants.SUCCESS);
 						map.put(Constants.READ, "true");
 						break;

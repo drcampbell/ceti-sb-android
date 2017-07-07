@@ -572,6 +572,13 @@ public class MainActivity extends FragmentActivity
 	public void onSchoolViewInteraction(String id, String model){
 
 	}
+	public void onEventViewInteractionUserList(JSONObject id, String model){
+
+		ListItemFragment listItemFragment = ListItemFragment.newInstance(id, "users", "?search=");
+		swapFragment(listItemFragment, R.id.fragment_container, FRAG_MAIN, true);
+		return;
+	}
+
 
 	/* Listener for UserProfileFragment.java */
 	/* Listener for UserViewFragment.java */

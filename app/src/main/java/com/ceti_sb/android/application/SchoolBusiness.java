@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -57,7 +58,7 @@ public class SchoolBusiness extends Application{
 	private static boolean activityVisible;
 	private static Context mContext;
 	public static final String[] time_zones = {"Eastern Time (US & Canada)"};
-
+	public static boolean schoolSearch = false;
 	private static OnNotificationListener mListener;
 
 	@Override
@@ -122,11 +123,24 @@ public class SchoolBusiness extends Application{
 	public static JSONObject getNotifications(){
 		return notifications;
 	}
+	public static void setSchool(String id){
+			try{
+				profile.put(Constants.SCHOOL_ID, id);
+			}
+			catch(JSONException e){
+				Log.d(TAG,e.toString());
+			}
+
+	}
+
 
 	public static void setProfile(JSONObject obj){
 		profile = obj;
 		try {
 			profile.put(Constants.ROLE, translateRole(profile.get(Constants.ROLE).toString()));
+			if(profile.get(Constants.SCHOOL_ID ) != null) {
+				profile.put(Constants.SCHOOL_ID, profile.get(Constants.SCHOOL_ID).toString());
+			}
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
 		}
@@ -163,6 +177,14 @@ public class SchoolBusiness extends Application{
 		}
 	}
 
+	public static String getSchool(){
+		try {
+			return profile.getString(Constants.SCHOOL_NAME);
+		} catch (JSONException e){
+			Log.d(TAG, e.toString());
+			return Constants.NULL;
+		}
+	}
 	public static String getEmail(){
 		try {
 			return profile.getString(Constants.EMAIL);

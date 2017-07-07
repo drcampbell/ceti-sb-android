@@ -758,6 +758,13 @@ public class MainActivity extends FragmentActivity
 //		swapFragment(new BlankFragment(),R.id.tab_container, TAB_CONTAINER, false);
 //		swapFragment(new BlankFragment(),R.id.tab_content, TAB_CONTENT, false);
 	}
+	public void handleSchoolMissing(){
+		Toast.makeText(getApplicationContext(),
+				"Please choose a school for yourself before trying to create events.", Toast.LENGTH_LONG).show();
+		SchoolBusiness.schoolSearch = true;
+		showSearchForm();
+
+	}
 
 	/* Listener for ProfileFragment.java */
 	public void onEditProfile(){

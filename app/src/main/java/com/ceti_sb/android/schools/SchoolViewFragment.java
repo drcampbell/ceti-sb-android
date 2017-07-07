@@ -105,6 +105,7 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 		switch (view.getId()){
 			case R.id.make_my_school_button:
 				mListener.makeMySchool(id);
+                SchoolBusiness.setSchool(id);
 				break;
 		}
 	}

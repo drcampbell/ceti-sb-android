@@ -16,7 +16,12 @@ import android.widget.EditText;
 
 import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.R;
+import com.ceti_sb.android.application.SchoolBusiness;
+
 import android.content.Context;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +33,8 @@ import android.content.Context;
  */
 public class SearchOptionsFragment extends Fragment implements View.OnClickListener {
     private final String TAG = "MainActivity";
+	private static final String ARG1 = "arg_1";
+	private static final String ARG2 = "arg_2";
 
 	private OnSearchInteractionListener mListener;
     private int searchType = 0;
@@ -35,6 +42,8 @@ public class SearchOptionsFragment extends Fragment implements View.OnClickListe
 	public static SearchOptionsFragment newInstance(String param1, String param2) {
 		SearchOptionsFragment fragment = new SearchOptionsFragment();
 		Bundle args = new Bundle();
+		args.putString(ARG1, param1);
+		args.putString(ARG2, param2);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -53,9 +62,27 @@ public class SearchOptionsFragment extends Fragment implements View.OnClickListe
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
+							 Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_search_options, container, false);
+		if(SchoolBusiness.schoolSearch){
+			((CheckBox) view.findViewById(R.id.schools_checkBox)).setChecked(true);
+			((CheckBox) view.findViewById(R.id.user_checkBox)).setChecked(false);
+			((CheckBox) view.findViewById(R.id.events_checkBox)).setChecked(false);
+		}
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_search_options, container, false);
+		return view ;
+	}
+	@Override
+	public View onResume(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_search_options, container, false);
+		if(SchoolBusiness.schoolSearch){
+			((CheckBox) view.findViewById(R.id.schools_checkBox)).setChecked(true);
+			((CheckBox) view.findViewById(R.id.user_checkBox)).setChecked(false);
+			((CheckBox) view.findViewById(R.id.events_checkBox)).setChecked(false);
+		}
+		// Inflate the layout for this fragment
+		return view ;
 	}
 
 	public void onButtonPressed(Uri uri) {

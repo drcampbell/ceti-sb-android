@@ -485,6 +485,11 @@ public class MainActivity extends FragmentActivity
 				break;
 		}
 	}
+	public void changeSearchModel(){
+		searchModel = Constants.SCHOOLS;
+
+	}
+
 
 	public void onCheckboxClicked(View view) {
 		boolean checked = ((CheckBox) view).isChecked();

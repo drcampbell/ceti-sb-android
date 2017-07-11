@@ -179,7 +179,7 @@ public class SchoolBusiness extends Application{
 
 	public static String getSchool(){
 		try {
-			return profile.getString(Constants.SCHOOL_NAME);
+			return profile.getString(Constants.SCHOOL_ID);
 		} catch (JSONException e){
 			Log.d(TAG, e.toString());
 			return Constants.NULL;

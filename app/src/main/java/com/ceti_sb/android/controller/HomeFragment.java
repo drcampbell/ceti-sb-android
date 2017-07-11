@@ -49,6 +49,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 		tab = 0;
 	}
 
+	public void onResume() {
+		super.onResume();
+
+	}
+
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
@@ -87,7 +93,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 				JSONObject profile = SchoolBusiness.getProfile();
 				if (profile != null) {
 					String school = SchoolBusiness.getSchool();
-					if(school == null || school.equals("Please Select A School") ){
+					if(school == null || school.equals(Constants.EMPTY) ||  school.equals("1")){
 						mListener.handleSchoolMissing();
 						return ;
 					}

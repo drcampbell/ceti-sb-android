@@ -19,6 +19,7 @@ import com.ceti_sb.android.R;
 import com.ceti_sb.android.application.SchoolBusiness;
 
 import android.content.Context;
+import android.widget.LinearLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +36,7 @@ public class SearchOptionsFragment extends Fragment implements View.OnClickListe
     private final String TAG = "MainActivity";
 	private static final String ARG1 = "arg_1";
 	private static final String ARG2 = "arg_2";
+
 
 	private OnSearchInteractionListener mListener;
     private int searchType = 0;
@@ -64,25 +66,26 @@ public class SearchOptionsFragment extends Fragment implements View.OnClickListe
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_search_options, container, false);
-		if(SchoolBusiness.schoolSearch){
-			((CheckBox) view.findViewById(R.id.schools_checkBox)).setChecked(true);
-			((CheckBox) view.findViewById(R.id.user_checkBox)).setChecked(false);
-			((CheckBox) view.findViewById(R.id.events_checkBox)).setChecked(false);
-		}
+
 		// Inflate the layout for this fragment
 		return view ;
 	}
 	@Override
-	public View onResume(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_search_options, container, false);
+	public void onStart() {
+		super.onStart();
+		View view = getView();
+		mListener.changeSearchModel();
+		//View view = inflater.inflate(R.layout.fragment_search_options, container, false);
 		if(SchoolBusiness.schoolSearch){
+			LinearLayout zip = ((LinearLayout) view.findViewById(R.id.zipLayout));
+			LinearLayout radius = ((LinearLayout) view.findViewById(R.id.radiusLayout));
 			((CheckBox) view.findViewById(R.id.schools_checkBox)).setChecked(true);
 			((CheckBox) view.findViewById(R.id.user_checkBox)).setChecked(false);
 			((CheckBox) view.findViewById(R.id.events_checkBox)).setChecked(false);
+			zip.setVisibility(View.VISIBLE);
+			radius.setVisibility(View.VISIBLE);
+			searchType = 2;
 		}
-		// Inflate the layout for this fragment
-		return view ;
 	}
 
 	public void onButtonPressed(Uri uri) {
@@ -237,6 +240,7 @@ public class SearchOptionsFragment extends Fragment implements View.OnClickListe
 		// TODO: Update argument type and name
 		public void onSearchInteraction(String model);
         public void onLocationSearchInteraction(String query);
+		public void changeSearchModel();
 
 	}
 

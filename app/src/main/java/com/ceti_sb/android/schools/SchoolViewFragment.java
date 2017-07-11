@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 	private String mParam1;
 	private String mParam2;
 	private String id;
+
 
 	private OnSchoolViewInteractionListener mListener;
 
@@ -131,12 +133,14 @@ public class SchoolViewFragment extends Fragment implements View.OnClickListener
 			JSONObject response = new JSONObject(str_response);
 			JSONObject school = response.getJSONObject("school");
 			id = school.getString(Constants.ID);
+			 String schoolId = SchoolBusiness.getSchool();
 			/* Check to make sure the school is selectable as a user's school */
-			if (id.equals("1") || id.equals(Constants.NULL)){
-				view.findViewById(R.id.make_my_school_button).setVisibility(View.INVISIBLE);
-			} else {
+			if (id.equals("1") || id.equals(Constants.NULL) || !id.equals(schoolId)){
 				view.findViewById(R.id.make_my_school_button).setClickable(true);
 				view.findViewById(R.id.make_my_school_button).setOnClickListener(this);
+
+			} else {
+				view.findViewById(R.id.make_my_school_button).setVisibility(View.INVISIBLE);
 			}
 			int[] res = {R.id.tv_name,R.id.tv_address,R.id.tv_city, R.id.tv_state, R.id.tv_zip, R.id.tv_phone};
 			String[] get_str = {Constants.NAME, "address", "city", "state", "zip", "phone"};

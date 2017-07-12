@@ -2,20 +2,21 @@ package com.ceti_sb.android.controller;
 
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Handler;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
-import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +25,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,20 +35,17 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
-
-import com.ceti_sb.android.account.AboutFragment;
-import com.ceti_sb.android.application.Constants;
-import com.ceti_sb.android.registration.LoginActivity;
 import com.ceti_sb.android.R;
-import com.ceti_sb.android.application.SchoolBusiness;
-import com.ceti_sb.android.account.SettingsFragment;
+import com.ceti_sb.android.account.AboutFragment;
 import com.ceti_sb.android.account.AccountEditFragment;
 import com.ceti_sb.android.account.ProfileEditFragment;
 import com.ceti_sb.android.account.ProfileFragment;
+import com.ceti_sb.android.account.SettingsFragment;
+import com.ceti_sb.android.application.Constants;
+import com.ceti_sb.android.application.SchoolBusiness;
 import com.ceti_sb.android.badges.BadgeAwardFragment;
 import com.ceti_sb.android.badges.BadgeViewFragment;
 import com.ceti_sb.android.claims.ClaimViewFragment;
@@ -56,8 +53,8 @@ import com.ceti_sb.android.events.DeleteEventDialogFragment;
 import com.ceti_sb.android.events.EventCreateFragment;
 import com.ceti_sb.android.events.EventViewFragment;
 import com.ceti_sb.android.gcm.RegistrationIntentService;
+import com.ceti_sb.android.registration.LoginActivity;
 import com.ceti_sb.android.schools.SchoolViewFragment;
-//import com.ceti_sb.android.social.TwitterClient;
 import com.ceti_sb.android.users.UserBadgesFragment;
 import com.ceti_sb.android.users.UserProfileFragment;
 import com.ceti_sb.android.users.UserViewFragment;
@@ -67,30 +64,26 @@ import com.ceti_sb.android.views.MessageFragment;
 import com.ceti_sb.android.views.SearchOptionsFragment;
 import com.ceti_sb.android.views.TabFragment;
 import com.ceti_sb.android.volley.NetworkVolley;
-//import com.facebook.FacebookSdk;
-//import com.facebook.share.model.ShareLinkContent;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xml.sax.InputSource;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import android.location.*;
-import android.location.LocationListener;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+//import com.ceti_sb.android.social.TwitterClient;
+//import com.facebook.FacebookSdk;
+//import com.facebook.share.model.ShareLinkContent;
 
 
 public class MainActivity extends FragmentActivity
@@ -701,7 +694,8 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void onGetAwardBadge(String event_id){
-		sendVolley(Request.Method.GET, "award_badge?event_id="+event_id, Constants.USERS, null, true);
+		sendVolley(Request.Method.GET, "award_badge?notification_id="+event_id, Constants.USERS, null, true);
+		//sendVolley(Request.Method.GET, "award_badge?event_id="+event_id, Constants.USERS, null, true);
 	}
 
     @Override
@@ -710,11 +704,11 @@ public class MainActivity extends FragmentActivity
     }
 
     /* Listener for BadgeAwardFragment.java */
-	public void awardBadge(Boolean award, int event_id){
+	public void awardBadge(Boolean award, int claim_id){
 		JSONObject obj = new JSONObject();
 		try {
 			obj.put(Constants.AWARD, award);
-			obj.put(Constants.EVENT_ID, event_id);
+			obj.put(Constants.CLAIM_ID, claim_id);
 		} catch (JSONException e) {
 
 		}
@@ -1244,7 +1238,7 @@ public class MainActivity extends FragmentActivity
 		if (id.contains(Constants.BADGES)){
 			handleBadgeResponse(response);
 			return;
-		} else if (id.contains("award_badge?event_id")) {
+		} else if (id.contains("award_badge?notification_id")) {
 			try {
 				Bundle args = jsonToBundle(response);
 				BadgeAwardFragment badgeAwardFragment = BadgeAwardFragment.newInstance(args);

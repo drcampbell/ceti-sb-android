@@ -11,10 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
-import com.ceti_sb.android.application.Constants;
-import com.ceti_sb.android.volley.NetworkVolley;
 import com.ceti_sb.android.R;
 import com.ceti_sb.android.application.SchoolBusiness;
+import com.ceti_sb.android.volley.NetworkVolley;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,7 +32,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 	// TODO: Rename and change types of parameters
 	private String event_name;
 	private String speaker_name;
-	private int event_id;
+	private int claim_id;
 	private String badge_url;
 	private AwardBadgeListener mListener;
 	private Boolean isAwarded;
@@ -52,7 +51,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 //		Bundle args = new Bundle();
 //		args.putString(ARG_PARAM1, event_name);
 //		args.putString(ARG_PARAM2, speaker_name);
-//		args.putString(ARG_PARAM3, event_id);
+//		args.putString(ARG_PARAM3, claim_id);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -67,7 +66,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 		if (getArguments() != null) {
 			event_name = getArguments().getString("event_name");
 			speaker_name = getArguments().getString("speaker_name");
-			event_id = Integer.parseInt(getArguments().getString(Constants.EVENT_ID));
+			claim_id = Integer.parseInt(getArguments().getString("claim_id"));
 			badge_url = getArguments().getString("badge_url");
 			isAwarded = Boolean.parseBoolean(getArguments().getString("isAwarded"));
 		}
@@ -128,10 +127,10 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 	public void onClick(View view) {
 		switch (view.getId()){
 			case R.id.award_badge_button:
-				mListener.awardBadge(true, event_id);
+				mListener.awardBadge(true, claim_id);
 				break;
 			case R.id.reject_award_button:
-				mListener.awardBadge(false, event_id);
+				mListener.awardBadge(false, claim_id);
 				break;
 			default:
 				break;

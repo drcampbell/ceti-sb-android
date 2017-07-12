@@ -1,6 +1,5 @@
 package com.ceti_sb.android.views;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,8 +21,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.R;
+import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.application.SchoolBusiness;
 import com.ceti_sb.android.volley.NetworkVolley;
 
@@ -286,7 +285,7 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 			view.setBackgroundColor(getResources().getColor(R.color.SolidWhite));
 			if (mModel.equals(getString(R.string.notifications))){
 				if (mData.get(position).get(Constants.N_TYPE).equals("4")){
-					mListener.onGetAwardBadge(mData.get(position).get(Constants.ID));
+					mListener.onGetAwardBadge(mData.get(position).get(Constants.AUX_ID));
 				}
                 else if(mData.get(position).get(Constants.N_TYPE).equals("5")){
                     mListener.onShowAwardBadge(mData.get(position).get(Constants.USER_ID),mData.get(position).get(Constants.ID));

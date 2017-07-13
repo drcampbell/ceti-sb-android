@@ -36,6 +36,7 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 	private String badge_url;
 	private AwardBadgeListener mListener;
 	private Boolean isAwarded;
+	private Boolean isRejected;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -69,6 +70,8 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 			claim_id = Integer.parseInt(getArguments().getString("claim_id"));
 			badge_url = getArguments().getString("badge_url");
 			isAwarded = Boolean.parseBoolean(getArguments().getString("isAwarded"));
+			isRejected = Boolean.parseBoolean(getArguments().getString("isRejected"));
+
 		}
 	}
 
@@ -89,10 +92,12 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 		badge.getLayoutParams().height = 512;
 		badge.getLayoutParams().width = 512;
 		if (isAwarded){
-			((TextView) view.findViewById(R.id.award_badge)).setText("You Have Awarded A Badge To");
-			view.findViewById(R.id.award_badge_button).setVisibility(View.INVISIBLE);
-			view.findViewById(R.id.reject_award_button).setVisibility(View.INVISIBLE);
-		} else {
+			handleAwardOrReject(view, "You have awarded a badge to");
+		}
+		else if (isRejected){
+			handleAwardOrReject(view, "You have rejected a badge to");
+		}
+		else {
 			view.findViewById(R.id.award_badge_button).setOnClickListener(BadgeAwardFragment.this);
 			view.findViewById(R.id.reject_award_button).setOnClickListener(BadgeAwardFragment.this);
 		}
@@ -105,7 +110,11 @@ public class BadgeAwardFragment extends Fragment implements View.OnClickListener
 			//mListener.onFragmentInteraction(uri);
 		}
 	}
-
+	private void handleAwardOrReject(View view, String message){
+		((TextView) view.findViewById(R.id.award_badge)).setText(message);
+		view.findViewById(R.id.award_badge_button).setVisibility(View.INVISIBLE);
+		view.findViewById(R.id.reject_award_button).setVisibility(View.INVISIBLE);
+	}
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);

@@ -284,10 +284,11 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 			// fragment is attached to one) that an item has been selected.
 			view.setBackgroundColor(getResources().getColor(R.color.SolidWhite));
 			if (mModel.equals(getString(R.string.notifications))){
-				if (mData.get(position).get(Constants.N_TYPE).equals("4")){
+				 String n_type =  mData.get(position).get(Constants.N_TYPE);
+				if (n_type.equals("4") || n_type.equals("10") || n_type.equals("11") ){
 					mListener.onGetAwardBadge(mData.get(position).get(Constants.AUX_ID));
 				}
-                else if(mData.get(position).get(Constants.N_TYPE).equals("5")){
+                else if(n_type.equals("5")){
                     mListener.onShowAwardBadge(mData.get(position).get(Constants.USER_ID),mData.get(position).get(Constants.ID));
                 }
                 else {
@@ -351,6 +352,10 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 				return "has canceled their claim";
 			case 9:
 				return "has canceled their speaking engagement";
+			case 10:
+				return "You awarded a badge!";
+			case 11:
+				return "You rejected a badge!";
 			default:
 				return event_title;
 		}

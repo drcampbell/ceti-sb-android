@@ -1,7 +1,5 @@
 package com.ceti_sb.android.application;
 
-import com.android.volley.toolbox.StringRequest;
-
 /**
  * Created by paranjay on 12/12/15.
  */
@@ -77,6 +75,10 @@ public class Constants {
     public final static String AWARD = "award";
     public final static String AWARD_BADGE = "award_badge";
 
+
     public final static String SLASH = "/";
     public final static String EMPTY = " ";
+
+    public final static String CLAIM_ID = "claim_id";
+
 }

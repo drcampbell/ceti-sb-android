@@ -14,16 +14,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.R;
+import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.application.SchoolBusiness;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,6 +53,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 	public final int CANCEL_EVENT = 0; public final int CANCEL_CLAIM = 1; public final int CANCEL_SPEAKER = 2;
 	private int mode;
 
+	JSONObject speakerNameArrayList = new JSONObject();
 	/*
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -88,7 +91,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 		//mLayout = (RelativeLayout) view.findViewById(R.id.layout_fragment_event);
 		String id;
 		String event_owner;
-		Boolean displayClaims = false;
+		Boolean displayClaims = true;
 		if (getArguments() != null) {
 			try {
 				JSONObject obj = new JSONObject(getArguments().getString(JSON_RESPONSE));
@@ -102,6 +105,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				// TODO Handle E
 				id = "nil";
 				event_owner = "0";
+
 			}
 			//mParam1 = getArguments().getString(JSON_RESPONSE);
 			//mParam2 = getArguments().getString(ARG_PARAM2);
@@ -150,7 +154,9 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_name).getTag(), "users");
 				break;
 			case R.id.tv_speaker:
-				mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_speaker).getTag(), "users");
+				//ListItemFragment listItemFragment = ListItemFragment.newInstance(speakerNameArrayList, "users", "?search=");
+				mListener.onEventViewInteractionUserList(speakerNameArrayList, "users");
+				//mListener.onEventViewInteraction((String) view.findViewById(R.id.tv_speaker).getTag(), "users");
 				break;
 			case R.id.edit_button:
 				mListener.onCreateEvent(true, event);
@@ -194,6 +200,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 		public void onDeleteEvent(String id);
 		public void getClaims(String id);
 		public void onCancelClaim(String claim_id);
+		public void onEventViewInteractionUserList(JSONObject id, String direction);
 	}
 
 	public String get_id(int res) {
@@ -222,6 +229,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 			int[] resource = {R.id.tv_title, R.id.tv_speaker, R.id.tv_start,R.id.tv_end,R.id.tv_location,R.id.tv_name,R.id.tv_content};
 			String[] name = {Constants.TITLE, Constants.SPEAKER, "event_start", "event_end", "loc_name", Constants.USER_NAME, "content"};
 			TextView tv;
+			Boolean isCurrentUserApproved = false;
 
 			event = response.toString();
 			Log.d("WHATISEVENT", event);
@@ -233,7 +241,20 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 			} catch (java.text.ParseException e){
 				future_event = false;
 			}
+			if(!response.getString("speaker").equals("TBA")) {
+				JSONArray speakerIDArr = new JSONArray(response.getString("speaker"));
 
+
+				JSONObject speakerID = new JSONObject();
+				for (int j = 0; j < speakerIDArr.length(); j++) {
+					speakerID = speakerIDArr.getJSONObject(j);
+					if (speakerID.getString("id").equals(SchoolBusiness.getUserAttr(Constants.ID))) {
+						isCurrentUserApproved = true;
+					}
+
+
+				}
+			}
 			/* Is the user not the owner of the event? */
 			if (!response.getString("user_id").equals(SchoolBusiness.getUserAttr(Constants.ID))){
 				((Button) view.findViewById(R.id.edit_button)).setVisibility(View.GONE);
@@ -248,13 +269,21 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 						mode = CANCEL_SPEAKER;
 					/* Does user have a claim on event? " */
 					} else if (Integer.parseInt(response.getString("claim_id")) > 0) {
-						((Button) view.findViewById(R.id.claim_button)).setText("Claimed: Pending Approval");
-						((Button) view.findViewById(R.id.claim_button)).setBackgroundColor(getResources().getColor(R.color.InactiveButton));
-						((Button) view.findViewById(R.id.claim_button)).setClickable(false);
-						((Button) view.findViewById(R.id.delete_button)).setVisibility(View.VISIBLE);
-						((Button) view.findViewById(R.id.delete_button)).setText("Cancel Claim");
-						((Button) view.findViewById(R.id.delete_button)).setOnClickListener(EventViewFragment.this);
-						mode = CANCEL_CLAIM;
+						if(isCurrentUserApproved == false) {
+							((Button) view.findViewById(R.id.claim_button)).setText("Claimed: Pending Approval");
+							((Button) view.findViewById(R.id.claim_button)).setBackgroundColor(getResources().getColor(R.color.InactiveButton));
+							((Button) view.findViewById(R.id.claim_button)).setClickable(false);
+							((Button) view.findViewById(R.id.delete_button)).setVisibility(View.VISIBLE);
+							((Button) view.findViewById(R.id.delete_button)).setText("Cancel Claim");
+							((Button) view.findViewById(R.id.delete_button)).setOnClickListener(EventViewFragment.this);
+							mode = CANCEL_CLAIM;
+						}else{
+							((Button) view.findViewById(R.id.claim_button)).setVisibility(View.GONE);
+							((Button) view.findViewById(R.id.delete_button)).setVisibility(View.VISIBLE);
+							((Button) view.findViewById(R.id.delete_button)).setText("Cancel");
+							((Button) view.findViewById(R.id.delete_button)).setOnClickListener(EventViewFragment.this);
+							mode = CANCEL_SPEAKER;
+						}
 					} else {
 						((Button) view.findViewById(R.id.claim_button)).setOnClickListener(EventViewFragment.this);
 					}
@@ -287,6 +316,7 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 					link = response.getString(link);
 					tv.setOnClickListener(EventViewFragment.this);
 					tv.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+
 				} else {
 					link = "0";
 				}
@@ -295,7 +325,39 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 				if (str.contains("event")) {
 					str = response.getString(str);
 				} else {//if (str.equals("school_name")) {
-					str = SchoolBusiness.toDisplayCase(response.getString(str));
+					if(str .equals("speaker")){
+						if(!response.getString(str).equals("TBA")) {
+							JSONArray speakerNameArr = new JSONArray(response.getString(str));
+
+							str = " ";
+							int count = 0;
+							if(speakerNameArr.length() > 2) {
+								count = 2;
+							}else{
+								count = speakerNameArr.length();
+							}
+							JSONObject speakerName = new JSONObject();
+							for(i = 0;i < speakerNameArr.length(); i++){
+								 speakerName = speakerNameArr.getJSONObject(i);
+								if(i < count) {
+									str += SchoolBusiness.toDisplayCase(speakerName.getString("name")) + ", ";
+								}
+							}
+
+							speakerNameArrayList.accumulate("users", speakerNameArr);
+							if(speakerNameArr.length() > 2) {
+								str += SchoolBusiness.toDisplayCase(" more");
+							}
+							else if (str != null && str.length() > 0 && str.charAt(str.length() - 2) == ',') {
+								str =  str.substring(0, str.length() - 2);
+							}
+						}else{
+							str = SchoolBusiness.toDisplayCase(response.getString(str));
+						}
+
+					}else {
+						str = SchoolBusiness.toDisplayCase(response.getString(str));
+					}
 				}
 				tv.setTag(link);
 				tv.setText(str);

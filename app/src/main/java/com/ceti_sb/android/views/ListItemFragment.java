@@ -1,6 +1,5 @@
 package com.ceti_sb.android.views;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,8 +21,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.R;
+import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.application.SchoolBusiness;
 import com.ceti_sb.android.volley.NetworkVolley;
 
@@ -285,10 +284,11 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 			// fragment is attached to one) that an item has been selected.
 			view.setBackgroundColor(getResources().getColor(R.color.SolidWhite));
 			if (mModel.equals(getString(R.string.notifications))){
-				if (mData.get(position).get(Constants.N_TYPE).equals("4")){
-					mListener.onGetAwardBadge(mData.get(position).get(Constants.ID));
+				 String n_type =  mData.get(position).get(Constants.N_TYPE);
+				if (n_type.equals("4") || n_type.equals("10") || n_type.equals("11") ){
+					mListener.onGetAwardBadge(mData.get(position).get(Constants.AUX_ID));
 				}
-                else if(mData.get(position).get(Constants.N_TYPE).equals("5")){
+                else if(n_type.equals("5")){
                     mListener.onShowAwardBadge(mData.get(position).get(Constants.USER_ID),mData.get(position).get(Constants.ID));
                 }
                 else {
@@ -352,6 +352,10 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 				return "has canceled their claim";
 			case 9:
 				return "has canceled their speaking engagement";
+			case 10:
+				return "You awarded a badge!";
+			case 11:
+				return "You rejected a badge!";
 			default:
 				return event_title;
 		}
@@ -386,7 +390,11 @@ public class ListItemFragment extends Fragment implements AbsListView.OnItemClic
 
                         map.put(Constants.ID, obj.getString(key[0]));
 						map.put(Constants.TITLE, obj.getString(key[1]));
-						map.put(Constants.DATA, obj.getString(key[2]));
+						if(obj.has(key[2])) {
+							map.put(Constants.DATA, obj.getString(key[2]));
+						}else{
+							map.put(Constants.DATA, "");
+						}
 						map.put(Constants.AUX_ID, Constants.SUCCESS);
 						map.put(Constants.READ, "true");
 						break;

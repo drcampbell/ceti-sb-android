@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.inputmethod.InputMethodManager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -80,6 +81,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
 
 //import com.ceti_sb.android.social.TwitterClient;
 //import com.facebook.FacebookSdk;
@@ -479,7 +481,17 @@ public class MainActivity extends FragmentActivity
 		}
 	}
 	public void changeSearchModel(){
-		searchModel = Constants.SCHOOLS;
+
+
+		JSONObject profile = SchoolBusiness.getProfile();
+		if (profile != null) {
+			String school = SchoolBusiness.getSchool();
+			if(school == null || school.equals(Constants.EMPTY) ||  school.equals("1")){
+				searchModel = Constants.SCHOOLS;
+				SchoolBusiness.schoolSearch = true;
+				return ;
+			}
+		}
 
 	}
 
@@ -588,6 +600,7 @@ public class MainActivity extends FragmentActivity
 	/* Listener for SearchOptionsFragment.java */
 	public void onSearchInteraction(String model){
 		searchModel = model;
+
 	}
 
 	/* Listener for HomeFragment.java */
@@ -711,14 +724,26 @@ public class MainActivity extends FragmentActivity
 
     /* Listener for BadgeAwardFragment.java */
 	public void awardBadge(Boolean award, int claim_id){
+
 		JSONObject obj = new JSONObject();
-		try {
-			obj.put(Constants.AWARD, award);
-			obj.put(Constants.CLAIM_ID, claim_id);
-		} catch (JSONException e) {
+		if(award == true) {
+			try {
+				obj.put(Constants.AWARD, award);
+				obj.put(Constants.CLAIM_ID, claim_id);
+			} catch (JSONException e) {
+
+			}
+			sendVolley(Request.Method.POST, "award_badge", Constants.USERS, obj, true);
+		}else{
+
+			try{
+				obj.put(Constants.CLAIM_ID, claim_id);
+			} catch (JSONException e) {
+
+			}
+			sendVolley(Request.Method.POST, "reject_badge", Constants.USERS, obj, true);
 
 		}
-		sendVolley(Request.Method.POST, "award_badge", Constants.USERS, obj, true);
 	}
 
 	/* Listener for UserBadgesFragment.java */
@@ -1294,6 +1319,9 @@ public class MainActivity extends FragmentActivity
 			case Constants.AWARD_BADGE:
 				onBackPressed();
 				return;
+			case Constants.REJECT_BADGE:
+				onBackPressed();
+				return;
 			default:
 				break;
 		}
@@ -1406,7 +1434,11 @@ public class MainActivity extends FragmentActivity
     }
     public void onSearchClick(View view){
         String query = null;
-        EditText cmpSearchTxt = (EditText) findViewById(R.id.searchText);
+		EditText cmpSearchTxt = (EditText) findViewById(R.id.searchText);
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(cmpSearchTxt.getWindowToken(),
+				InputMethodManager.RESULT_UNCHANGED_SHOWN);
+
         String searchText = cmpSearchTxt.getText().toString();
         String zip = ((EditText) findViewById(R.id.txtZip)).getText().toString();
         String radius = ((EditText) findViewById(R.id.txtRadius)).getText().toString();

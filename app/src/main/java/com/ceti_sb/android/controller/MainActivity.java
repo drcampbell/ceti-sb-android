@@ -29,6 +29,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.inputmethod.InputMethodManager;
+import android.provider.Settings;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -490,6 +491,9 @@ public class MainActivity extends FragmentActivity
 				searchModel = Constants.SCHOOLS;
 				SchoolBusiness.schoolSearch = true;
 				return ;
+			}else{
+				searchModel = Constants.EVENT;
+				SchoolBusiness.schoolSearch = false;
 			}
 		}
 
@@ -532,9 +536,22 @@ public class MainActivity extends FragmentActivity
                 break;
             case R.id.myLocation:
                 if (checked) {
-                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 
+					boolean gps_enabled = false;
+
+					Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
+
+					locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+					gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+					if(gps_enabled){
+					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+					}else{
+						((CheckBox) findViewById(R.id.myLocation)).setChecked(false);
+						intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+						startActivity(intent);
+						Toast.makeText(getApplicationContext(),
+								"Please switch on gps.", Toast.LENGTH_LONG).show();
+					}
                 }
                 break;
         }

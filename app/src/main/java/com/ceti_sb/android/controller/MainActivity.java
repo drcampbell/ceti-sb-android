@@ -492,7 +492,7 @@ public class MainActivity extends FragmentActivity
 				SchoolBusiness.schoolSearch = true;
 				return ;
 			}else{
-				searchModel = Constants.EVENT;
+				searchModel = Constants.EVENTS;
 				SchoolBusiness.schoolSearch = false;
 			}
 		}

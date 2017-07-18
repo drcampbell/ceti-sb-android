@@ -2,20 +2,21 @@ package com.ceti_sb.android.controller;
 
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Handler;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
-import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -24,10 +25,11 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.inputmethod.InputMethodManager;
+import android.provider.Settings;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -35,20 +37,17 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
-
-import com.ceti_sb.android.account.AboutFragment;
-import com.ceti_sb.android.application.Constants;
-import com.ceti_sb.android.registration.LoginActivity;
 import com.ceti_sb.android.R;
-import com.ceti_sb.android.application.SchoolBusiness;
-import com.ceti_sb.android.account.SettingsFragment;
+import com.ceti_sb.android.account.AboutFragment;
 import com.ceti_sb.android.account.AccountEditFragment;
 import com.ceti_sb.android.account.ProfileEditFragment;
 import com.ceti_sb.android.account.ProfileFragment;
+import com.ceti_sb.android.account.SettingsFragment;
+import com.ceti_sb.android.application.Constants;
+import com.ceti_sb.android.application.SchoolBusiness;
 import com.ceti_sb.android.badges.BadgeAwardFragment;
 import com.ceti_sb.android.badges.BadgeViewFragment;
 import com.ceti_sb.android.claims.ClaimViewFragment;
@@ -56,8 +55,8 @@ import com.ceti_sb.android.events.DeleteEventDialogFragment;
 import com.ceti_sb.android.events.EventCreateFragment;
 import com.ceti_sb.android.events.EventViewFragment;
 import com.ceti_sb.android.gcm.RegistrationIntentService;
+import com.ceti_sb.android.registration.LoginActivity;
 import com.ceti_sb.android.schools.SchoolViewFragment;
-//import com.ceti_sb.android.social.TwitterClient;
 import com.ceti_sb.android.users.UserBadgesFragment;
 import com.ceti_sb.android.users.UserProfileFragment;
 import com.ceti_sb.android.users.UserViewFragment;
@@ -67,30 +66,27 @@ import com.ceti_sb.android.views.MessageFragment;
 import com.ceti_sb.android.views.SearchOptionsFragment;
 import com.ceti_sb.android.views.TabFragment;
 import com.ceti_sb.android.volley.NetworkVolley;
-//import com.facebook.FacebookSdk;
-//import com.facebook.share.model.ShareLinkContent;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xml.sax.InputSource;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import android.location.*;
-import android.location.LocationListener;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+
+//import com.ceti_sb.android.social.TwitterClient;
+//import com.facebook.FacebookSdk;
+//import com.facebook.share.model.ShareLinkContent;
 
 
 public class MainActivity extends FragmentActivity
@@ -460,10 +456,15 @@ public class MainActivity extends FragmentActivity
 						case "message":
 							break;
 						default:
-							sendVolley(Request.Method.GET, extras.getString(Constants.EVENT_ID),
-									Constants.EVENTS, null, true);
+							sendVolley(Request.Method.GET, Constants.NULL, Constants.NOTIFICATIONS, null, true);
+							//sendVolley(Request.Method.GET, extras.getString(Constants.EVENT_ID),
+									//Constants.EVENTS, null, true);
 							break;
 					}
+				}
+				else{
+					sendVolley(Request.Method.GET, Constants.NULL, Constants.NOTIFICATIONS, null, true);
+
 				}
 				break;
 			case Intent.ACTION_VIEW:
@@ -480,6 +481,24 @@ public class MainActivity extends FragmentActivity
 				break;
 		}
 	}
+	public void changeSearchModel(){
+
+
+		JSONObject profile = SchoolBusiness.getProfile();
+		if (profile != null) {
+			String school = SchoolBusiness.getSchool();
+			if(school == null || school.equals(Constants.EMPTY) ||  school.equals("1")){
+				searchModel = Constants.SCHOOLS;
+				SchoolBusiness.schoolSearch = true;
+				return ;
+			}else{
+				searchModel = Constants.EVENTS;
+				SchoolBusiness.schoolSearch = false;
+			}
+		}
+
+	}
+
 
 	public void onCheckboxClicked(View view) {
 		boolean checked = ((CheckBox) view).isChecked();
@@ -517,9 +536,22 @@ public class MainActivity extends FragmentActivity
                 break;
             case R.id.myLocation:
                 if (checked) {
-                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 
+					boolean gps_enabled = false;
+
+					Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
+
+					locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+					gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+					if(gps_enabled){
+					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+					}else{
+						((CheckBox) findViewById(R.id.myLocation)).setChecked(false);
+						intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+						startActivity(intent);
+						Toast.makeText(getApplicationContext(),
+								"Please switch on gps.", Toast.LENGTH_LONG).show();
+					}
                 }
                 break;
         }
@@ -567,6 +599,13 @@ public class MainActivity extends FragmentActivity
 	public void onSchoolViewInteraction(String id, String model){
 
 	}
+	public void onEventViewInteractionUserList(JSONObject id, String model){
+
+		ListItemFragment listItemFragment = ListItemFragment.newInstance(id, "users", "?search=");
+		swapFragment(listItemFragment, R.id.fragment_container, FRAG_MAIN, true);
+		return;
+	}
+
 
 	/* Listener for UserProfileFragment.java */
 	/* Listener for UserViewFragment.java */
@@ -578,6 +617,7 @@ public class MainActivity extends FragmentActivity
 	/* Listener for SearchOptionsFragment.java */
 	public void onSearchInteraction(String model){
 		searchModel = model;
+
 	}
 
 	/* Listener for HomeFragment.java */
@@ -663,7 +703,8 @@ public class MainActivity extends FragmentActivity
 		try {
 			imageLoader = NetworkVolley.getInstance(getApplicationContext()).getImageLoader();
 			NetworkImageView badge = (NetworkImageView) view.findViewById(R.id.school_badge);
-			badge.setImageUrl(SchoolBusiness.AWS_S3 + response.getString("badge_url"), imageLoader);
+			badge.setImageUrl(SchoolBusiness.AWS_S3 + response.getString("badge_id") +
+					Constants.SLASH + response.getString("badge_url"), imageLoader);
 		} catch (JSONException e){
 			handleJSONException(e);
 		}
@@ -689,7 +730,8 @@ public class MainActivity extends FragmentActivity
 	}
 
 	public void onGetAwardBadge(String event_id){
-		sendVolley(Request.Method.GET, "award_badge?event_id="+event_id, Constants.USERS, null, true);
+		sendVolley(Request.Method.GET, "award_badge?notification_id="+event_id, Constants.USERS, null, true);
+		//sendVolley(Request.Method.GET, "award_badge?event_id="+event_id, Constants.USERS, null, true);
 	}
 
     @Override
@@ -698,15 +740,27 @@ public class MainActivity extends FragmentActivity
     }
 
     /* Listener for BadgeAwardFragment.java */
-	public void awardBadge(Boolean award, int event_id){
+	public void awardBadge(Boolean award, int claim_id){
+
 		JSONObject obj = new JSONObject();
-		try {
-			obj.put(Constants.AWARD, award);
-			obj.put(Constants.EVENT_ID, event_id);
-		} catch (JSONException e) {
+		if(award == true) {
+			try {
+				obj.put(Constants.AWARD, award);
+				obj.put(Constants.CLAIM_ID, claim_id);
+			} catch (JSONException e) {
+
+			}
+			sendVolley(Request.Method.POST, "award_badge", Constants.USERS, obj, true);
+		}else{
+
+			try{
+				obj.put(Constants.CLAIM_ID, claim_id);
+			} catch (JSONException e) {
+
+			}
+			sendVolley(Request.Method.POST, "reject_badge", Constants.USERS, obj, true);
 
 		}
-		sendVolley(Request.Method.POST, "award_badge", Constants.USERS, obj, true);
 	}
 
 	/* Listener for UserBadgesFragment.java */
@@ -751,6 +805,13 @@ public class MainActivity extends FragmentActivity
 	public void clearTabs(){
 //		swapFragment(new BlankFragment(),R.id.tab_container, TAB_CONTAINER, false);
 //		swapFragment(new BlankFragment(),R.id.tab_content, TAB_CONTENT, false);
+	}
+	public void handleSchoolMissing(){
+		Toast.makeText(getApplicationContext(),
+				"Please choose a school for yourself before trying to create events.", Toast.LENGTH_LONG).show();
+		SchoolBusiness.schoolSearch = true;
+		showSearchForm();
+
 	}
 
 	/* Listener for ProfileFragment.java */
@@ -984,7 +1045,7 @@ public class MainActivity extends FragmentActivity
 			search = false;
 		}
         String url = SchoolBusiness.getTarget() + model + delim + id;
-
+		Log.d("URL", "Outgoing URL: " + url);
 //        if(search){
 //            url = SchoolBusiness.getTarget() +  id;
 //        }
@@ -1232,7 +1293,7 @@ public class MainActivity extends FragmentActivity
 		if (id.contains(Constants.BADGES)){
 			handleBadgeResponse(response);
 			return;
-		} else if (id.contains("award_badge?event_id")) {
+		} else if (id.contains("award_badge?notification_id")) {
 			try {
 				Bundle args = jsonToBundle(response);
 				BadgeAwardFragment badgeAwardFragment = BadgeAwardFragment.newInstance(args);
@@ -1273,6 +1334,9 @@ public class MainActivity extends FragmentActivity
 						return;
 				}
 			case Constants.AWARD_BADGE:
+				onBackPressed();
+				return;
+			case Constants.REJECT_BADGE:
 				onBackPressed();
 				return;
 			default:
@@ -1387,7 +1451,11 @@ public class MainActivity extends FragmentActivity
     }
     public void onSearchClick(View view){
         String query = null;
-        EditText cmpSearchTxt = (EditText) findViewById(R.id.searchText);
+		EditText cmpSearchTxt = (EditText) findViewById(R.id.searchText);
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(cmpSearchTxt.getWindowToken(),
+				InputMethodManager.RESULT_UNCHANGED_SHOWN);
+
         String searchText = cmpSearchTxt.getText().toString();
         String zip = ((EditText) findViewById(R.id.txtZip)).getText().toString();
         String radius = ((EditText) findViewById(R.id.txtRadius)).getText().toString();

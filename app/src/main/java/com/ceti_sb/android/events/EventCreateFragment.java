@@ -54,7 +54,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 	private String mEvent;
 	private String mId;
 	private OnEventCreatorListener mListener;
-    private TimeZone timeZone = TimeZone.getTimeZone("EST");
+    private TimeZone timeZone = TimeZone.getTimeZone("America/New_York");
 
 
     Spinner mSpinner;
@@ -166,7 +166,7 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				event.put(Constants.ID, mId);
 			}
 			EditText data;
-			int[] resource = {R.id.ET_content, R.id.ET_title, R.id.et_tags};
+			int[] resource = {R.id.ET_content, R.id.ET_title};//R.id.et_tags
 			String[] headers = {"content", Constants.TITLE, "tag_list",};
 
 			int[] start = {R.id.start_year, R.id.start_month, R.id.start_day, R.id.start_hour, R.id.start_minutes};
@@ -317,9 +317,9 @@ public class EventCreateFragment extends Fragment implements View.OnClickListene
 				mId = event.getString(Constants.ID);
 				((EditText) view.findViewById(R.id.ET_title)).setText(event.getString(Constants.TITLE));
 				((EditText) view.findViewById(R.id.ET_content)).setText(event.getString("content"));
-				if (event.has("tags")){
-					((EditText) view.findViewById(R.id.et_tags)).setText(event.getString("tags"));
-				}
+				//if (event.has("tags")){
+				//	((EditText) view.findViewById(R.id.et_tags)).setText(event.getString("tags"));
+				//}
 
 				cal.setTime(parseDate(event.getString("event_start")));
 				setETDate(cal, view, start_res, time_min, time_max, cal_res, R.id.start_pm);

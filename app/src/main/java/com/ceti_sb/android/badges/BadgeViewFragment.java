@@ -114,7 +114,7 @@ public class BadgeViewFragment extends Fragment implements View.OnClickListener 
 
         badge = new BadgeImageView(getActivity().getApplicationContext());
 		display.addView(badge);
-		String badge_str = SchoolBusiness.AWS_S3 + mBadge;
+		String badge_str = SchoolBusiness.AWS_S3 + badge_id + Constants.SLASH + mBadge;
 		badge.setImageUrl(badge_str, imageLoader);
 		badge.getLayoutParams().height = 512;
 		badge.getLayoutParams().width = 512;

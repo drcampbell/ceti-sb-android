@@ -30,7 +30,7 @@ public class MyGcmListenerService extends GcmListenerService {
             Log.d(TAG, "Data" + data.toString());
             String message = data.getString("message");
             String event_id = data.getString("event_id");
-            String n_type = data.getString("n_type");
+            String n_type = "pushNotification";
             String notif_count = data.getString("count");
             Log.d(TAG, "From: " + from);
             Log.d(TAG, "Message: " + message);
@@ -79,7 +79,7 @@ public class MyGcmListenerService extends GcmListenerService {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setAction(SchoolBusiness.ACTION_NOTIFICATION);
-                intent.putExtras(data);
+                //intent.putExtras(null);
                 pendingIntent = PendingIntent.getActivity(this, rcode++ /* Request code */, intent,
                         PendingIntent.FLAG_ONE_SHOT);
             } else {

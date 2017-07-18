@@ -79,11 +79,13 @@ public class LoginActivity extends Activity implements OnClickListener {
 		    obj = newLogin();
 //	    }
         showLoader();
+        Log.d(TAG, url);
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST,url,obj,
 			new Response.Listener<JSONObject>() {
 				@Override
 				public void onResponse(JSONObject response){
                     closeLoader();
+                    Log.d(TAG, response.toString());
 					SchoolBusiness.setProfile(response);
 					if (saveLoginCheckBox.isChecked()){
 						SchoolBusiness.setRemember(true);

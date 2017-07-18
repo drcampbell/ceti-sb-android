@@ -125,11 +125,12 @@ public class UserBadgesFragment extends Fragment implements View.OnClickListener
 				BadgeImageView badgeView = new BadgeImageView(getActivity());
 				JSONObject badge = badges.getJSONObject(i);
 				display.addView(badgeView, i);
-				badgeView.setImageUrl(SchoolBusiness.AWS_S3 + badge.getString("badge_url"), imageLoader);
+				badgeView.setImageUrl(SchoolBusiness.AWS_S3 + badge.getString("badge_id") +
+						Constants.SLASH + badge.getString("badge_url"), imageLoader);
 				badgeView.getLayoutParams().height = 96;
 				badgeView.getLayoutParams().width = 96;
 				badgeView.setClickable(true);
-				badgeView.setTag(badge.getString("badge_id"));
+				badgeView.setTag(badge.getString("user_badge_id"));
 				badgeView.setOnClickListener(this);
 				//bmap.put(resource[i], badges.getString(i));
 			}

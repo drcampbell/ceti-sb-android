@@ -1,16 +1,20 @@
 package com.ceti_sb.android.controller;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.ceti_sb.android.application.Constants;
 import com.ceti_sb.android.R;
 import com.ceti_sb.android.application.SchoolBusiness;
+
+import org.json.JSONObject;
 
 /*
  * A simple {@link Fragment} subclass.
@@ -23,7 +27,6 @@ import com.ceti_sb.android.application.SchoolBusiness;
 public class HomeFragment extends Fragment implements View.OnClickListener{//, FragmentTabHost.OnTabChangeListener
 	private int tab;
 //	private FragmentTabHost tabHost;
-
 
 	private OnWelcomeInteractionListener mListener;
 
@@ -45,6 +48,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 		}
 		tab = 0;
 	}
+
+	public void onResume() {
+		super.onResume();
+
+	}
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,6 +90,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 	public void onClick(View view){
 		switch (view.getId()){
 			case R.id.create_event:
+				JSONObject profile = SchoolBusiness.getProfile();
+				if (profile != null) {
+					String school = SchoolBusiness.getSchool();
+					if(school == null || school.equals(Constants.EMPTY) ||  school.equals("1")){
+						mListener.handleSchoolMissing();
+						return ;
+					}
+				}
 				mListener.onCreateEvent(false, Constants.NULL);
 				break;
 		}
@@ -106,6 +123,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{//, F
 		public void onCreateEvent(Boolean edit, String event);
 		public void onCreateTab(int tab);
 		public void clearTabs();
+		public void handleSchoolMissing();
 	}
 
     /*

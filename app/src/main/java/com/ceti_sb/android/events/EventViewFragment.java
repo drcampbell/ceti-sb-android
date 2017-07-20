@@ -337,9 +337,9 @@ public class EventViewFragment extends Fragment implements View.OnClickListener 
 								count = speakerNameArr.length();
 							}
 							JSONObject speakerName = new JSONObject();
-							for(i = 0;i < speakerNameArr.length(); i++){
-								 speakerName = speakerNameArr.getJSONObject(i);
-								if(i < count) {
+							for(int j = 0;j < speakerNameArr.length(); j++){
+								 speakerName = speakerNameArr.getJSONObject(j);
+								if(j < count) {
 									str += SchoolBusiness.toDisplayCase(speakerName.getString("name")) + ", ";
 								}
 							}
